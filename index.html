@@ -20,170 +20,33 @@
 			--card-bg-dark: #1f1f1f;
 			--arabic-font: 'Scheherazade New', serif;
 		}
-
-		body {
-			margin: 0;
-			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-			background-color: var(--bg-light);
-			color: var(--text-light);
-			transition: background-color 0.3s, color 0.3s;
-			line-height: 1.6;
-		}
-
-		body.dark {
-			background-color: var(--bg-dark);
-			color: var(--text-dark);
-		}
-
-		header {
-			background-color: var(--accent);
-			color: white;
-			padding: 1rem 2rem;
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-			position: relative;
-			flex-wrap: wrap;
-			gap: 0.5rem;
-		}
-
-		.header-title {
-			font-weight: bold;
-		}
-
-		.bismillah {
-			position: absolute;
-			left: 50%;
-			transform: translateX(-50%);
-			font-family: var(--arabic-font);
-			font-size: 1.6rem;
-			white-space: nowrap;
-		}
-
-		.buttons {
-			display: flex;
-			gap: 0.5rem;
-			align-items: center;
-		}
-
-		select {
-			padding: 4px 6px;
-			border-radius: 5px;
-			border: 1px solid #ccc;
-			font-size: 0.9rem;
-		}
-
-		.container {
-			display: flex;
-			flex-direction: column;
-			padding: 1.5rem;
-			max-width: 1200px;
-			margin: 0 auto;
-		}
-
-		.surah-list,
-		.surah-content {
-			margin-top: 1.5rem;
-		}
-
-		.surah-item {
-			padding: 1rem;
-			border: 1px solid #ddd;
-			border-radius: 10px;
-			background-color: var(--card-bg-light);
-			margin-bottom: 0.75rem;
-			cursor: pointer;
-			transition: all 0.3s ease;
-		}
-
-		body.dark .surah-item {
-			background-color: var(--card-bg-dark);
-			border-color: #333;
-		}
-
-		.surah-item:hover {
-			background-color: #e0e7ff;
-		}
-
-		.verse {
-			margin: 1.5rem 0;
-			text-align: right;
-			direction: rtl;
-			background: var(--card-bg-light);
-			padding: 1rem;
-			border-radius: 10px;
-			box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-		}
-
-		body.dark .verse {
-			background: var(--card-bg-dark);
-		}
-
-		.translation {
-			font-size: 1rem;
-			color: #444;
-			text-align: right;
-			direction: rtl;
-			margin-top: 0.5rem;
-			font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', serif;
-		}
-
-		body.dark .translation {
-			color: #ccc;
-		}
-
-		.toggle-theme,
-		.text-resize {
-			cursor: pointer;
-			font-weight: bold;
-			border: none;
-			background: none;
-			color: white;
-			font-size: 1.4rem;
-		}
-
-		.font-select {
-			padding: 4px 6px;
-			border-radius: 5px;
-			border: none;
-			font-size: 0.9rem;
-		}
-
-		.wbw {
-			margin-top: 0.5rem;
-			display: flex;
-			flex-wrap: wrap;
-			gap: 5px;
-			justify-content: flex-end;
-			direction: rtl;
-		}
-
-		.wbw span {
-			background: rgba(59, 130, 246, 0.1);
-			padding: 3px 6px;
-			border-radius: 6px;
-			text-align: center;
-		}
-
-		body.dark .wbw span {
-			background: rgba(59, 130, 246, 0.2);
-		}
-
+		body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-light); color: var(--text-light); transition: background-color 0.3s, color 0.3s; line-height: 1.6; }
+		body.dark { background-color: var(--bg-dark); color: var(--text-dark); }
+		header { background-color: var(--accent); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); position: relative; flex-wrap: wrap; gap: 0.5rem; }
+		.header-title { font-weight: bold; }
+		.bismillah { position: absolute; left: 50%; transform: translateX(-50%); font-family: var(--arabic-font); font-size: 1.6rem; white-space: nowrap; }
+		.buttons { display: flex; gap: 0.5rem; align-items: center; }
+		select { padding: 4px 6px; border-radius: 5px; border: 1px solid #ccc; font-size: 0.9rem; }
+		.container { display: flex; flex-direction: column; padding: 1.5rem; max-width: 1200px; margin: 0 auto; }
+		.surah-list, .surah-content { margin-top: 1.5rem; }
+		.surah-item { padding: 1rem; border: 1px solid #ddd; border-radius: 10px; background-color: var(--card-bg-light); margin-bottom: 0.75rem; cursor: pointer; transition: all 0.3s ease; }
+		body.dark .surah-item { background-color: var(--card-bg-dark); border-color: #333; }
+		.surah-item:hover { background-color: #e0e7ff; }
+		.verse { margin: 1.5rem 0; text-align: right; direction: rtl; background: var(--card-bg-light); padding: 1rem; border-radius: 10px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); }
+		body.dark .verse { background: var(--card-bg-dark); }
+		.translation { font-size: 1rem; color: #444; text-align: right; direction: rtl; margin-top: 0.5rem; font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', serif; }
+		body.dark .translation { color: #ccc; }
+		.hashiyah { font-size: 0.9rem; color: #666; text-align: right; direction: rtl; margin-top: 0.4rem; font-style: italic; }
+		body.dark .hashiyah { color: #aaa; }
+		.toggle-theme, .text-resize { cursor: pointer; font-weight: bold; border: none; background: none; color: white; font-size: 1.4rem; }
+		.font-select { padding: 4px 6px; border-radius: 5px; border: none; font-size: 0.9rem; }
+		.wbw { margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 5px; justify-content: flex-end; direction: rtl; }
+		.wbw span { background: rgba(59, 130, 246, 0.1); padding: 3px 6px; border-radius: 6px; text-align: center; }
+		body.dark .wbw span { background: rgba(59, 130, 246, 0.2); }
 		@media (min-width: 768px) {
-			.container {
-				flex-direction: row;
-			}
-
-			.surah-list {
-				flex: 1;
-				max-width: 320px;
-				margin-right: 2rem;
-			}
-
-			.surah-content {
-				flex: 3;
-			}
+			.container { flex-direction: row; }
+			.surah-list { flex: 1; max-width: 320px; margin-right: 2rem; }
+			.surah-content { flex: 3; }
 		}
 	</style>
 </head>
@@ -191,7 +54,7 @@
 <body class="dark">
 	<header>
 		<div class="header-title">Quran Reader</div>
-		<div class="bismillah">بِسۡمِ اللهِ الرَّحۡمٰنِ الرَّحِيۡمِ‏</div>
+		<div class="bismillah">بِسۡمِ اللّٰہِ الرَّحۡمٰنِ الرَّحِیۡمِ</div>
 		<div class="buttons">
 			<select id="surahSelect"></select>
 			<select id="verseSelect"></select>
@@ -213,208 +76,90 @@
 	</div>
 
 	<!-- Local data scripts -->
-	<script src="QuranArabic.js"></script>
+	<script src="Quran.js"></script>
 	<script src="wbw-urdu.js"></script>
 
 	<script>
-		let arabicFontSize = 1.4;
-		let urduFontSize = 1.0;
-		let wbwArabicFontSize = 1.2;
-		let wbwUrduFontSize = 0.9;
+		let arabicFontSize = 1.4, urduFontSize = 1.0, wbwArabicFontSize = 1.2, wbwUrduFontSize = 0.9;
 		let arabicFont = "'Scheherazade New', serif";
-		let surahMetaData = [];
 
 		const surahList = document.getElementById('surahList');
 		const surahContent = document.getElementById('surahContent');
 		const surahSelect = document.getElementById('surahSelect');
 		const verseSelect = document.getElementById('verseSelect');
 
-		function toggleTheme() {
-			document.body.classList.toggle('dark');
-		}
-
+		function toggleTheme() { document.body.classList.toggle('dark'); }
 		function changeFontSize(delta) {
-			arabicFontSize += 0.1 * delta;
-			urduFontSize += 0.1 * delta;
-			wbwArabicFontSize += 0.1 * delta;
-			wbwUrduFontSize += 0.1 * delta;
-
-			document.querySelectorAll('.verse strong').forEach(el => {
-				el.style.fontSize = arabicFontSize + 'rem';
-			});
-			document.querySelectorAll('.translation').forEach(el => {
-				el.style.fontSize = urduFontSize + 'rem';
-			});
-			document.querySelectorAll('.wbw span div:first-child').forEach(el => {
-				el.style.fontSize = wbwArabicFontSize + 'rem';
-			});
-			document.querySelectorAll('.wbw span div:last-child').forEach(el => {
-				el.style.fontSize = wbwUrduFontSize + 'rem';
-			});
+			arabicFontSize += 0.1 * delta; urduFontSize += 0.1 * delta; wbwArabicFontSize += 0.1 * delta; wbwUrduFontSize += 0.1 * delta;
+			document.querySelectorAll('.verse strong').forEach(el => el.style.fontSize = arabicFontSize + 'rem');
+			document.querySelectorAll('.translation').forEach(el => el.style.fontSize = urduFontSize + 'rem');
+			document.querySelectorAll('.wbw span div:first-child').forEach(el => el.style.fontSize = wbwArabicFontSize + 'rem');
+			document.querySelectorAll('.wbw span div:last-child').forEach(el => el.style.fontSize = wbwUrduFontSize + 'rem');
 		}
-
 		function changeArabicFont(font) {
-			arabicFont = font;
-			document.documentElement.style.setProperty('--arabic-font', font);
-			document.querySelectorAll('.verse strong, .wbw span div:first-child, .bismillah').forEach(el => {
-				el.style.fontFamily = font;
+			arabicFont = font; document.documentElement.style.setProperty('--arabic-font', font);
+			document.querySelectorAll('.verse strong, .wbw span div:first-child, .bismillah').forEach(el => el.style.fontFamily = font);
+		}
+
+		function loadSurahList() {
+			surahList.innerHTML = ''; surahSelect.innerHTML = '<option value="">Select Surah</option>';
+			Object.keys(quranData).forEach(num => {
+				const item = document.createElement('div');
+				item.className = 'surah-item';
+				item.innerHTML = `<strong>${num}</strong> - Verses: ${Object.keys(quranData[num]).length}`;
+				item.onclick = () => loadSurah(num);
+				surahList.appendChild(item);
+
+				const opt = document.createElement('option');
+				opt.value = num; opt.textContent = `${num}`;
+				surahSelect.appendChild(opt);
 			});
 		}
 
-		async function loadSurahList() {
-			try {
-				const res = await fetch("https://api.alquran.cloud/v1/surah");
-				const data = await res.json();
-				surahMetaData = data.data;
-				surahList.innerHTML = '';
-				surahSelect.innerHTML = '<option value="">Select Surah</option>';
-				surahMetaData.forEach(surah => {
-					const item = document.createElement('div');
-					item.className = 'surah-item';
-					item.innerHTML = `
-						<strong>${surah.number}. ${surah.englishName}</strong> - ${surah.englishNameTranslation}
-						<br><small>Type: ${surah.revelationType}, Verses: ${surah.numberOfAyahs}</small>
-					`;
-					item.onclick = () => loadSurah(surah.number, surah.englishName, surah.englishNameTranslation);
-					surahList.appendChild(item);
-
-					const opt = document.createElement('option');
-					opt.value = surah.number;
-					opt.textContent = `${surah.number}. ${surah.englishName}`;
-					surahSelect.appendChild(opt);
-				});
-
-				const last = JSON.parse(localStorage.getItem('lastRead'));
-				if (last) {
-					const meta = surahMetaData.find(s => s.number === last.surah);
-					if (meta) {
-						await loadSurah(meta.number, meta.englishName, meta.englishNameTranslation, last.verse);
-						surahSelect.value = last.surah;
-						verseSelect.value = last.verse;
-					}
-				}
-			} catch (err) {
-				surahList.innerHTML = "<p>Error loading Surah list.</p>";
-			}
-		}
-
-		async function loadSurah(number, engName, engTrans, scrollToVerse = null) {
+		function loadSurah(number, scrollToVerse = null) {
 			surahContent.innerHTML = "<p>Loading Surah...</p>";
-			try {
-				const urduRes = await fetch(`https://api.alquran.cloud/v1/surah/${number}/ur.najafi`);
-				const urduData = (await urduRes.json()).data;
+			const surah = quranData[number];
+			if (!surah) { surahContent.innerHTML = "<p>Not found.</p>"; return; }
 
-				const arabicAyahs = quranData[number];
-				if (!arabicAyahs) {
-					surahContent.innerHTML = "<p>Arabic text not found for this Surah.</p>";
-					return;
-				}
+			verseSelect.innerHTML = '<option value="">Select Verse</option>';
+			Object.keys(surah).forEach(v => {
+				const opt = document.createElement('option');
+				opt.value = v; opt.textContent = `Verse ${v}`;
+				verseSelect.appendChild(opt);
+			});
 
-				verseSelect.innerHTML = '<option value="">Select Verse</option>';
-				for (let i = 1; i <= urduData.ayahs.length; i++) {
-					const opt = document.createElement('option');
-					opt.value = i;
-					opt.textContent = `Verse ${i}`;
-					verseSelect.appendChild(opt);
-				}
-
-				let versesHtml = "";
-
-				if (number !== 1 && number !== 9) {
-					const bismillahArabic = "بِسۡمِ اللهِ الرَّحۡمٰنِ الرَّحِيۡمِ";
-					const bismillahUrdu = "(شروع کرتا ہوں) اللہ کے نام سے جو بڑا مہربان نہایت رحم والا ہے۔";
-					const bismillahWBW = [
-						{ "arabic": "بِ", "urdu": "سے" },
-						{ "arabic": "اسْمِ", "urdu": "نام" },
-						{ "arabic": "اللّٰهِ", "urdu": "اللہ" },
-						{ "arabic": "ال", "urdu": "جو" },
-						{ "arabic": "رَحْمٰنِ", "urdu": "بہت مہربان" },
-						{ "arabic": "الرَّحِيمِ", "urdu": "جو رحم کرنے والا" }
-					];
-
-					versesHtml += `
-						<div class='verse'>
-							<strong style="font-size: ${arabicFontSize}rem; font-family: ${arabicFont}">${bismillahArabic}</strong>
-							<div class='translation' style="font-size: ${urduFontSize}rem">${bismillahUrdu}</div>
-							<div class="wbw">
-								${bismillahWBW.map(word => `
-									<span>
-										<div style="font-family: ${arabicFont}; font-size:${wbwArabicFontSize}rem;">${word.arabic}</div>
-										<div style="font-family: 'Noto Nastaliq Urdu', serif; font-size:${wbwUrduFontSize}rem;">${word.urdu}</div>
-									</span>
-								`).join('')}
-							</div>
-						</div>
-					`;
-				}
-
-				versesHtml += Object.keys(arabicAyahs).map(ayahNum => {
-					const wbwAyah = wbwData?.[number]?.[ayahNum] || [];
-					return `
-						<div class='verse' id="verse-${ayahNum}">
-							<strong style="font-size: ${arabicFontSize}rem; font-family: ${arabicFont}">
-								${arabicAyahs[ayahNum]} 
-							</strong>
-							<div class='translation' style="font-size: ${urduFontSize}rem">
-								${urduData.ayahs[ayahNum - 1].text}
-							</div>
-							${wbwAyah.length > 0 ? `
-								<div class="wbw">
-									${wbwAyah.map(word => `
-										<span>
-											<div style="font-family: ${arabicFont}; font-size:${wbwArabicFontSize}rem;">${word.arabic}</div>
-											<div style="font-family: 'Noto Nastaliq Urdu', serif; font-size:${wbwUrduFontSize}rem;">${word.urdu.replace(/^:\s*/, '')}</div>
-										</span>
-									`).join('')}
-								</div>
-							` : ''}
-						</div>
-					`;
-				}).join('');
-
-				surahContent.innerHTML = `
-					<h2>${number}. ${engName} (${engTrans})</h2>
-					<div>${versesHtml}</div>
+			let versesHtml = "";
+			Object.keys(surah).forEach(v => {
+				const ayah = surah[v];
+				const wbwAyah = wbwData?.[number]?.[v] || [];
+				versesHtml += `
+					<div class='verse' id="verse-${v}">
+						<strong style="font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayah.arabic}</strong>
+						<div class='translation' style="font-size:${urduFontSize}rem">${ayah.urdu}</div>
+						${ayah.hashiyah ? `<div class="hashiyah">${ayah.hashiyah}</div>` : ""}
+						${wbwAyah.length ? `<div class="wbw">
+							${wbwAyah.map(word => `
+								<span>
+									<div style="font-family:${arabicFont}; font-size:${wbwArabicFontSize}rem;">${word.arabic}</div>
+									<div style="font-family:'Noto Nastaliq Urdu', serif; font-size:${wbwUrduFontSize}rem;">${word.urdu}</div>
+								</span>`).join('')}
+						</div>` : ""}
+					</div>
 				`;
+			});
 
-				changeArabicFont(arabicFont);
-				surahContent.scrollIntoView({ behavior: 'smooth' });
-
-				if (scrollToVerse) {
-					document.getElementById(`verse-${scrollToVerse}`)?.scrollIntoView({ behavior: 'smooth' });
-				}
-
-				localStorage.setItem('lastRead', JSON.stringify({ surah: number, verse: scrollToVerse || 1 }));
-			} catch (err) {
-				surahContent.innerHTML = "<p>Error loading Surah.</p>";
-			}
+			surahContent.innerHTML = `<h2>Surah ${number}</h2><div>${versesHtml}</div>`;
+			changeArabicFont(arabicFont);
+			if (scrollToVerse) document.getElementById(`verse-${scrollToVerse}`)?.scrollIntoView({ behavior: 'smooth' });
+			localStorage.setItem('lastRead', JSON.stringify({ surah: number, verse: scrollToVerse || 1 }));
 		}
 
-		surahSelect.addEventListener('change', () => {
-			const sNum = parseInt(surahSelect.value);
-			const vNum = 1;
-			if (sNum) {
-				const meta = surahMetaData.find(s => s.number === sNum);
-				if (meta) {
-					loadSurah(meta.number, meta.englishName, meta.englishNameTranslation, vNum);
-				}
-			}
-		});
-
-		verseSelect.addEventListener('change', () => {
-			const sNum = parseInt(surahSelect.value);
-			const vNum = parseInt(verseSelect.value) || 1;
-			if (sNum) {
-				const meta = surahMetaData.find(s => s.number === sNum);
-				if (meta) {
-					loadSurah(meta.number, meta.englishName, meta.englishNameTranslation, vNum);
-				}
-			}
-		});
+		surahSelect.addEventListener('change', () => { if (surahSelect.value) loadSurah(surahSelect.value, 1); });
+		verseSelect.addEventListener('change', () => { if (surahSelect.value) loadSurah(surahSelect.value, verseSelect.value); });
 
 		loadSurahList();
-		changeArabicFont(arabicFont);
+		const last = JSON.parse(localStorage.getItem('lastRead'));
+		if (last) loadSurah(last.surah, last.verse);
 	</script>
-
 </body>
 </html>
