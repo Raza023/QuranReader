@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Quran Reader</title>
+	<link href="https://fonts.googleapis.com/css2?family=Lateef&display=swap" rel="stylesheet">
+
+	<style>
+		@font-face {
+			font-family: 'IndoPak';
+			src: url('https://cdn.jsdelivr.net/gh/alif-type/indopak-quran-font@latest/IndoPak.ttf') format('truetype');
+			font-weight: normal;
+			font-style: normal;
+		}
+
+		.verse strong {
+			font-size: 1.4rem;
+			font-family: 'IndoPak', 'Lateef', serif !important;
+			display: block;
+		}
+
+		:root {
+			--bg-light: #f9f9f9;
+			--bg-dark: #121212;
+			--text-light: #121212;
+			--text-dark: #f9f9f9;
+			--accent: #3b82f6;
+			--card-bg-light: #ffffff;
+			--card-bg-dark: #1f1f1f;
+		}
+
+		body {
+			margin: 0;
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			background-color: var(--bg-light);
+			color: var(--text-light);
+			transition: background-color 0.3s, color 0.3s;
+			line-height: 1.6;
+		}
+
+		body.dark {
+			background-color: var(--bg-dark);
+			color: var(--text-dark);
+		}
+
+		header {
+			background-color: var(--accent);
+			color: white;
+			padding: 1rem 2rem;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		}
+
+		.buttons {
+			display: flex;
+			gap: 1rem;
+			align-items: center;
+		}
+
+		.container {
+			display: flex;
+			flex-direction: column;
+			padding: 1.5rem;
+			max-width: 1200px;
+			margin: 0 auto;
+		}
+
+		.surah-list,
+		.surah-content {
+			margin-top: 1.5rem;
+		}
+
+		.surah-item {
+			padding: 1rem;
+			border: 1px solid #ddd;
+			border-radius: 10px;
+			background-color: var(--card-bg-light);
+			margin-bottom: 0.75rem;
+			cursor: pointer;
+			transition: all 0.3s ease;
+		}
+
+		body.dark .surah-item {
+			background-color: var(--card-bg-dark);
+			border-color: #333;
+		}
+
+		.surah-item:hover {
+			background-color: #e0e7ff;
+		}
+
+		.verse {
+			margin: 1.5rem 0;
+			text-align: right;
+			direction: rtl;
+			background: var(--card-bg-light);
+			padding: 1rem;
+			border-radius: 10px;
+			box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+		}
+
+		body.dark .verse {
+			background: var(--card-bg-dark);
+		}
+
+		.translation {
+			font-style: normal;
+			font-size: 1rem;
+			color: #444;
+			text-align: right;
+			direction: rtl;
+			margin-top: 0.5rem;
+			font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', serif;
+		}
+
+		body.dark .translation {
+			color: #ccc;
+		}
+
+		.toggle-theme,
+		.text-resize {
+			cursor: pointer;
+			font-weight: bold;
+			border: none;
+			background: none;
+			color: white;
+			font-size: 1.4rem;
+		}
+
+		.wbw {
+			margin-top: 0.5rem;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 5px;
+			justify-content: flex-end;
+			direction: rtl;
+		}
+
+		.wbw span {
+			background: rgba(59, 130, 246, 0.1);
+			padding: 3px 6px;
+			border-radius: 6px;
+			text-align: center;
+		}
+
+		body.dark .wbw span {
+			background: rgba(59, 130, 246, 0.2);
+		}
+
+		@media (min-width: 768px) {
+			.container {
+				flex-direction: row;
+			}
+
+			.surah-list {
+				flex: 1;
+				max-width: 320px;
+				margin-right: 2rem;
+			}
+
+			.surah-content {
+				flex: 3;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<header>
+		<h1>Quran Reader</h1>
+		<div class="buttons">
+			<button class="text-resize" onclick="changeFontSize(1)">A+</button>
+			<button class="text-resize" onclick="changeFontSize(-1)">A-</button>
+			<button class="toggle-theme" onclick="toggleTheme()">🌓</button>
+		</div>
+	</header>
+
+	<div class="container">
+		<div class="surah-list" id="surahList">Loading...</div>
+		<div class="surah-content" id="surahContent">Select a Surah to view</div>
+	</div>
+
+	<!-- Local data scripts -->
+	<script src="QuranArabic.js"></script>
+	<script src="wbw-urdu.js"></script>
+
+	<script>
+		let arabicFontSize = 1.4;
+		let urduFontSize = 1.0;
+
+		const surahList = document.getElementById('surahList');
+		const surahContent = document.getElementById('surahContent');
+
+		function toggleTheme() {
+			document.body.classList.toggle('dark');
+		}
+
+		function changeFontSize(delta) {
+			arabicFontSize += 0.1 * delta;
+			urduFontSize += 0.1 * delta;
+			document.querySelectorAll('.verse strong').forEach(el => {
+				el.style.fontSize = arabicFontSize + 'rem';
+			});
+			document.querySelectorAll('.translation').forEach(el => {
+				el.style.fontSize = urduFontSize + 'rem';
+			});
+		}
+
+		async function loadSurahList() {
+			try {
+				const res = await fetch("https://api.alquran.cloud/v1/surah");
+				const data = await res.json();
+				surahList.innerHTML = '';
+				data.data.forEach(surah => {
+					const item = document.createElement('div');
+					item.className = 'surah-item';
+					item.innerHTML = `
+						<strong>${surah.englishName}</strong> - ${surah.englishNameTranslation}
+						<br><small>Type: ${surah.revelationType}, Verses: ${surah.numberOfAyahs}</small>
+					`;
+					item.onclick = () => loadSurah(surah.number, surah.englishName, surah.englishNameTranslation);
+					surahList.appendChild(item);
+				});
+			} catch (err) {
+				surahList.innerHTML = "<p>Error loading Surah list.</p>";
+			}
+		}
+
+		async function loadSurah(number, engName, engTrans) {
+			surahContent.innerHTML = "<p>Loading Surah...</p>";
+			try {
+				// Urdu translation from API
+				const urduRes = await fetch(`https://api.alquran.cloud/v1/surah/${number}/ur.najafi`);
+				const urduData = (await urduRes.json()).data;
+
+				// Arabic from local JSON
+				const arabicAyahs = quranData[number];
+				if (!arabicAyahs) {
+					surahContent.innerHTML = "<p>Arabic text not found for this Surah.</p>";
+					return;
+				}
+
+				surahContent.innerHTML = `
+					<h2>${engName} (${engTrans})</h2>
+					<div>
+						${Object.keys(arabicAyahs).map(ayahNum => {
+					const wbwAyah = wbwData?.[number]?.[ayahNum] || [];
+					return `
+								<div class='verse'>
+									<strong style="font-size: ${arabicFontSize}rem">
+										${arabicAyahs[ayahNum]} 
+									</strong>
+									<div class='translation' style="font-size: ${urduFontSize}rem">
+										${urduData.ayahs[ayahNum - 1].text}
+									</div>
+									${wbwAyah.length > 0 ? `
+										<div class="wbw">
+											${wbwAyah.map(word => `
+												<span>
+													<div style="font-family: 'Lateef', serif; font-size:1.2rem;">${word.arabic}</div>
+													<div style="font-family: 'Noto Nastaliq Urdu', serif; font-size:0.9rem;">${word.urdu.replace(/^:\s*/, '')}</div>
+												</span>
+											`).join('')}
+										</div>
+									` : ''}
+								</div>
+							`;
+				}).join('')}
+					</div>`;
+				surahContent.scrollIntoView({ behavior: 'smooth' });
+			} catch (err) {
+				surahContent.innerHTML = "<p>Error loading Surah.</p>";
+			}
+		}
+
+		loadSurahList();
+	</script>
+
+</body>
+
+</html>

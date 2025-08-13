@@ -1,0 +1,3 @@
+npm init -y
+npm install axios@0.18
+npm install cheerio@1.0.0-rc.2
