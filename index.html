@@ -53,6 +53,22 @@
 			justify-content: space-between;
 			align-items: center;
 			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+			position: relative;
+		}
+
+		.header-title {
+			flex: 1;
+			text-align: left;
+			font-weight: bold;
+		}
+
+		.bismillah {
+			position: absolute;
+			left: 50%;
+			transform: translateX(-50%);
+			font-family: 'IndoPak', 'Lateef', serif;
+			font-size: 1.6rem;
+			white-space: nowrap;
 		}
 
 		.buttons {
@@ -171,7 +187,8 @@
 
 <body>
 	<header>
-		<h1>Quran Reader</h1>
+		<div class="header-title">Quran Reader</div>
+		<div class="bismillah">بِسۡمِ اللهِ الرَّحۡمٰنِ الرَّحِيۡمِ‏</div>
 		<div class="buttons">
 			<button class="text-resize" onclick="changeFontSize(1)">A+</button>
 			<button class="text-resize" onclick="changeFontSize(-1)">A-</button>
@@ -219,7 +236,7 @@
 					const item = document.createElement('div');
 					item.className = 'surah-item';
 					item.innerHTML = `
-						<strong>${surah.englishName}</strong> - ${surah.englishNameTranslation}
+						<strong>${surah.number}. ${surah.englishName}</strong> - ${surah.englishNameTranslation}
 						<br><small>Type: ${surah.revelationType}, Verses: ${surah.numberOfAyahs}</small>
 					`;
 					item.onclick = () => loadSurah(surah.number, surah.englishName, surah.englishNameTranslation);
@@ -233,44 +250,76 @@
 		async function loadSurah(number, engName, engTrans) {
 			surahContent.innerHTML = "<p>Loading Surah...</p>";
 			try {
-				// Urdu translation from API
 				const urduRes = await fetch(`https://api.alquran.cloud/v1/surah/${number}/ur.najafi`);
 				const urduData = (await urduRes.json()).data;
 
-				// Arabic from local JSON
 				const arabicAyahs = quranData[number];
 				if (!arabicAyahs) {
 					surahContent.innerHTML = "<p>Arabic text not found for this Surah.</p>";
 					return;
 				}
 
-				surahContent.innerHTML = `
-					<h2>${engName} (${engTrans})</h2>
-					<div>
-						${Object.keys(arabicAyahs).map(ayahNum => {
+				let versesHtml = "";
+
+				// Add Bismillah for all except Surah 1 & 9
+				if (number !== 1 && number !== 9) {
+					const bismillahArabic = "بِسۡمِ اللهِ الرَّحۡمٰنِ الرَّحِيۡمِ";
+					const bismillahUrdu = "(شروع کرتا ہوں) اللہ کے نام سے جو بڑا مہربان نہایت رحم والا ہے۔";
+					const bismillahWBW = [
+						{ "arabic": "بِ", "urdu": ": سے" },
+						{ "arabic": "اسْمِ", "urdu": ": نام" },
+						{ "arabic": "اللّٰهِ", "urdu": ": اللہ" },
+						{ "arabic": "ال", "urdu": ": جو" },
+						{ "arabic": "رَحْمٰنِ", "urdu": ": بہت مہربان" },
+						{ "arabic": "الرَّحِيمِ", "urdu": ": جو رحم کرنے والا" }
+					];
+
+					versesHtml += `
+						<div class='verse'>
+							<strong style="font-size: ${arabicFontSize}rem">${bismillahArabic}</strong>
+							<div class='translation' style="font-size: ${urduFontSize}rem">${bismillahUrdu}</div>
+							<div class="wbw">
+								${bismillahWBW.map(word => `
+									<span>
+										<div style="font-family: 'Lateef', serif; font-size:1.2rem;">${word.arabic}</div>
+										<div style="font-family: 'Noto Nastaliq Urdu', serif; font-size:0.9rem;">${word.urdu}</div>
+									</span>
+								`).join('')}
+							</div>
+						</div>
+					`;
+				}
+
+				// Add actual Surah verses
+				versesHtml += Object.keys(arabicAyahs).map(ayahNum => {
 					const wbwAyah = wbwData?.[number]?.[ayahNum] || [];
 					return `
-								<div class='verse'>
-									<strong style="font-size: ${arabicFontSize}rem">
-										${arabicAyahs[ayahNum]} 
-									</strong>
-									<div class='translation' style="font-size: ${urduFontSize}rem">
-										${urduData.ayahs[ayahNum - 1].text}
-									</div>
-									${wbwAyah.length > 0 ? `
-										<div class="wbw">
-											${wbwAyah.map(word => `
-												<span>
-													<div style="font-family: 'Lateef', serif; font-size:1.2rem;">${word.arabic}</div>
-													<div style="font-family: 'Noto Nastaliq Urdu', serif; font-size:0.9rem;">${word.urdu.replace(/^:\s*/, '')}</div>
-												</span>
-											`).join('')}
-										</div>
-									` : ''}
+						<div class='verse'>
+							<strong style="font-size: ${arabicFontSize}rem">
+								${arabicAyahs[ayahNum]} 
+							</strong>
+							<div class='translation' style="font-size: ${urduFontSize}rem">
+								${urduData.ayahs[ayahNum - 1].text}
+							</div>
+							${wbwAyah.length > 0 ? `
+								<div class="wbw">
+									${wbwAyah.map(word => `
+										<span>
+											<div style="font-family: 'Lateef', serif; font-size:1.2rem;">${word.arabic}</div>
+											<div style="font-family: 'Noto Nastaliq Urdu', serif; font-size:0.9rem;">${word.urdu.replace(/^:\s*/, '')}</div>
+										</span>
+									`).join('')}
 								</div>
-							`;
-				}).join('')}
-					</div>`;
+							` : ''}
+						</div>
+					`;
+				}).join('');
+
+				surahContent.innerHTML = `
+					<h2>${number}. ${engName} (${engTrans})</h2>
+					<div>${versesHtml}</div>
+				`;
+
 				surahContent.scrollIntoView({ behavior: 'smooth' });
 			} catch (err) {
 				surahContent.innerHTML = "<p>Error loading Surah.</p>";
