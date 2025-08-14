@@ -321,7 +321,7 @@
 	<script src="src/script/tarjumah.js"></script>
 	<script src="src/script/wbw-urdu.js"></script>
 	<script>
-		let arabicFontSize = 1.4, urduFontSize = 1.0, wbwArabicFontSize = 1.2, wbwUrduFontSize = 0.9;
+		let arabicFontSize = 1.4, urduFontSize = 1.0, wbwArabicFontSize = 1.2, wbwUrduFontSize = 0.9, hashiyahFontSize = 0.95;
 		const arabicFont = "'indopak-nastaleeq'";
 		const surahList = document.getElementById('surahList');
 		const surahContent = document.getElementById('surahContent');
@@ -333,11 +333,16 @@
 			document.body.classList.toggle('dark');
 		}
 		function changeFontSize(delta) {
-			arabicFontSize += 0.1 * delta; urduFontSize += 0.1 * delta; wbwArabicFontSize += 0.1 * delta; wbwUrduFontSize += 0.1 * delta;
+			arabicFontSize += 0.1 * delta; 
+			urduFontSize += 0.1 * delta; 
+			wbwArabicFontSize += 0.1 * delta; 
+			wbwUrduFontSize += 0.1 * delta; 
+			hashiyahFontSize += 0.1 * delta;
 			document.querySelectorAll('.verse .arabic-text').forEach(el => el.style.fontSize = arabicFontSize + 'rem');
 			document.querySelectorAll('.translation').forEach(el => el.style.fontSize = urduFontSize + 'rem');
 			document.querySelectorAll('.wbw span div:first-child').forEach(el => el.style.fontSize = wbwArabicFontSize + 'rem');
 			document.querySelectorAll('.wbw span div:last-child').forEach(el => el.style.fontSize = wbwUrduFontSize + 'rem');
+			document.querySelectorAll('.hashiyah').forEach(el => el.style.fontSize = hashiyahFontSize + 'rem');
 		}
 		function showLoading() {
 			surahContent.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:120px;"><div style="width:40px;height:40px;border:4px solid var(--accent);border-top:4px solid transparent;border-radius:50%;animation:spin 1s linear infinite;"></div></div>`;
@@ -404,8 +409,6 @@
 					versesHtml += `
 					<div class='verse' id="verse-${ayahNum}">
 						<div class="arabic-text" style="font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
-						${tData.urdu ? `<div class='translation' style="font-size:${urduFontSize}rem">${tData.urdu}</div>` : ""}
-						${tData.hashiyah ? `<div class="hashiyah">${tData.hashiyah}</div>` : ""}
 						${wbwAyah.length ? `<div class="wbw">
 							${wbwAyah.map(word => `
 								<span>
@@ -413,6 +416,8 @@
 									<div style="font-family:'Noto Nastaliq Urdu', serif; font-size:${wbwUrduFontSize}rem;">${word.urdu}</div>
 								</span>`).join('')}
 						</div>` : ""}
+						${tData.urdu ? `<div class='translation' style="font-size:${urduFontSize}rem">${tData.urdu}</div>` : ""}
+						${tData.hashiyah ? `<div class="hashiyah" style="font-size:${hashiyahFontSize}rem">${tData.hashiyah}</div>` : ""}
 					</div>
 				`;
 				});
