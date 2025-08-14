@@ -50,7 +50,9 @@
 			flex-direction: column;
 			align-items: stretch;
 			box-shadow: var(--shadow);
-			position: relative;
+			position: sticky;
+			top: 0;
+			z-index: 1000;
 			gap: 0.5rem;
 			border-bottom-left-radius: var(--radius);
 			border-bottom-right-radius: var(--radius);
@@ -220,16 +222,15 @@
 
 		.hashiyah {
 			font-size: 0.95rem;
-			color: #666;
+			color: #1d7b02;
 			text-align: right;
 			direction: rtl;
 			margin-top: 0.4rem;
-			font-style: italic;
 			transition: color 0.2s;
 		}
 
 		body.dark .hashiyah {
-			color: #aaa;
+			color: #3fe411;
 		}
 
 		.wbw {
@@ -315,6 +316,7 @@
 		<div class="surah-content" id="surahContent">Select a Surah to view</div>
 	</div>
 
+	<script src="surahmeta.js"></script>
 	<script src="indopak.js"></script>
 	<script src="quran.js"></script>
 	<script src="wbw-urdu.js"></script>
@@ -332,7 +334,7 @@
 		}
 		function changeFontSize(delta) {
 			arabicFontSize += 0.1 * delta; urduFontSize += 0.1 * delta; wbwArabicFontSize += 0.1 * delta; wbwUrduFontSize += 0.1 * delta;
-			document.querySelectorAll('.verse strong').forEach(el => el.style.fontSize = arabicFontSize + 'rem');
+			document.querySelectorAll('.verse .arabic-text').forEach(el => el.style.fontSize = arabicFontSize + 'rem');
 			document.querySelectorAll('.translation').forEach(el => el.style.fontSize = urduFontSize + 'rem');
 			document.querySelectorAll('.wbw span div:first-child').forEach(el => el.style.fontSize = wbwArabicFontSize + 'rem');
 			document.querySelectorAll('.wbw span div:last-child').forEach(el => el.style.fontSize = wbwUrduFontSize + 'rem');
@@ -354,23 +356,24 @@
 			});
 
 			Object.keys(surahMap).forEach(num => {
+				const meta = surahmeta.Surahs.find(s => s.number === parseInt(num));
 				const item = document.createElement('div');
 				item.className = 'surah-item';
 				item.setAttribute('tabindex', '0');
 				item.setAttribute('aria-label', `Surah ${num}`);
-				item.innerHTML = `<strong>${num}</strong> <span style="opacity:0.7;font-size:0.95rem;">(${surahMap[num].length} verses)</span>`;
+				item.innerHTML = `<strong>${num}. ${meta?.name || ''}</strong> <span style="opacity:0.7;font-size:0.95rem;">(${meta?.EngMean || ''})</span>`;
 				item.onclick = () => loadSurah(num, 1);
 				item.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') loadSurah(num, 1); };
 				surahList.appendChild(item);
 
 				const opt = document.createElement('option');
-				opt.value = num; opt.textContent = `${num}`;
+				opt.value = num;
+				opt.textContent = `${num}. ${meta?.name || ''} (${meta?.EngMean || ''})`;
 				surahSelect.appendChild(opt);
 			});
 		}
 
 		function loadSurah(number, scrollToVerse = null) {
-			// Hide Bismillah if Surah 9, otherwise show
 			bismillahText.style.display = (parseInt(number) === 9) ? "none" : "block";
 
 			showLoading();
@@ -380,6 +383,8 @@
 					.sort((a, b) => parseInt(a.split(':')[1]) - parseInt(b.split(':')[1]));
 
 				if (!ayat.length) { surahContent.innerHTML = "<p>Not found.</p>"; return; }
+
+				const meta = surahmeta.Surahs.find(s => s.number === parseInt(number));
 
 				verseSelect.innerHTML = '<option value="">Select Verse</option>';
 				ayat.forEach(k => {
@@ -394,12 +399,11 @@
 					const ayahObj = quranData[k];
 					const ayahNum = k.split(':')[1];
 					const wbwAyah = wbwData?.[number]?.[ayahNum] || [];
-
 					const tData = translationData?.[number]?.[ayahNum] || {};
 
 					versesHtml += `
 					<div class='verse' id="verse-${ayahNum}">
-						<strong style="font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</strong>
+						<div class="arabic-text" style="font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
 						${tData.urdu ? `<div class='translation' style="font-size:${urduFontSize}rem">${tData.urdu}</div>` : ""}
 						${tData.hashiyah ? `<div class="hashiyah">${tData.hashiyah}</div>` : ""}
 						${wbwAyah.length ? `<div class="wbw">
@@ -412,7 +416,14 @@
 					</div>
 				`;
 				});
-				surahContent.innerHTML = `<h2 style="margin-bottom:1.2rem;font-size:1.3rem;">Surah ${number}</h2><div>${versesHtml}</div>`;
+				surahContent.innerHTML = `
+					<h2 style="margin-bottom:0.5rem;font-size:1.5rem;"><spantext-align: right; direction: rtl;>سورة</span>${meta?.name || ''}</h2>
+					<div style="margin-bottom:1rem;font-size:1rem;opacity:0.8;">
+						Meaning: ${meta?.EngMean || ''} (${meta?.UrduMean || ''})
+						<br>
+						Verses: ${meta?.versesCount || ''}
+					</div>
+					<div>${versesHtml}</div>`;
 				if (scrollToVerse) document.getElementById(`verse-${scrollToVerse}`)?.scrollIntoView({ behavior: 'smooth' });
 				localStorage.setItem('lastRead', JSON.stringify({ surah: number, verse: scrollToVerse || 1 }));
 			}, 350);
