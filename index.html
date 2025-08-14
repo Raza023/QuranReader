@@ -5,8 +5,15 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Quran Reader</title>
-	<link href="https://fonts.googleapis.com/css2?family=Lateef&family=Amiri&family=Scheherazade+New&family=Noto+Naskh+Arabic&display=swap" rel="stylesheet">
 	<style>
+		@font-face {
+			font-family: 'indopak-nastaleeq';
+			src: url('fonts/indopak-nastaleeq/font.woff2') format('woff2'),
+				url('fonts/indopak-nastaleeq/font.woff') format('woff'),
+				url('fonts/indopak-nastaleeq/font.ttf') format('truetype');
+			font-display: swap;
+		}
+
 		:root {
 			--bg-light: #f9f9f9;
 			--bg-dark: #121212;
@@ -16,10 +23,11 @@
 			--accent-hover: #2563eb;
 			--card-bg-light: #ffffff;
 			--card-bg-dark: #1f1f1f;
-			--arabic-font: 'Scheherazade New', serif;
-			--shadow: 0 4px 24px rgba(59,130,246,0.08);
+			--arabic-font: 'indopak-nastaleeq';
+			--shadow: 0 4px 24px rgba(59, 130, 246, 0.08);
 			--radius: 16px;
 		}
+
 		body {
 			margin: 0;
 			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -28,10 +36,12 @@
 			transition: background-color 0.3s, color 0.3s;
 			line-height: 1.6;
 		}
+
 		body.dark {
 			background-color: var(--bg-dark);
 			color: var(--text-dark);
 		}
+
 		header {
 			background-color: var(--accent);
 			color: white;
@@ -45,6 +55,7 @@
 			border-bottom-left-radius: var(--radius);
 			border-bottom-right-radius: var(--radius);
 		}
+
 		@media (min-width: 600px) {
 			header {
 				flex-direction: row;
@@ -52,11 +63,13 @@
 				align-items: center;
 			}
 		}
+
 		.header-title {
 			font-weight: bold;
 			font-size: 1.3rem;
 			letter-spacing: 1px;
 		}
+
 		.bismillah {
 			position: static;
 			font-family: var(--arabic-font);
@@ -65,6 +78,7 @@
 			text-align: center;
 			margin: 0.5rem 0;
 		}
+
 		@media (min-width: 600px) {
 			.bismillah {
 				position: absolute;
@@ -73,13 +87,15 @@
 				margin: 0;
 			}
 		}
+
 		.buttons {
 			display: flex;
 			gap: 0.5rem;
 			align-items: center;
 			flex-wrap: wrap;
 		}
-		select, .font-select {
+
+		select {
 			padding: 6px 10px;
 			border-radius: 8px;
 			border: 1px solid #ccc;
@@ -87,11 +103,14 @@
 			background: #fff;
 			transition: border 0.2s;
 		}
-		select:focus, .font-select:focus {
+
+		select:focus {
 			outline: none;
 			border-color: var(--accent);
 		}
-		button.text-resize, .toggle-theme {
+
+		button.text-resize,
+		.toggle-theme {
 			cursor: pointer;
 			font-weight: bold;
 			border: none;
@@ -101,11 +120,14 @@
 			border-radius: 8px;
 			padding: 6px 12px;
 			transition: background 0.2s, box-shadow 0.2s;
-			box-shadow: 0 2px 8px rgba(59,130,246,0.08);
+			box-shadow: 0 2px 8px rgba(59, 130, 246, 0.08);
 		}
-		button.text-resize:hover, .toggle-theme:hover {
+
+		button.text-resize:hover,
+		.toggle-theme:hover {
 			background: var(--accent-hover);
 		}
+
 		.container {
 			display: flex;
 			flex-direction: column;
@@ -114,19 +136,23 @@
 			margin: 0 auto;
 			gap: 2rem;
 		}
+
 		@media (min-width: 768px) {
 			.container {
 				flex-direction: row;
 			}
+
 			.surah-list {
 				flex: 1;
 				max-width: 320px;
 				margin-right: 2rem;
 			}
+
 			.surah-content {
 				flex: 3;
 			}
 		}
+
 		.surah-list {
 			margin-top: 1.5rem;
 			background: var(--card-bg-light);
@@ -135,9 +161,11 @@
 			padding: 1rem;
 			min-height: 100px;
 		}
+
 		body.dark .surah-list {
 			background: var(--card-bg-dark);
 		}
+
 		.surah-item {
 			padding: 1rem;
 			border: 1px solid #ddd;
@@ -146,17 +174,20 @@
 			margin-bottom: 0.75rem;
 			cursor: pointer;
 			transition: all 0.3s ease, box-shadow 0.2s;
-			box-shadow: 0 1px 4px rgba(59,130,246,0.05);
+			box-shadow: 0 1px 4px rgba(59, 130, 246, 0.05);
 			font-size: 1.1rem;
 		}
+
 		body.dark .surah-item {
 			background-color: var(--card-bg-dark);
 			border-color: #333;
 		}
+
 		.surah-item:hover {
 			background-color: #e0e7ff;
-			box-shadow: 0 4px 16px rgba(59,130,246,0.12);
+			box-shadow: 0 4px 16px rgba(59, 130, 246, 0.12);
 		}
+
 		.verse {
 			margin: 1.5rem 0;
 			text-align: right;
@@ -168,24 +199,25 @@
 			transition: background 0.3s;
 			position: relative;
 		}
+
 		body.dark .verse {
 			background: var(--card-bg-dark);
 		}
-		.verse strong {
-			transition: font-size 0.2s, font-family 0.2s;
-		}
+
 		.translation {
 			font-size: 1rem;
 			color: #444;
 			text-align: right;
 			direction: rtl;
 			margin-top: 0.5rem;
-			font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', serif;
+			font-family: 'Noto Nastaliq Urdu', serif;
 			transition: font-size 0.2s, color 0.2s;
 		}
+
 		body.dark .translation {
 			color: #ccc;
 		}
+
 		.hashiyah {
 			font-size: 0.95rem;
 			color: #666;
@@ -195,9 +227,11 @@
 			font-style: italic;
 			transition: color 0.2s;
 		}
+
 		body.dark .hashiyah {
 			color: #aaa;
 		}
+
 		.wbw {
 			margin-top: 0.5rem;
 			display: flex;
@@ -206,6 +240,7 @@
 			justify-content: flex-end;
 			direction: rtl;
 		}
+
 		.wbw span {
 			background: rgba(59, 130, 246, 0.1);
 			padding: 3px 6px;
@@ -213,40 +248,45 @@
 			text-align: center;
 			transition: background 0.2s;
 		}
+
 		body.dark .wbw span {
 			background: rgba(59, 130, 246, 0.2);
 		}
-		.wbw span:hover {
-			background: #dbeafe;
-		}
+
 		::-webkit-scrollbar {
 			width: 8px;
 			background: #e0e7ff;
 		}
+
 		::-webkit-scrollbar-thumb {
 			background: var(--accent);
 			border-radius: 8px;
 		}
-		
+
 		@media (max-width: 480px) {
 			.container {
 				padding: 0.5rem;
 				gap: 1rem;
 			}
+
 			.surah-list {
 				padding: 0.5rem;
 			}
+
 			.verse {
 				padding: 0.5rem;
 				font-size: 0.95rem;
 			}
+
 			.header-title {
 				font-size: 1rem;
 			}
+
 			.bismillah {
 				font-size: 1.1rem;
 			}
 		}
+
 		@media (max-width: 767px) {
 			.surah-list {
 				display: none !important;
@@ -258,37 +298,35 @@
 <body class="dark">
 	<header>
 		<div class="header-title">Quran Reader</div>
-		
+
 		<div class="buttons">
 			<select id="surahSelect" aria-label="Select Surah"></select>
 			<select id="verseSelect" aria-label="Select Verse"></select>
-			<select class="font-select" onchange="changeArabicFont(this.value)" aria-label="Arabic Font">
-				<option value="'Lateef', serif">Font 1</option>
-				<option value="'Amiri', serif">Font 2</option>
-				<option value="'Scheherazade New', serif" selected>Font 3</option>
-				<option value="'Noto Naskh Arabic', serif">Font 4</option>
-			</select>
 			<button class="text-resize" onclick="changeFontSize(1)" aria-label="Increase Font Size">A+</button>
 			<button class="text-resize" onclick="changeFontSize(-1)" aria-label="Decrease Font Size">A-</button>
 			<button class="toggle-theme" onclick="toggleTheme()" aria-label="Toggle Theme">🌓</button>
 		</div>
 	</header>
-	</br>
-	<div class="bismillah">بِسۡمِ اللّٰہِ الرَّحۡمٰنِ الرَّحِیۡمِ</div>
-	</br>
+	<br>
+	<div class="bismillah" id="bismillahText">بِسۡمِ اللّٰہِ الرَّحۡمٰنِ الرَّحِیۡمِ</div>
+	<br>
 	<div class="container">
 		<div class="surah-list" id="surahList">Loading...</div>
 		<div class="surah-content" id="surahContent">Select a Surah to view</div>
 	</div>
-	<script src="Quran.js"></script>
+
+	<script src="indopak.js"></script>
+	<script src="quran.js"></script>
 	<script src="wbw-urdu.js"></script>
 	<script>
 		let arabicFontSize = 1.4, urduFontSize = 1.0, wbwArabicFontSize = 1.2, wbwUrduFontSize = 0.9;
-		let arabicFont = "'Scheherazade New', serif";
+		const arabicFont = "'indopak-nastaleeq'";
 		const surahList = document.getElementById('surahList');
 		const surahContent = document.getElementById('surahContent');
 		const surahSelect = document.getElementById('surahSelect');
 		const verseSelect = document.getElementById('verseSelect');
+		const bismillahText = document.getElementById('bismillahText');
+
 		function toggleTheme() {
 			document.body.classList.toggle('dark');
 		}
@@ -299,69 +337,90 @@
 			document.querySelectorAll('.wbw span div:first-child').forEach(el => el.style.fontSize = wbwArabicFontSize + 'rem');
 			document.querySelectorAll('.wbw span div:last-child').forEach(el => el.style.fontSize = wbwUrduFontSize + 'rem');
 		}
-		function changeArabicFont(font) {
-			arabicFont = font; document.documentElement.style.setProperty('--arabic-font', font);
-			document.querySelectorAll('.verse strong, .wbw span div:first-child, .bismillah').forEach(el => el.style.fontFamily = font);
-		}
 		function showLoading() {
 			surahContent.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:120px;"><div style="width:40px;height:40px;border:4px solid var(--accent);border-top:4px solid transparent;border-radius:50%;animation:spin 1s linear infinite;"></div></div>`;
 		}
 		document.head.insertAdjacentHTML('beforeend', `<style>@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}</style>`);
+
 		function loadSurahList() {
 			surahList.innerHTML = '';
 			surahSelect.innerHTML = '<option value="">Select Surah</option>';
-			Object.keys(quranData).forEach(num => {
+
+			const surahMap = {};
+			Object.keys(quranData).forEach(key => {
+				const [s, a] = key.split(':').map(Number);
+				if (!surahMap[s]) surahMap[s] = [];
+				surahMap[s].push(a);
+			});
+
+			Object.keys(surahMap).forEach(num => {
 				const item = document.createElement('div');
 				item.className = 'surah-item';
 				item.setAttribute('tabindex', '0');
 				item.setAttribute('aria-label', `Surah ${num}`);
-				item.innerHTML = `<strong>${num}</strong> <span style="opacity:0.7;font-size:0.95rem;">(${Object.keys(quranData[num]).length} verses)</span>`;
+				item.innerHTML = `<strong>${num}</strong> <span style="opacity:0.7;font-size:0.95rem;">(${surahMap[num].length} verses)</span>`;
 				item.onclick = () => loadSurah(num, 1);
 				item.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') loadSurah(num, 1); };
 				surahList.appendChild(item);
+
 				const opt = document.createElement('option');
 				opt.value = num; opt.textContent = `${num}`;
 				surahSelect.appendChild(opt);
 			});
 		}
+
 		function loadSurah(number, scrollToVerse = null) {
+			// Hide Bismillah if Surah 9, otherwise show
+			bismillahText.style.display = (parseInt(number) === 9) ? "none" : "block";
+
 			showLoading();
 			setTimeout(() => {
-				const surah = quranData[number];
-				if (!surah) { surahContent.innerHTML = "<p>Not found.</p>"; return; }
+				const ayat = Object.keys(quranData)
+					.filter(k => parseInt(k.split(':')[0]) === parseInt(number))
+					.sort((a, b) => parseInt(a.split(':')[1]) - parseInt(b.split(':')[1]));
+
+				if (!ayat.length) { surahContent.innerHTML = "<p>Not found.</p>"; return; }
+
 				verseSelect.innerHTML = '<option value="">Select Verse</option>';
-				Object.keys(surah).forEach(v => {
+				ayat.forEach(k => {
+					const ayahNum = k.split(':')[1];
 					const opt = document.createElement('option');
-					opt.value = v; opt.textContent = `Verse ${v}`;
+					opt.value = ayahNum; opt.textContent = `Verse ${ayahNum}`;
 					verseSelect.appendChild(opt);
 				});
+
 				let versesHtml = "";
-				Object.keys(surah).forEach(v => {
-					const ayah = surah[v];
-					const wbwAyah = wbwData?.[number]?.[v] || [];
+				ayat.forEach(k => {
+					const ayahObj = quranData[k];
+					const ayahNum = k.split(':')[1];
+					const wbwAyah = wbwData?.[number]?.[ayahNum] || [];
+
+					const tData = translationData?.[number]?.[ayahNum] || {};
+
 					versesHtml += `
-						<div class='verse' id="verse-${v}">
-							<strong style="font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayah.arabic}</strong>
-							<div class='translation' style="font-size:${urduFontSize}rem">${ayah.urdu}</div>
-							${ayah.hashiyah ? `<div class="hashiyah">${ayah.hashiyah}</div>` : ""}
-							${wbwAyah.length ? `<div class="wbw">
-								${wbwAyah.map(word => `
-									<span>
-										<div style="font-family:${arabicFont}; font-size:${wbwArabicFontSize}rem;">${word.arabic}</div>
-										<div style="font-family:'Noto Nastaliq Urdu', serif; font-size:${wbwUrduFontSize}rem;">${word.urdu}</div>
-									</span>`).join('')}
-							</div>` : ""}
-						</div>
-					`;
+					<div class='verse' id="verse-${ayahNum}">
+						<strong style="font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</strong>
+						${tData.urdu ? `<div class='translation' style="font-size:${urduFontSize}rem">${tData.urdu}</div>` : ""}
+						${tData.hashiyah ? `<div class="hashiyah">${tData.hashiyah}</div>` : ""}
+						${wbwAyah.length ? `<div class="wbw">
+							${wbwAyah.map(word => `
+								<span>
+									<div style="font-family:${arabicFont}; font-size:${wbwArabicFontSize}rem;">${word.arabic}</div>
+									<div style="font-family:'Noto Nastaliq Urdu', serif; font-size:${wbwUrduFontSize}rem;">${word.urdu}</div>
+								</span>`).join('')}
+						</div>` : ""}
+					</div>
+				`;
 				});
 				surahContent.innerHTML = `<h2 style="margin-bottom:1.2rem;font-size:1.3rem;">Surah ${number}</h2><div>${versesHtml}</div>`;
-				changeArabicFont(arabicFont);
 				if (scrollToVerse) document.getElementById(`verse-${scrollToVerse}`)?.scrollIntoView({ behavior: 'smooth' });
 				localStorage.setItem('lastRead', JSON.stringify({ surah: number, verse: scrollToVerse || 1 }));
 			}, 350);
 		}
+
 		surahSelect.addEventListener('change', () => { if (surahSelect.value) loadSurah(surahSelect.value, 1); });
 		verseSelect.addEventListener('change', () => { if (surahSelect.value) loadSurah(surahSelect.value, verseSelect.value); });
+
 		loadSurahList();
 		const last = JSON.parse(localStorage.getItem('lastRead'));
 		if (last) loadSurah(last.surah, last.verse);
