@@ -479,30 +479,30 @@
 				const audioUrl = `https://everyayah.com/data/Alafasy_64kbps/${surahStr}${ayahStr}.mp3`;
 
 				versesHtml += `
-        <div class='verse' id="verse-${ayahNum}">
-            <div class="arabic-text" style="font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
+					<div class='verse' id="verse-${ayahNum}">
+						<div class="arabic-text" style="font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
 
-            <!-- Audio Player -->
-            <audio controls preload="none" 
-                   id="audio-${ayahNum}" 
-                   onended="playNextVerse(${ayahNum})" 
-                   style="width:100%;margin-top:6px;">
-                <source src="${audioUrl}" type="audio/mpeg">
-                Your browser does not support the audio element.
-            </audio>
+						<!-- Audio Player -->
+						<audio controls preload="none" 
+							id="audio-${ayahNum}" 
+							onended="playNextVerse(${ayahNum})" 
+							style="width:100%;margin-top:6px;">
+							<source src="${audioUrl}" type="audio/mpeg">
+							Your browser does not support the audio element.
+						</audio>
 
-            ${wbwAyah.length ? `<div class="wbw">
-                ${wbwAyah.map(word => `
-                    <span>
-                        <div style="font-family:${arabicFont}; font-size:${wbwArabicFontSize}rem;">${word.arabic}</div>
-                        <div style="font-family:'Noto Nastaliq Urdu', serif; font-size:${wbwUrduFontSize}rem;">${word.urdu}</div>
-                    </span>`).join('')}
-            </div>` : ""}
+						${wbwAyah.length ? `<div class="wbw">
+							${wbwAyah.map(word => `
+								<span>
+									<div style="font-family:${arabicFont}; font-size:${wbwArabicFontSize}rem;">${word.arabic}</div>
+									<div style="font-family:'Noto Nastaliq Urdu', serif; font-size:${wbwUrduFontSize}rem;">${word.urdu}</div>
+								</span>`).join('')}
+						</div>` : ""}
 
-            ${tData.urdu ? `<div class='translation' style="font-size:${urduFontSize}rem">${tData.urdu}</div>` : ""}
-            ${tData.hashiyah ? `<div class="hashiyah" style="font-size:${hashiyahFontSize}rem">${tData.hashiyah}</div>` : ""}
-        </div>
-    `;
+						${tData.urdu ? `<div class='translation' style="font-size:${urduFontSize}rem">${tData.urdu}</div>` : ""}
+						${tData.hashiyah ? `<div class="hashiyah" style="font-size:${hashiyahFontSize}rem">${tData.hashiyah}</div>` : ""}
+					</div>
+				`;
 			});
 
 			// Pagination controls
@@ -519,14 +519,14 @@
 			paginationHtml += navBtns + `</div>`;
 
 			surahContent.innerHTML = `
-        <h2 style="margin-bottom:0.5rem;font-size:1.5rem;">سورة ${meta?.name || ''}</h2>
-        <div style="margin-bottom:1rem;font-size:1rem;opacity:0.8;">
-            Meaning: ${meta?.EngMean || ''} (${meta?.UrduMean || ''})<br>
-            Verses: ${meta?.versesCount || ''}
-        </div>
-        <div>${versesHtml}</div>
-        ${paginationHtml}
-    `;
+				<h2 style="margin-bottom:0.5rem;font-size:1.5rem;">سورة ${meta?.name || ''}</h2>
+				<div style="margin-bottom:1rem;font-size:1rem;opacity:0.8;">
+					Meaning: ${meta?.EngMean || ''} (${meta?.UrduMean || ''})<br>
+					Verses: ${meta?.versesCount || ''}
+				</div>
+				<div>${versesHtml}</div>
+				${paginationHtml}
+			`;
 
 			// Auto scroll
 			if (scrollToVerse) {
