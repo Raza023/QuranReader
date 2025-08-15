@@ -304,6 +304,29 @@
 			border-radius: 8px;
 		}
 
+		/* 🎵 Fancy audio styling */
+		audio {
+			border-radius: 12px;
+			box-shadow: 0 3px 10px rgba(59, 130, 246, 0.2);
+			transition: all 0.3s ease;
+			background: #f8fafc;
+		}
+		audio:hover {
+			box-shadow: 0 5px 16px rgba(59, 130, 246, 0.35);
+			transform: translateY(-1px);
+		}
+		body.dark audio {
+			background: #1e293b;
+		}
+		audio::-webkit-media-controls-panel {
+			background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+			color: white;
+		}
+		audio::-webkit-media-controls-play-button,
+		audio::-webkit-media-controls-mute-button {
+			filter: brightness(1.2);
+		}
+
 		@media (max-width: 767px) {
 			.surah-list {
 				display: none !important;
@@ -364,6 +387,8 @@
 		const surahSelect = document.getElementById('surahSelect');
 		const verseSelect = document.getElementById('verseSelect');
 		const bismillahText = document.getElementById('bismillahText');
+
+		let currentPlayingAudio = null;
 
 		// Pagination variables
 		let currentSurah = null;
@@ -473,7 +498,6 @@
 				const wbwAyah = wbwData?.[currentSurah]?.[ayahNum] || [];
 				const tData = translationData?.[currentSurah]?.[ayahNum] || {};
 
-				// Format surah and ayah number to 3 digits for audio URL
 				const surahStr = String(currentSurah).padStart(3, '0');
 				const ayahStr = String(ayahNum).padStart(3, '0');
 				const audioUrl = `https://everyayah.com/data/Alafasy_64kbps/${surahStr}${ayahStr}.mp3`;
@@ -482,10 +506,10 @@
 					<div class='verse' id="verse-${ayahNum}">
 						<div class="arabic-text" style="font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
 
-						<!-- Audio Player -->
 						<audio controls preload="none" 
 							id="audio-${ayahNum}" 
 							onended="playNextVerse(${ayahNum})" 
+							onplay="handleAudioPlay(this)"
 							style="width:100%;margin-top:6px;">
 							<source src="${audioUrl}" type="audio/mpeg">
 							Your browser does not support the audio element.
@@ -540,6 +564,15 @@
 					if (el) scrollWithOffset(el, 100);
 				}, 200);
 			}
+		}
+
+		// Stop previous audio when new one plays
+		function handleAudioPlay(audioEl) {
+			if (currentPlayingAudio && currentPlayingAudio !== audioEl) {
+				currentPlayingAudio.pause();
+				currentPlayingAudio.currentTime = 0;
+			}
+			currentPlayingAudio = audioEl;
 		}
 
 		function playNextVerse(currentAyahNum) {
