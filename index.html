@@ -473,20 +473,36 @@
 				const wbwAyah = wbwData?.[currentSurah]?.[ayahNum] || [];
 				const tData = translationData?.[currentSurah]?.[ayahNum] || {};
 
+				// Format surah and ayah number to 3 digits for audio URL
+				const surahStr = String(currentSurah).padStart(3, '0');
+				const ayahStr = String(ayahNum).padStart(3, '0');
+				const audioUrl = `https://everyayah.com/data/Alafasy_64kbps/${surahStr}${ayahStr}.mp3`;
+
 				versesHtml += `
-				<div class='verse' id="verse-${ayahNum}">
-					<div class="arabic-text" style="font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
-					${wbwAyah.length ? `<div class="wbw">
-						${wbwAyah.map(word => `
-							<span>
-								<div style="font-family:${arabicFont}; font-size:${wbwArabicFontSize}rem;">${word.arabic}</div>
-								<div style="font-family:'Noto Nastaliq Urdu', serif; font-size:${wbwUrduFontSize}rem;">${word.urdu}</div>
-							</span>`).join('')}
-					</div>` : ""}
-					${tData.urdu ? `<div class='translation' style="font-size:${urduFontSize}rem">${tData.urdu}</div>` : ""}
-					${tData.hashiyah ? `<div class="hashiyah" style="font-size:${hashiyahFontSize}rem">${tData.hashiyah}</div>` : ""}
-				</div>
-			`;
+        <div class='verse' id="verse-${ayahNum}">
+            <div class="arabic-text" style="font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
+
+            <!-- Audio Player -->
+            <audio controls preload="none" 
+                   id="audio-${ayahNum}" 
+                   onended="playNextVerse(${ayahNum})" 
+                   style="width:100%;margin-top:6px;">
+                <source src="${audioUrl}" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+
+            ${wbwAyah.length ? `<div class="wbw">
+                ${wbwAyah.map(word => `
+                    <span>
+                        <div style="font-family:${arabicFont}; font-size:${wbwArabicFontSize}rem;">${word.arabic}</div>
+                        <div style="font-family:'Noto Nastaliq Urdu', serif; font-size:${wbwUrduFontSize}rem;">${word.urdu}</div>
+                    </span>`).join('')}
+            </div>` : ""}
+
+            ${tData.urdu ? `<div class='translation' style="font-size:${urduFontSize}rem">${tData.urdu}</div>` : ""}
+            ${tData.hashiyah ? `<div class="hashiyah" style="font-size:${hashiyahFontSize}rem">${tData.hashiyah}</div>` : ""}
+        </div>
+    `;
 			});
 
 			// Pagination controls
@@ -503,29 +519,49 @@
 			paginationHtml += navBtns + `</div>`;
 
 			surahContent.innerHTML = `
-			<h2 style="margin-bottom:0.5rem;font-size:1.5rem;">سورة ${meta?.name || ''}</h2>
-			<div style="margin-bottom:1rem;font-size:1rem;opacity:0.8;">
-				Meaning: ${meta?.EngMean || ''} (${meta?.UrduMean || ''})<br>
-				Verses: ${meta?.versesCount || ''}
-			</div>
-			<div>${versesHtml}</div>
-			${paginationHtml}
-		`;
+        <h2 style="margin-bottom:0.5rem;font-size:1.5rem;">سورة ${meta?.name || ''}</h2>
+        <div style="margin-bottom:1rem;font-size:1rem;opacity:0.8;">
+            Meaning: ${meta?.EngMean || ''} (${meta?.UrduMean || ''})<br>
+            Verses: ${meta?.versesCount || ''}
+        </div>
+        <div>${versesHtml}</div>
+        ${paginationHtml}
+    `;
 
-			// Auto scroll to verse if specified
+			// Auto scroll
 			if (scrollToVerse) {
 				setTimeout(() => {
 					const el = document.getElementById(`verse-${scrollToVerse}`);
 					if (el) scrollWithOffset(el, 100);
 				}, 200);
 			} else {
-				// Scroll to first verse of page
 				setTimeout(() => {
 					const el = document.getElementById(`verse-${pageAyat[0].split(':')[1]}`);
 					if (el) scrollWithOffset(el, 100);
 				}, 200);
 			}
 		}
+
+		function playNextVerse(currentAyahNum) {
+			const nextAyahNum = currentAyahNum + 1;
+			const nextAudio = document.getElementById(`audio-${nextAyahNum}`);
+
+			if (nextAudio) {
+				nextAudio.play();
+				scrollWithOffset(document.getElementById(`verse-${nextAyahNum}`), 100);
+			} else {
+				// If next verse is not on this page, go to next page
+				if (currentPage * ayatPerPage < currentAyatList.length) {
+					nextPage();
+					setTimeout(() => {
+						const firstAyahNextPage = currentAyatList[(currentPage - 1) * ayatPerPage].split(':')[1];
+						const firstAudio = document.getElementById(`audio-${firstAyahNextPage}`);
+						if (firstAudio) firstAudio.play();
+					}, 500);
+				}
+			}
+		}
+
 
 		function nextPage() {
 			currentPage++;
