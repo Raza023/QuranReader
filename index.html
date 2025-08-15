@@ -365,6 +365,12 @@
 		const verseSelect = document.getElementById('verseSelect');
 		const bismillahText = document.getElementById('bismillahText');
 
+		// Pagination variables
+		let currentSurah = null;
+		let currentPage = 1;
+		const ayatPerPage = 10;
+		let currentAyatList = [];
+
 		function toggleTheme() {
 			document.body.classList.toggle('dark');
 		}
@@ -414,9 +420,8 @@
 			});
 		}
 
-		function loadSurah(number, scrollToVerse = null) {
+		function loadSurah(number, verseToScroll = null) {
 			bismillahText.style.display = (parseInt(number) === 9) ? "none" : "block";
-
 			showLoading();
 			setTimeout(() => {
 				const ayat = Object.keys(quranData)
@@ -435,14 +440,32 @@
 					verseSelect.appendChild(opt);
 				});
 
-				let versesHtml = "";
-				ayat.forEach(k => {
-					const ayahObj = quranData[k];
-					const ayahNum = k.split(':')[1];
-					const wbwAyah = wbwData?.[number]?.[ayahNum] || [];
-					const tData = translationData?.[number]?.[ayahNum] || {};
+				// Save state for pagination
+				currentSurah = number;
+				currentAyatList = ayat;
+				if (verseToScroll) {
+					currentPage = Math.ceil(parseInt(verseToScroll) / ayatPerPage);
+				} else {
+					currentPage = 1;
+				}
+				renderPage(meta);
+				localStorage.setItem('lastRead', JSON.stringify({ surah: number, verse: verseToScroll || 1 }));
+			}, 350);
+		}
 
-					versesHtml += `
+		function renderPage(meta) {
+			const start = (currentPage - 1) * ayatPerPage;
+			const end = start + ayatPerPage;
+			const pageAyat = currentAyatList.slice(start, end);
+
+			let versesHtml = "";
+			pageAyat.forEach(k => {
+				const ayahObj = quranData[k];
+				const ayahNum = k.split(':')[1];
+				const wbwAyah = wbwData?.[currentSurah]?.[ayahNum] || [];
+				const tData = translationData?.[currentSurah]?.[ayahNum] || {};
+
+				versesHtml += `
 					<div class='verse' id="verse-${ayahNum}">
 						<div class="arabic-text" style="font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
 						${wbwAyah.length ? `<div class="wbw">
@@ -456,22 +479,49 @@
 						${tData.hashiyah ? `<div class="hashiyah" style="font-size:${hashiyahFontSize}rem">${tData.hashiyah}</div>` : ""}
 					</div>
 				`;
-				});
-				surahContent.innerHTML = `
-					<h2 style="margin-bottom:0.5rem;font-size:1.5rem;"><spantext-align: right; direction: rtl;>سورة</span>${meta?.name || ''}</h2>
-					<div style="margin-bottom:1rem;font-size:1rem;opacity:0.8;">
-						Meaning: ${meta?.EngMean || ''} (${meta?.UrduMean || ''})
-						<br>
-						Verses: ${meta?.versesCount || ''}
-					</div>
-					<div>${versesHtml}</div>`;
-				if (scrollToVerse) document.getElementById(`verse-${scrollToVerse}`)?.scrollIntoView({ behavior: 'smooth' });
-				localStorage.setItem('lastRead', JSON.stringify({ surah: number, verse: scrollToVerse || 1 }));
-			}, 350);
+			});
+
+			// Pagination controls
+			let paginationHtml = `<div style="margin-top:1rem;display:flex;justify-content:center;gap:10px;">`;
+			if (currentPage > 1) {
+				paginationHtml += `<button onclick="prevPage()" style="padding:6px 12px;border:none;border-radius:8px;background:var(--accent);color:white;cursor:pointer;">Prev</button>`;
+			}
+			if (end < currentAyatList.length) {
+				paginationHtml += `<button onclick="nextPage()" style="padding:6px 12px;border:none;border-radius:8px;background:var(--accent);color:white;cursor:pointer;">Next</button>`;
+			}
+			paginationHtml += `</div>`;
+
+			surahContent.innerHTML = `
+				<h2 style="margin-bottom:0.5rem;font-size:1.5rem;">سورة ${meta?.name || ''}</h2>
+				<div style="margin-bottom:1rem;font-size:1rem;opacity:0.8;">
+					Meaning: ${meta?.EngMean || ''} (${meta?.UrduMean || ''})<br>
+					Verses: ${meta?.versesCount || ''}
+				</div>
+				<div>${versesHtml}</div>
+				${paginationHtml}
+			`;
+		}
+
+		function nextPage() {
+			currentPage++;
+			const meta = surahmeta.Surahs.find(s => s.number === parseInt(currentSurah));
+			renderPage(meta);
+		}
+		function prevPage() {
+			currentPage--;
+			const meta = surahmeta.Surahs.find(s => s.number === parseInt(currentSurah));
+			renderPage(meta);
 		}
 
 		surahSelect.addEventListener('change', () => { if (surahSelect.value) loadSurah(surahSelect.value, 1); });
-		verseSelect.addEventListener('change', () => { if (surahSelect.value) loadSurah(surahSelect.value, verseSelect.value); });
+		verseSelect.addEventListener('change', () => { 
+			if (surahSelect.value && verseSelect.value) {
+				loadSurah(surahSelect.value, verseSelect.value);
+				setTimeout(() => {
+					document.getElementById(`verse-${verseSelect.value}`)?.scrollIntoView({ behavior: 'smooth' });
+				}, 400);
+			}
+		});
 
 		loadSurahList();
 		const last = JSON.parse(localStorage.getItem('lastRead'));
@@ -482,7 +532,6 @@
 			loader.style.opacity = "0";
 			setTimeout(() => loader.style.display = "none", 500);
 		});
-
 	</script>
 </body>
 </html>
