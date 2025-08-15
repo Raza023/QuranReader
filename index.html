@@ -309,7 +309,7 @@
 		</div>
 	</header>
 	<br>
-	<div class="bismillah" id="bismillahText">بِسۡمِ اللّٰہِ الرَّحۡمٰنِ الرَّحِیۡمِ</div>
+	<div class="bismillah" id="bismillahText">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِیْمِ</div>
 	<br>
 	<div class="container">
 		<div class="surah-list" id="surahList">Loading...</div>
@@ -366,14 +366,14 @@
 				item.className = 'surah-item';
 				item.setAttribute('tabindex', '0');
 				item.setAttribute('aria-label', `Surah ${num}`);
-				item.innerHTML = `<strong>${num}. ${meta?.name || ''}</strong> <span style="opacity:0.7;font-size:0.95rem;">(${meta?.EngMean || ''})</span>`;
+				item.innerHTML = `<strong>${num}. سورة${meta?.name || ''}</strong> <span style="opacity:0.7;font-size:0.95rem;">(${meta?.EngMean || ''})</span>`;
 				item.onclick = () => loadSurah(num, 1);
 				item.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') loadSurah(num, 1); };
 				surahList.appendChild(item);
 
 				const opt = document.createElement('option');
 				opt.value = num;
-				opt.textContent = `${num}. ${meta?.name || ''} (${meta?.EngMean || ''})`;
+				opt.textContent = `${num}. سورة${meta?.name || ''} (${meta?.EngMean || ''})`;
 				surahSelect.appendChild(opt);
 			});
 		}
