@@ -32,14 +32,25 @@
 		}
 
 		:root {
-			--bg-light: #f9fafb;
+			/* === Light mode sepia theme === */
+			--bg-light: #f4ecd8;
+			--text-light: #3b2f2f;
+			--card-bg-light: #fdf8ef;
+
+			/* Dark mode unchanged */
 			--bg-dark: #0f172a;
-			--text-light: #0f172a;
 			--text-dark: #f9fafb;
+			--card-bg-dark: #1e293b;
+
+			/* Accent colors */
 			--accent: #3b82f6;
 			--accent-hover: #2563eb;
-			--card-bg-light: #ffffff;
-			--card-bg-dark: #1e293b;
+
+			/* Light mode brown replacements */
+			--accent-light: #8B4513;
+			/* brown */
+			--accent-light-hover: #5c2e0f;
+
 			--arabic-font: 'indopak-nastaleeq';
 			--shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 			--radius: 16px;
@@ -96,9 +107,9 @@
 		}
 
 		header {
-			background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+			background: linear-gradient(135deg, var(--accent-light), var(--accent-light-hover));
 			color: white;
-			padding: 1rem;
+			padding: 0.8rem 1rem;
 			display: flex;
 			flex-direction: column;
 			align-items: stretch;
@@ -109,6 +120,10 @@
 			gap: 0.5rem;
 			border-bottom-left-radius: var(--radius);
 			border-bottom-right-radius: var(--radius);
+		}
+
+		body.dark header {
+			background: linear-gradient(135deg, var(--accent), var(--accent-hover));
 		}
 
 		@media (min-width: 600px) {
@@ -124,6 +139,10 @@
 			font-weight: bold;
 			font-size: 1.5rem;
 			letter-spacing: 0.5px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 0.5rem;
 		}
 
 		.bismillah {
@@ -143,31 +162,63 @@
 
 		.buttons {
 			display: flex;
-			gap: 0.5rem;
+			gap: 0.6rem;
 			flex-wrap: wrap;
 			align-items: center;
+			justify-content: flex-end;
 		}
 
+		/* Dropdowns - uniform look */
 		select {
 			padding: 8px 14px;
 			border-radius: 12px;
 			border: none;
 			font-size: 1rem;
-			background: linear-gradient(135deg, #ffffff, #f0f4ff);
+			background: linear-gradient(135deg, #fff9f0, #f0e6d2);
 			box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
 			transition: all 0.2s ease;
 			cursor: pointer;
 			font-weight: 500;
+			color: #3b2f2f;
+		}
+
+		/* Light mode: brown menus */
+		body:not(.dark) select {
+			background: linear-gradient(135deg, #deb887, #cd853f);
+			/* brown gradient */
+			color: #2b1a12;
+		}
+
+		/* Dark mode dropdowns: black with white text */
+		body.dark select {
+			background: #000;
+			color: #fff;
+		}
+
+		/* Force options inside dropdown */
+		body.dark select option {
+			background: #000;
+			color: #fff;
+		}
+
+		body:not(.dark) select option {
+			background: #deb887;
+			color: #2b1a12;
 		}
 
 		select:hover {
-			background: linear-gradient(135deg, #f0f4ff, #e0e7ff);
 			transform: translateY(-1px);
 		}
 
 		select:focus {
 			outline: none;
+			box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.4);
+			/* brown glow */
+		}
+
+		body.dark select:focus {
 			box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+			/* blue glow */
 		}
 
 		button.text-resize,
@@ -175,19 +226,29 @@
 			cursor: pointer;
 			font-weight: bold;
 			border: none;
-			background: var(--accent);
+			background: var(--accent-light);
 			color: white;
-			font-size: 1.2rem;
-			border-radius: 8px;
+			font-size: 1.1rem;
+			border-radius: 10px;
 			padding: 6px 12px;
 			transition: all 0.2s;
-			box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 		}
 
 		button.text-resize:hover,
 		.toggle-theme:hover {
-			background: var(--accent-hover);
+			background: var(--accent-light-hover);
 			transform: scale(1.05);
+		}
+
+		body.dark button.text-resize,
+		body.dark .toggle-theme {
+			background: var(--accent);
+		}
+
+		body.dark button.text-resize:hover,
+		body.dark .toggle-theme:hover {
+			background: var(--accent-hover);
 		}
 
 		.container {
@@ -247,7 +308,7 @@
 		}
 
 		.surah-item:hover {
-			background-color: #e0e7ff;
+			background-color: #f7eedc;
 			box-shadow: 0 4px 16px rgba(59, 130, 246, 0.12);
 			transform: translateY(-2px);
 		}
@@ -269,7 +330,7 @@
 
 		.translation {
 			font-size: 1rem;
-			color: #444;
+			color: #5a4630;
 			text-align: right;
 			direction: rtl;
 			margin-top: 0.5rem;
@@ -324,23 +385,29 @@
 		/* 🎵 Fancy audio styling */
 		audio {
 			border-radius: 12px;
-			box-shadow: 0 3px 10px rgba(59, 130, 246, 0.2);
+			box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
 			transition: all 0.3s ease;
-			background: #f8fafc;
+			background: #fdf8ef;
 		}
 
-		audio:hover {
-			box-shadow: 0 5px 16px rgba(59, 130, 246, 0.35);
-			transform: translateY(-1px);
+		/* Light mode: brown audio player */
+		body:not(.dark) audio::-webkit-media-controls-panel {
+			background: linear-gradient(135deg, var(--accent-light), var(--accent-light-hover));
+			color: white;
 		}
 
 		body.dark audio {
 			background: #1e293b;
 		}
 
-		audio::-webkit-media-controls-panel {
+		body.dark audio::-webkit-media-controls-panel {
 			background: linear-gradient(135deg, var(--accent), var(--accent-hover));
 			color: white;
+		}
+
+		audio:hover {
+			box-shadow: 0 5px 16px rgba(0, 0, 0, 0.35);
+			transform: translateY(-1px);
 		}
 
 		audio::-webkit-media-controls-play-button,
@@ -351,6 +418,11 @@
 		@media (max-width: 767px) {
 			.surah-list {
 				display: none !important;
+			}
+
+			.header-title {
+				width: 100%;
+				justify-content: space-between;
 			}
 		}
 
@@ -364,7 +436,8 @@
 			}
 
 			.buttons select,
-			.buttons button {
+			.buttons button,
+			.header-title select {
 				font-size: 0.9rem;
 				padding: 4px 8px;
 			}
