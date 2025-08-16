@@ -5,8 +5,10 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Quran Reader</title>
-	<meta name="description" content="A simple Quran reader with Surah and Verse selection, audio playback, and translations." />
-	<meta name="keywords" content="Quran, Quran Reader, Surah, Verse, Audio, Translation, Urdu, Arabic, Indopak Nastaleeq" />
+	<meta name="description"
+		content="A simple Quran reader with Surah and Verse selection, audio playback, and translations." />
+	<meta name="keywords"
+		content="Quran, Quran Reader, Surah, Verse, Audio, Translation, Urdu, Arabic, Indopak Nastaleeq" />
 	<meta name="author" content="Your Name" />
 	<meta name="theme-color" content="#3b82f6" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -326,17 +328,21 @@
 			transition: all 0.3s ease;
 			background: #f8fafc;
 		}
+
 		audio:hover {
 			box-shadow: 0 5px 16px rgba(59, 130, 246, 0.35);
 			transform: translateY(-1px);
 		}
+
 		body.dark audio {
 			background: #1e293b;
 		}
+
 		audio::-webkit-media-controls-panel {
 			background: linear-gradient(135deg, var(--accent), var(--accent-hover));
 			color: white;
 		}
+
 		audio::-webkit-media-controls-play-button,
 		audio::-webkit-media-controls-mute-button {
 			filter: brightness(1.2);
@@ -372,11 +378,21 @@
 		بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِیْمِ
 	</div>
 	<header>
-		<div class="header-title">Quran Reader</div>
+		<div class="header-title">Quran Majeed
+			<select style="float: right;" id="repeatSelect" aria-label="Repeat Count">
+				<option value="1" selected>Repeat 1x</option>
+				<option value="2">Repeat 2x</option>
+				<option value="3">Repeat 3x</option>
+				<option value="5">Repeat 5x</option>
+				<option value="10">Repeat 10x</option>
+				<option value="15">Repeat 15x</option>
+			</select>
+		</div>
 
 		<div class="buttons">
 			<select id="surahSelect" aria-label="Select Surah"></select>
 			<select id="verseSelect" aria-label="Select Verse"></select>
+
 			<button class="text-resize" onclick="changeFontSize(1)" aria-label="Increase Font Size">A+</button>
 			<button class="text-resize" onclick="changeFontSize(-1)" aria-label="Decrease Font Size">A-</button>
 			<button class="toggle-theme" onclick="toggleTheme()" aria-label="Toggle Theme">🌓</button>
@@ -413,6 +429,18 @@
 
 		// === NEW: track mode of sequential playback ===
 		let playbackMode = "arabic"; // or "urdu"
+
+		// === NEW repeat count variables ===
+		let repeatCount = 1; // default
+		let repeatProgress = {}; // tracks {surah: {ayah: currentRepeat}}
+
+		// Listen repeat selector
+		document.addEventListener("DOMContentLoaded", () => {
+			document.getElementById("repeatSelect").addEventListener("change", e => {
+				repeatCount = parseInt(e.target.value) || 1;
+				repeatProgress = {}; // reset
+			});
+		});
 
 		function toggleTheme() {
 			document.body.classList.toggle('dark');
@@ -466,6 +494,9 @@
 		function loadSurah(number, verseToScroll = null) {
 			bismillahText.style.display = (parseInt(number) === 9) ? "none" : "block";
 			showLoading();
+
+			repeatProgress = {}; // reset progress whenever surah loads
+
 			setTimeout(() => {
 				const ayat = Object.keys(quranData)
 					.filter(k => parseInt(k.split(':')[0]) === parseInt(number))
@@ -596,36 +627,46 @@
 			}
 		}
 
-		// === UPDATED: stop prev audio + set playbackMode ===
+		// === UPDATED: handle play ===
 		function handleAudioPlay(audioEl, type) {
 			if (currentPlayingAudio && currentPlayingAudio !== audioEl) {
 				currentPlayingAudio.pause();
 				currentPlayingAudio.currentTime = 0;
 			}
 			currentPlayingAudio = audioEl;
-			playbackMode = type; // track which started sequence
+			playbackMode = type;
 		}
 
-		// === NEW: sequence logic ===
+		// === UPDATED: sequence logic with repeat ===
 		function playNext(type, currentAyahNum) {
+			if (!repeatProgress[currentSurah]) repeatProgress[currentSurah] = {};
+			if (!repeatProgress[currentSurah][currentAyahNum]) repeatProgress[currentSurah][currentAyahNum] = 1;
+
+			let currentRepeat = repeatProgress[currentSurah][currentAyahNum];
 			let nextAudio = null;
 
 			if (type === "arabic") {
-				// after arabic -> urdu same ayah
 				nextAudio = document.getElementById(`audio-ur-${currentAyahNum}`);
 			} else if (type === "urdu") {
-				// after urdu -> next arabic
-				const nextAyahNum = currentAyahNum + 1;
-				nextAudio = document.getElementById(`audio-ar-${nextAyahNum}`);
-				// if not exists, go next page and play first arabic
-				if (!nextAudio && currentPage * ayatPerPage < currentAyatList.length) {
-					nextPage();
-					setTimeout(() => {
-						const firstAyahNextPage = currentAyatList[(currentPage - 1) * ayatPerPage].split(':')[1];
-						const firstAudio = document.getElementById(`audio-ar-${firstAyahNextPage}`);
-						if (firstAudio) firstAudio.play();
-					}, 500);
-					return;
+				// Completed one cycle (arabic+urdu)
+				if (currentRepeat < repeatCount) {
+					repeatProgress[currentSurah][currentAyahNum]++;
+					nextAudio = document.getElementById(`audio-ar-${currentAyahNum}`);
+				} else {
+					// Reset for next ayah
+					repeatProgress[currentSurah][currentAyahNum] = 1;
+					const nextAyahNum = currentAyahNum + 1;
+					nextAudio = document.getElementById(`audio-ar-${nextAyahNum}`);
+
+					if (!nextAudio && currentPage * ayatPerPage < currentAyatList.length) {
+						nextPage();
+						setTimeout(() => {
+							const firstAyahNextPage = currentAyatList[(currentPage - 1) * ayatPerPage].split(':')[1];
+							const firstAudio = document.getElementById(`audio-ar-${firstAyahNextPage}`);
+							if (firstAudio) firstAudio.play();
+						}, 500);
+						return;
+					}
 				}
 			}
 
