@@ -411,6 +411,9 @@
 		const ayatPerPage = 10;
 		let currentAyatList = [];
 
+		// === NEW: track mode of sequential playback ===
+		let playbackMode = "arabic"; // or "urdu"
+
 		function toggleTheme() {
 			document.body.classList.toggle('dark');
 		}
@@ -516,15 +519,16 @@
 				const surahStr = String(currentSurah).padStart(3, '0');
 				const ayahStr = String(ayahNum).padStart(3, '0');
 				const audioUrl = `https://everyayah.com/data/Alafasy_64kbps/${surahStr}${ayahStr}.mp3`;
+				const urduAudioUrl = `https://www.balaghulquran.com/media/ayaat/ur/${surahStr}/U${surahStr}${ayahStr}.mp3`;
 
 				versesHtml += `
 					<div class='verse' id="verse-${ayahNum}">
 						<div class="arabic-text" style="font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
 
 						<audio controls preload="none" 
-							id="audio-${ayahNum}" 
-							onended="playNextVerse(${ayahNum})" 
-							onplay="handleAudioPlay(this)"
+							id="audio-ar-${ayahNum}" 
+							onended="playNext('arabic', ${ayahNum})" 
+							onplay="handleAudioPlay(this, 'arabic')"
 							style="width:100%;margin-top:6px;">
 							<source src="${audioUrl}" type="audio/mpeg">
 							Your browser does not support the audio element.
@@ -539,10 +543,21 @@
 						</div>` : ""}
 
 						${tData.urdu ? `<div class='translation' style="font-size:${urduFontSize}rem">${tData.urdu}</div>` : ""}
+
+						<audio controls preload="none"
+							id="audio-ur-${ayahNum}" 
+							onended="playNext('urdu', ${ayahNum})"
+							onplay="handleAudioPlay(this, 'urdu')"
+							style="width:100%;margin-top:6px;">
+							<source src="${urduAudioUrl}" type="audio/mpeg">
+							Your browser does not support the audio element.
+						</audio>
+
 						${tData.hashiyah ? `<div class="hashiyah" style="font-size:${hashiyahFontSize}rem">${tData.hashiyah}</div>` : ""}
 					</div>
 				`;
 			});
+
 
 			// Pagination controls
 			let paginationHtml = `<div style="margin-top:1rem;display:flex;flex-direction:column;align-items:center;gap:6px;">`;
@@ -581,35 +596,44 @@
 			}
 		}
 
-		// Stop previous audio when new one plays
-		function handleAudioPlay(audioEl) {
+		// === UPDATED: stop prev audio + set playbackMode ===
+		function handleAudioPlay(audioEl, type) {
 			if (currentPlayingAudio && currentPlayingAudio !== audioEl) {
 				currentPlayingAudio.pause();
 				currentPlayingAudio.currentTime = 0;
 			}
 			currentPlayingAudio = audioEl;
+			playbackMode = type; // track which started sequence
 		}
 
-		function playNextVerse(currentAyahNum) {
-			const nextAyahNum = currentAyahNum + 1;
-			const nextAudio = document.getElementById(`audio-${nextAyahNum}`);
+		// === NEW: sequence logic ===
+		function playNext(type, currentAyahNum) {
+			let nextAudio = null;
 
-			if (nextAudio) {
-				nextAudio.play();
-				scrollWithOffset(document.getElementById(`verse-${nextAyahNum}`), 120);
-			} else {
-				// If next verse is not on this page, go to next page
-				if (currentPage * ayatPerPage < currentAyatList.length) {
+			if (type === "arabic") {
+				// after arabic -> urdu same ayah
+				nextAudio = document.getElementById(`audio-ur-${currentAyahNum}`);
+			} else if (type === "urdu") {
+				// after urdu -> next arabic
+				const nextAyahNum = currentAyahNum + 1;
+				nextAudio = document.getElementById(`audio-ar-${nextAyahNum}`);
+				// if not exists, go next page and play first arabic
+				if (!nextAudio && currentPage * ayatPerPage < currentAyatList.length) {
 					nextPage();
 					setTimeout(() => {
 						const firstAyahNextPage = currentAyatList[(currentPage - 1) * ayatPerPage].split(':')[1];
-						const firstAudio = document.getElementById(`audio-${firstAyahNextPage}`);
+						const firstAudio = document.getElementById(`audio-ar-${firstAyahNextPage}`);
 						if (firstAudio) firstAudio.play();
 					}, 500);
+					return;
 				}
 			}
-		}
 
+			if (nextAudio) {
+				nextAudio.play();
+				scrollWithOffset(nextAudio.closest('.verse'), 120);
+			}
+		}
 
 		function nextPage() {
 			currentPage++;
