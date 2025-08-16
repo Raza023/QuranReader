@@ -5,6 +5,21 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Quran Reader</title>
+	<meta name="description" content="A simple Quran reader with Surah and Verse selection, audio playback, and translations." />
+	<meta name="keywords" content="Quran, Quran Reader, Surah, Verse, Audio, Translation, Urdu, Arabic, Indopak Nastaleeq" />
+	<meta name="author" content="Your Name" />
+	<meta name="theme-color" content="#3b82f6" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<meta name="mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+	<meta name="msapplication-TileColor" content="#3b82f6" />
+	<meta name="msapplication-TileImage" content="src/favicon.png" />
+	<meta name="application-name" content="Quran Reader" />
+	<meta name="apple-mobile-web-app-title" content="Quran Reader" />
+	<!-- Favicon -->
+	<link rel="icon" type="image/png" href="src/favicon.png">
+
 	<style>
 		@font-face {
 			font-family: 'indopak-nastaleeq';
@@ -581,7 +596,7 @@
 
 			if (nextAudio) {
 				nextAudio.play();
-				scrollWithOffset(document.getElementById(`verse-${nextAyahNum}`), 100);
+				scrollWithOffset(document.getElementById(`verse-${nextAyahNum}`), 120);
 			} else {
 				// If next verse is not on this page, go to next page
 				if (currentPage * ayatPerPage < currentAyatList.length) {
