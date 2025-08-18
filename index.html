@@ -382,7 +382,7 @@
 			border-radius: 8px;
 		}
 
-		/* 🎵 Fancy audio styling */
+		/* Fancy audio styling */
 		audio {
 			border-radius: 12px;
 			box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
@@ -506,6 +506,9 @@
 		// === NEW repeat count variables ===
 		let repeatCount = 1; // default
 		let repeatProgress = {}; // tracks {surah: {ayah: currentRepeat}}
+
+		// === NEW: Auto-resume audio after internet reconnect ===
+		let lastAudioState = { el: null, time: 0, playing: false };
 
 		// Listen repeat selector
 		document.addEventListener("DOMContentLoaded", () => {
@@ -748,6 +751,27 @@
 				scrollWithOffset(nextAudio.closest('.verse'), 120);
 			}
 		}
+
+		window.addEventListener("offline", () => {
+			if (currentPlayingAudio) {
+				lastAudioState = {
+					el: currentPlayingAudio,
+					time: currentPlayingAudio.currentTime,
+					playing: !currentPlayingAudio.paused
+				};
+			}
+		});
+
+		window.addEventListener("online", () => {
+			if (lastAudioState.el && lastAudioState.playing) {
+				const el = lastAudioState.el;
+				// reload the source in case connection dropped mid-stream
+				el.load();
+				el.currentTime = lastAudioState.time;
+				el.play().catch(() => { });
+				lastAudioState = { el: null, time: 0, playing: false };
+			}
+		});
 
 		function nextPage() {
 			currentPage++;
