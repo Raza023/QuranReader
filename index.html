@@ -549,19 +549,16 @@
 			{ html: "🔁", value: "next" },   // continue to next surah
 			{ html: "<span class='crossed'>🔁</span>", value: "off" } // nothing
 		];
+
 		let currentSurahMode = 2; // default = off
-
 		let currentPlayingAudio = null;
-
 		// Pagination variables
 		let currentSurah = null;
 		let currentPage = 1;
 		const ayatPerPage = 10;
 		let currentAyatList = [];
-
 		// === NEW: track mode of sequential playback ===
 		let playbackMode = "arabic"; // or "urdu"
-
 		// === NEW repeat count variables ===
 		let repeatCount = 1; // default
 		let repeatProgress = {}; // tracks {surah: {ayah: currentRepeat}}
@@ -577,6 +574,7 @@
 		function toggleTheme() {
 			document.body.classList.toggle('dark');
 		}
+
 		function changeFontSize(delta) {
 			arabicFontSize += 0.1 * delta;
 			urduFontSize += 0.1 * delta;
@@ -589,22 +587,22 @@
 			document.querySelectorAll('.wbw span div:last-child').forEach(el => el.style.fontSize = wbwUrduFontSize + 'rem');
 			document.querySelectorAll('.hashiyah').forEach(el => el.style.fontSize = hashiyahFontSize + 'rem');
 		}
+
 		function showLoading() {
 			surahContent.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:120px;"><div style="width:40px;height:40px;border:4px solid var(--accent);border-top:4px solid transparent;border-radius:50%;animation:spin 1s linear infinite;"></div></div>`;
 		}
+
 		document.head.insertAdjacentHTML('beforeend', `<style>@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}</style>`);
 
 		function loadSurahList() {
 			surahList.innerHTML = '';
 			surahSelect.innerHTML = '<option value="">Select Surah</option>';
-
 			const surahMap = {};
 			Object.keys(quranData).forEach(key => {
 				const [s, a] = key.split(':').map(Number);
 				if (!surahMap[s]) surahMap[s] = [];
 				surahMap[s].push(a);
 			});
-
 			Object.keys(surahMap).forEach(num => {
 				const meta = surahmeta.Surahs.find(s => s.number === parseInt(num));
 				const item = document.createElement('div');
@@ -615,7 +613,6 @@
 				item.onclick = () => loadSurah(num, 1); // navigate to first verse
 				item.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') loadSurah(num, 1); };
 				surahList.appendChild(item);
-
 				const opt = document.createElement('option');
 				opt.value = num;
 				opt.textContent = `${num}. سورة${meta?.name || ''} (${meta?.EngMean || ''})`;
@@ -626,18 +623,13 @@
 		function loadSurah(number, verseToScroll = null) {
 			bismillahText.style.display = (parseInt(number) === 9) ? "none" : "block";
 			showLoading();
-
 			repeatProgress = {}; // reset progress whenever surah loads
-
 			setTimeout(() => {
 				const ayat = Object.keys(quranData)
 					.filter(k => parseInt(k.split(':')[0]) === parseInt(number))
 					.sort((a, b) => parseInt(a.split(':')[1]) - parseInt(b.split(':')[1]));
-
 				if (!ayat.length) { surahContent.innerHTML = "<p>Not found.</p>"; return; }
-
 				const meta = surahmeta.Surahs.find(s => s.number === parseInt(number));
-
 				verseSelect.innerHTML = '<option value="">Select Verse</option>';
 				ayat.forEach(k => {
 					const ayahNum = k.split(':')[1];
@@ -645,7 +637,6 @@
 					opt.value = ayahNum; opt.textContent = `Verse ${ayahNum}`;
 					verseSelect.appendChild(opt);
 				});
-
 				// Save state for pagination
 				currentSurah = number;
 				currentAyatList = ayat;
@@ -671,19 +662,16 @@
 			const pageAyat = currentAyatList.slice(start, end);
 			const totalPages = Math.ceil(currentAyatList.length / ayatPerPage);
 			const remainingPages = totalPages - currentPage;
-
 			let versesHtml = "";
 			pageAyat.forEach(k => {
 				const ayahObj = quranData[k];
 				const ayahNum = k.split(':')[1];
 				const wbwAyah = wbwData?.[currentSurah]?.[ayahNum] || [];
 				const tData = translationData?.[currentSurah]?.[ayahNum] || {};
-
 				const surahStr = String(currentSurah).padStart(3, '0');
 				const ayahStr = String(ayahNum).padStart(3, '0');
 				const audioUrl = `https://everyayah.com/data/Alafasy_64kbps/${surahStr}${ayahStr}.mp3`;
 				const urduAudioUrl = `https://www.balaghulquran.com/media/ayaat/ur/${surahStr}/U${surahStr}${ayahStr}.mp3`;
-
 				versesHtml += `
 					<div class='verse' id="verse-${ayahNum}">
 						<div class="arabic-text" style="font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
@@ -721,7 +709,6 @@
 				`;
 			});
 
-
 			// Pagination controls
 			let paginationHtml = `<div style="margin-top:1rem;display:flex;flex-direction:column;align-items:center;gap:6px;">`;
 			paginationHtml += `<div>Page ${currentPage} / ${totalPages} — Remaining: ${remainingPages}</div>`;
@@ -734,7 +721,6 @@
 			}
 			navBtns += `</div>`;
 			paginationHtml += navBtns + `</div>`;
-
 			surahContent.innerHTML = `
 				<h2 style="margin-bottom:0.5rem;font-size:1.5rem;">سورة ${meta?.name || ''}</h2>
 				<div style="margin-bottom:1rem;font-size:1rem;opacity:0.8;">
@@ -744,7 +730,6 @@
 				<div>${versesHtml}</div>
 				${paginationHtml}
 			`;
-
 			// Auto scroll
 			if (scrollToVerse) {
 				setTimeout(() => {
@@ -773,10 +758,8 @@
 		function playNext(type, currentAyahNum) {
 			if (!repeatProgress[currentSurah]) repeatProgress[currentSurah] = {};
 			if (!repeatProgress[currentSurah][currentAyahNum]) repeatProgress[currentSurah][currentAyahNum] = 1;
-
 			let currentRepeat = repeatProgress[currentSurah][currentAyahNum];
 			let nextAudio = null;
-
 			if (type === "arabic") {
 				nextAudio = document.getElementById(`audio-ur-${currentAyahNum}`);
 			} else if (type === "urdu") {
@@ -789,7 +772,6 @@
 					repeatProgress[currentSurah][currentAyahNum] = 1;
 					const nextAyahNum = currentAyahNum + 1;
 					nextAudio = document.getElementById(`audio-ar-${nextAyahNum}`);
-
 					if (!nextAudio) {
 						// Case: last ayah of surah
 						if (currentSurahMode === 0) {
@@ -816,7 +798,6 @@
 					}
 				}
 			}
-
 			if (nextAudio) {
 				nextAudio.play();
 				scrollWithOffset(nextAudio.closest('.verse'), 120);
@@ -833,7 +814,6 @@
 				time: forceTime ? 0 : audioEl.currentTime
 			}));
 		}
-
 		// Pause & save on offline
 		window.addEventListener("offline", () => {
 			if (currentPlayingAudio && !currentPlayingAudio.paused) {
@@ -900,8 +880,6 @@
 			setTimeout(() => loader.style.display = "none", 500);
 		});
 
-
-
 		function updateSurahButton() {
 			repeatSurahBtn.innerHTML = surahModes[currentSurahMode].html;
 		}
@@ -910,7 +888,6 @@
 			updateSurahButton();
 		});
 		updateSurahButton();
-
 
 	</script>
 </body>
