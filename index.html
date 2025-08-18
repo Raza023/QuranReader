@@ -415,6 +415,50 @@
 			filter: brightness(1.2);
 		}
 
+		.crossed {
+			position: relative;
+			display: inline-block;
+		}
+
+		.crossed::after {
+			content: "";
+			position: absolute;
+			top: 50%;
+			left: 0;
+			width: 100%;
+			height: 2px;
+			background: red;
+			transform: rotate(-45deg);
+			transform-origin: center;
+		}
+
+		/* Tooltip styling for header buttons */
+		button[data-tooltip] {
+			position: relative;
+		}
+
+		button[data-tooltip]::after {
+			content: attr(data-tooltip);
+			position: absolute;
+			bottom: -35px;
+			left: 50%;
+			transform: translateX(-50%);
+			background: rgba(0, 0, 0, 0.8);
+			color: #fff;
+			font-size: 0.8rem;
+			padding: 4px 8px;
+			border-radius: 6px;
+			white-space: nowrap;
+			opacity: 0;
+			pointer-events: none;
+			transition: opacity 0.2s ease;
+		}
+
+		button[data-tooltip]:hover::after {
+			opacity: 1;
+		}
+
+
 		@media (max-width: 767px) {
 			.surah-list {
 				display: none !important;
@@ -466,9 +510,15 @@
 			<select id="surahSelect" aria-label="Select Surah"></select>
 			<select id="verseSelect" aria-label="Select Verse"></select>
 
-			<button class="text-resize" onclick="changeFontSize(1)" aria-label="Increase Font Size">A+</button>
-			<button class="text-resize" onclick="changeFontSize(-1)" aria-label="Decrease Font Size">A-</button>
-			<button class="toggle-theme" onclick="toggleTheme()" aria-label="Toggle Theme">🌓</button>
+			<button class="text-resize" onclick="changeFontSize(1)" aria-label="Increase Font Size"
+				data-tooltip="Increase text">A+</button>
+			<button class="text-resize" onclick="changeFontSize(-1)" aria-label="Decrease Font Size"
+				data-tooltip="Decrease text">A-</button>
+			<button class="toggle-theme" onclick="toggleTheme()" aria-label="Toggle Theme"
+				data-tooltip="Light / Dark mode">🌓</button>
+			<button id="repeatSurahBtn" class="toggle-theme" aria-label="Repeat Surah Mode"
+				data-tooltip="Repeat Mode"></button>
+
 		</div>
 	</header>
 	<br>
@@ -491,6 +541,15 @@
 		const surahSelect = document.getElementById('surahSelect');
 		const verseSelect = document.getElementById('verseSelect');
 		const bismillahText = document.getElementById('bismillahText');
+
+		// === NEW Repeat Surah/Nothing/Next modes ===
+		const repeatSurahBtn = document.getElementById("repeatSurahBtn");
+		const surahModes = [
+			{ html: "🔂", value: "surah" },  // repeat same surah
+			{ html: "🔁", value: "next" },   // continue to next surah
+			{ html: "<span class='crossed'>🔁</span>", value: "off" } // nothing
+		];
+		let currentSurahMode = 2; // default = off
 
 		let currentPlayingAudio = null;
 
@@ -731,14 +790,29 @@
 					const nextAyahNum = currentAyahNum + 1;
 					nextAudio = document.getElementById(`audio-ar-${nextAyahNum}`);
 
-					if (!nextAudio && currentPage * ayatPerPage < currentAyatList.length) {
-						nextPage();
-						setTimeout(() => {
-							const firstAyahNextPage = currentAyatList[(currentPage - 1) * ayatPerPage].split(':')[1];
-							const firstAudio = document.getElementById(`audio-ar-${firstAyahNextPage}`);
-							if (firstAudio) firstAudio.play();
-						}, 500);
-						return;
+					if (!nextAudio) {
+						// Case: last ayah of surah
+						if (currentSurahMode === 0) {
+							// 🔂 repeat same surah
+							const firstAudio = document.getElementById("audio-ar-1");
+							if (firstAudio) {
+								setTimeout(() => firstAudio.play(), 400);
+								return;
+							}
+						} else if (currentSurahMode === 1) {
+							// 🔁 continue to next surah
+							const nextSurah = parseInt(currentSurah) + 1;
+							const metaNext = surahmeta.Surahs.find(s => s.number === nextSurah);
+							if (metaNext) {
+								loadSurah(nextSurah, 1);
+								setTimeout(() => {
+									const firstAudio = document.getElementById("audio-ar-1");
+									if (firstAudio) firstAudio.play();
+								}, 600);
+								return;
+							}
+						}
+						// default (off) => stop after last ayah
 					}
 				}
 			}
@@ -825,6 +899,19 @@
 			loader.style.opacity = "0";
 			setTimeout(() => loader.style.display = "none", 500);
 		});
+
+
+
+		function updateSurahButton() {
+			repeatSurahBtn.innerHTML = surahModes[currentSurahMode].html;
+		}
+		repeatSurahBtn.addEventListener("click", () => {
+			currentSurahMode = (currentSurahMode + 1) % surahModes.length;
+			updateSurahButton();
+		});
+		updateSurahButton();
+
+
 	</script>
 </body>
 
