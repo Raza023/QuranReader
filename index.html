@@ -749,37 +749,51 @@
 			}
 		}
 
-		// === INTERNET HANDLING + AUDIO RESUME ===
+		// === INTERNET HANDLING + AUDIO RESUME/RETRY ===
+		function saveAudioState(audioEl, forceTime = false) {
+			if (!audioEl) return;
+			localStorage.setItem("lastAudioState", JSON.stringify({
+				surah: currentSurah,
+				ayah: audioEl.id.split('-')[2],
+				type: audioEl.id.includes("ar") ? "arabic" : "urdu",
+				time: forceTime ? 0 : audioEl.currentTime
+			}));
+		}
+
+		// Pause & save on offline
 		window.addEventListener("offline", () => {
 			if (currentPlayingAudio && !currentPlayingAudio.paused) {
-				// Save current playing state in localStorage
-				localStorage.setItem("lastAudioState", JSON.stringify({
-					surah: currentSurah,
-					ayah: currentPlayingAudio.id.split('-')[2], // extract ayah num
-					type: currentPlayingAudio.id.includes("ar") ? "arabic" : "urdu",
-					time: currentPlayingAudio.currentTime
-				}));
+				saveAudioState(currentPlayingAudio);
 				currentPlayingAudio.pause();
 			}
 		});
 
+		// Retry on online
 		window.addEventListener("online", () => {
 			const state = localStorage.getItem("lastAudioState");
 			if (state) {
 				const { surah, ayah, type, time } = JSON.parse(state);
-				// Ensure still same surah
 				if (parseInt(surah) === parseInt(currentSurah)) {
 					const audioEl = document.getElementById(`audio-${type === "arabic" ? "ar" : "ur"}-${ayah}`);
 					if (audioEl) {
+						// Reload source to avoid disabled state
+						audioEl.load();
 						audioEl.currentTime = time || 0;
-						audioEl.play().catch(() => { }); // resume
+						audioEl.play().catch(() => { });
 					}
 				}
-				localStorage.removeItem("lastAudioState"); // clear after resuming
+				localStorage.removeItem("lastAudioState");
 			}
 		});
 
-		// On full page refresh, clear saved state
+		// Save if audio fails to load
+		document.addEventListener("error", e => {
+			if (e.target.tagName === "AUDIO") {
+				saveAudioState(e.target, true); // start again after restore
+			}
+		}, true);
+
+		// Clear on full refresh
 		window.addEventListener("beforeunload", () => {
 			localStorage.removeItem("lastAudioState");
 		});
