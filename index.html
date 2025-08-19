@@ -754,7 +754,7 @@
 			playbackMode = type;
 		}
 
-		// === UPDATED: sequence logic with repeat ===
+		// === UPDATED: sequence logic with repeat + pagination + surah modes ===
 		function playNext(type, currentAyahNum) {
 			if (!repeatProgress[currentSurah]) repeatProgress[currentSurah] = {};
 			if (!repeatProgress[currentSurah][currentAyahNum]) repeatProgress[currentSurah][currentAyahNum] = 1;
@@ -772,32 +772,50 @@
 					repeatProgress[currentSurah][currentAyahNum] = 1;
 					const nextAyahNum = currentAyahNum + 1;
 					nextAudio = document.getElementById(`audio-ar-${nextAyahNum}`);
+					// === if next ayah not found in current page -> try load next page ===
 					if (!nextAudio) {
-						// Case: last ayah of surah
-						if (currentSurahMode === 0) {
-							// 🔂 repeat same surah
-							const firstAudio = document.getElementById("audio-ar-1");
-							if (firstAudio) {
-								setTimeout(() => firstAudio.play(), 400);
-								return;
-							}
-						} else if (currentSurahMode === 1) {
-							// 🔁 continue to next surah
-							const nextSurah = parseInt(currentSurah) + 1;
-							const metaNext = surahmeta.Surahs.find(s => s.number === nextSurah);
-							if (metaNext) {
-								loadSurah(nextSurah, 1);
+						const ayahIndex = currentAyatList.findIndex(k => parseInt(k.split(':')[1]) === currentAyahNum);
+						if (ayahIndex >= 0 && ayahIndex + 1 < currentAyatList.length) {
+							const nextAyahKey = currentAyatList[ayahIndex + 1];
+							const nextNum = parseInt(nextAyahKey.split(':')[1]);
+							const meta = surahmeta.Surahs.find(s => s.number === parseInt(currentSurah));
+							currentPage = Math.ceil((ayahIndex + 2) / ayatPerPage);
+							renderPage(meta, nextNum);
+							setTimeout(() => {
+								const el = document.getElementById(`audio-ar-${nextNum}`);
+								if (el) el.play();
+							}, 500);
+							return;
+						} else {
+							// === reached last ayah of surah ===
+							if (currentSurahMode === 0) {
+								// 🔂 repeat same surah
+								loadSurah(currentSurah, 1);
 								setTimeout(() => {
 									const firstAudio = document.getElementById("audio-ar-1");
 									if (firstAudio) firstAudio.play();
 								}, 600);
 								return;
+							} else if (currentSurahMode === 1) {
+								// 🔁 continue to next surah
+								const nextSurah = parseInt(currentSurah) + 1;
+								const metaNext = surahmeta.Surahs.find(s => s.number === nextSurah);
+								if (metaNext) {
+									loadSurah(nextSurah, 1);
+									setTimeout(() => {
+										const firstAudio = document.getElementById("audio-ar-1");
+										if (firstAudio) firstAudio.play();
+									}, 600);
+									return;
+								}
 							}
+							// default (off) => stop after last ayah
+							return;
 						}
-						// default (off) => stop after last ayah
 					}
 				}
 			}
+
 			if (nextAudio) {
 				nextAudio.play();
 				scrollWithOffset(nextAudio.closest('.verse'), 120);
