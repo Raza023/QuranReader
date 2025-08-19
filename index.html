@@ -704,7 +704,7 @@
 							Your browser does not support the audio element.
 						</audio>
 
-						${tData.hashiyah ? `<div class="hashiyah" style="font-size:${hashiyahFontSize}rem">${tData.hashiyah}</div>` : ""}
+						${tData.hashiyah ? `<div class="hashiyah" style="font-size:${hashiyahFontSize}rem">${tData.hashiyah.replace(/\n/g, "<br>")}</div>` : ""}
 					</div>
 				`;
 			});
