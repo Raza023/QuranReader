@@ -670,8 +670,8 @@
 				const tData = translationData?.[currentSurah]?.[ayahNum] || {};
 				const surahStr = String(currentSurah).padStart(3, '0');
 				const ayahStr = String(ayahNum).padStart(3, '0');
-				const audioUrl = `https://everyayah.com/data/Alafasy_64kbps/${surahStr}${ayahStr}.mp3`;
-				const urduAudioUrl = `https://www.balaghulquran.com/media/ayaat/ur/${surahStr}/U${surahStr}${ayahStr}.mp3`;
+				const audioUrl = `src/audio/verses/${surahStr}${ayahStr}.mp3`;
+				const urduAudioUrl = `src/audio/tarjumah/${surahStr}${ayahStr}.mp3`;
 				versesHtml += `
 					<div class='verse' id="verse-${ayahNum}">
 						<div class="arabic-text" style="font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
