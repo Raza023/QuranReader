@@ -384,6 +384,7 @@
 
 		/* Fancy audio styling */
 		audio {
+			height: 25px;
 			border-radius: 12px;
 			box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
 			transition: all 0.3s ease;
@@ -932,9 +933,7 @@
 				navigator.mediaSession.setActionHandler("play", () => { audioEl.play(); });
 				navigator.mediaSession.setActionHandler("pause", () => { audioEl.pause(); });
 				navigator.mediaSession.setActionHandler("stop", () => { audioEl.pause(); audioEl.currentTime = 0; });
-				navigator.mediaSession.setActionHandler("nexttrack", () => {
-					playNext(type, parseInt(ayahNum));
-				});
+				navigator.mediaSession.setActionHandler("nexttrack", () => { playNext(type, parseInt(ayahNum)); });
 			}
 		}
 
