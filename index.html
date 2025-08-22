@@ -710,6 +710,15 @@
 				`;
 			});
 
+			// === INTRO AUDIO (hidden, surah-wide) ===
+			if (parseInt(currentSurah) !== 1 && parseInt(currentSurah) !== 9) {
+				versesHtml =
+					`<audio id="intro-audio" preload="auto" style="display:none;">
+						<source src="src/audio/verses/001001.mp3" type="audio/mpeg">
+					</audio>` + versesHtml;
+			}
+
+
 			// Pagination controls
 			let paginationHtml = `<div style="margin-top:1rem;display:flex;flex-direction:column;align-items:center;gap:6px;">`;
 			paginationHtml += `<div>Page ${currentPage} / ${totalPages} — Remaining: ${remainingPages}</div>`;
@@ -751,6 +760,22 @@
 				currentPlayingAudio.pause();
 				currentPlayingAudio.currentTime = 0;
 			}
+
+			// === INTRO HANDLING for first verse play ===
+			if (type === "arabic" && parseInt(audioEl.id.split('-')[2]) === 1
+				&& parseInt(currentSurah) !== 1 && parseInt(currentSurah) !== 9) {
+				const introEl = document.getElementById("intro-audio");
+				if (introEl && !introEl.dataset.played) {
+					audioEl.pause();
+					audioEl.currentTime = 0;
+					introEl.dataset.played = "true";
+					introEl.onended = () => { audioEl.play(); };
+					introEl.play();
+					return; // stop here until intro finishes
+				}
+			}
+
+
 			currentPlayingAudio = audioEl;
 			playbackMode = type;
 
