@@ -768,7 +768,7 @@
 			let arabic = verseEl.querySelector(".arabic-text")?.innerText || "";
 			// Remove/replace ayah end sign ( and similar)
 			arabic = arabic.replace(/[\uFD00-\uFDFF\u06DD\u06DE]/g, "");
-			arabic = arabic.slice(0, -1); 
+			arabic = arabic.slice(0, -1);
 			// (optional) add a clean marker at end
 			arabic = arabic.trim() + " ۝";
 
@@ -790,9 +790,18 @@
 
 			// 🔗 Add sharable verse link
 			const link = `${window.location.origin}${window.location.pathname}?surah=${surah}&ayah=${ayah}`;
-			shareText += `🔗 ${link}`;
 
 			if (navigator.share) {
+
+				// Detect Chrome on Android
+				const ua = navigator.userAgent.toLowerCase();
+				const isAndroidChrome = ua.includes("android") && ua.includes("chrome");
+
+				if (!isAndroidChrome) {
+					// Only attach url for non-Chrome-mobile browsers
+					shareText += `🔗 ${link}`;
+				}
+
 				navigator.share({
 					title: `Surah ${surah}, Ayah ${ayah}`,
 					text: shareText,
