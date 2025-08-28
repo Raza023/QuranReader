@@ -975,15 +975,24 @@
 		loadSurahList();
 
 		// If link has ?surah= and ?ayah= open that verse
-		const params = new URLSearchParams(window.location.search);
-		const qsSurah = params.get("surah");
-		const qsAyah = params.get("ayah");
-		if (qsSurah && qsAyah) {
-			loadSurah(qsSurah, qsAyah);
-		}
+		// === Handle Surah/Ayah load from query OR localStorage ===
+		(function () {
+			const params = new URLSearchParams(window.location.search);
+			const qsSurah = params.get("surah");
+			const qsAyah = params.get("ayah");
 
-		const last = JSON.parse(localStorage.getItem('lastRead'));
-		if (last) loadSurah(last.surah, last.verse);
+			if (qsSurah && qsAyah) {
+				// 🔹 Priority 1: If query params are present, load them
+				loadSurah(qsSurah, qsAyah);
+			} else {
+				// 🔹 Priority 2: Fallback to last read from localStorage
+				const last = JSON.parse(localStorage.getItem("lastRead"));
+				if (last) {
+					loadSurah(last.surah, last.verse);
+				}
+			}
+		})();
+
 
 		window.addEventListener("load", () => {
 			const loader = document.getElementById("loading-screen");
