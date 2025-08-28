@@ -765,7 +765,12 @@
 			const verseEl = document.getElementById(`verse-${ayah}`);
 			if (!verseEl) return;
 
-			const arabic = verseEl.querySelector(".arabic-text")?.innerText || "";
+			let arabic = verseEl.querySelector(".arabic-text")?.innerText || "";
+			// Remove/replace ayah end sign ( and similar)
+			arabic = arabic.replace(/[\uFD00-\uFDFF\u06DD\u06DE]/g, "");
+			// (optional) add a clean marker at end
+			arabic = arabic.trim() + " ۝";
+
 			const urdu = verseEl.querySelector(".translation")?.innerText || "";
 			const hashiyah = verseEl.querySelector(".hashiyah")?.innerText || "";
 
