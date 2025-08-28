@@ -790,13 +790,12 @@
 
 			// 🔗 Add sharable verse link
 			const link = `${window.location.origin}${window.location.pathname}?surah=${surah}&ayah=${ayah}`;
-			//shareText += `🔗 ${link}`;
+			shareText += `🔗 ${link}`;
 
 			if (navigator.share) {
 				navigator.share({
 					title: `Surah ${surah}, Ayah ${ayah}`,
-					text: shareText,
-					url: link // also pass link as separate param
+					text: shareText
 				}).catch(err => console.log("Share cancelled", err));
 			} else {
 				navigator.clipboard.writeText(shareText).then(() => {
