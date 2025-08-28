@@ -63,6 +63,7 @@
 			color: var(--text-light);
 			transition: background-color 0.3s, color 0.3s;
 			line-height: 1.6;
+			overflow-x: hidden;
 		}
 
 		body.dark {
@@ -120,6 +121,7 @@
 			gap: 0.5rem;
 			border-bottom-left-radius: var(--radius);
 			border-bottom-right-radius: var(--radius);
+			overflow: hidden;
 		}
 
 		body.dark header {
@@ -143,6 +145,7 @@
 			align-items: center;
 			justify-content: space-between;
 			gap: 0.5rem;
+			overflow: hidden;
 		}
 
 		.bismillah {
@@ -166,6 +169,7 @@
 			flex-wrap: wrap;
 			align-items: center;
 			justify-content: flex-end;
+			overflow: hidden;
 		}
 
 		/* Dropdowns - uniform look */
@@ -468,6 +472,18 @@
 			.header-title {
 				width: 100%;
 				justify-content: space-between;
+			}
+
+			.buttons {
+				width: 100%;
+				justify-content: flex-end;
+				overflow-x: auto;
+				-ms-overflow-style: none;
+				scrollbar-width: none;
+			}
+
+			.buttons::-webkit-scrollbar {
+				display: none;
 			}
 		}
 
