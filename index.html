@@ -808,6 +808,7 @@
 					url: link // also pass link as separate param
 				}).catch(err => console.log("Share cancelled", err));
 			} else {
+				shareText += `🔗 ${link}`;
 				navigator.clipboard.writeText(shareText).then(() => {
 					alert("Verse copied to clipboard ✅");
 				}).catch(() => {
