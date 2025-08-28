@@ -785,16 +785,19 @@
 			if (arabic) shareText += `🔹 Arabic:\n${arabic}\n\n`;
 			if (urdu) shareText += `🔸 Tarjumah:\n${urdu}\n\n`;
 			if (wbwText) shareText += wbwText + "\n\n";
-			if (hashiyah) shareText += `💡 Hashiyah:\n${hashiyah}\n`;
+			if (hashiyah) shareText += `💡 Hashiyah:\n${hashiyah}\n\n`;
 
-			// Prefer Web Share API if available
+			// 🔗 Add sharable verse link
+			const link = `${window.location.origin}${window.location.pathname}?surah=${surah}&ayah=${ayah}`;
+			shareText += `🔗 ${link}`;
+
 			if (navigator.share) {
 				navigator.share({
 					title: `Surah ${surah}, Ayah ${ayah}`,
-					text: shareText
+					text: shareText,
+					url: link // also pass link as separate param
 				}).catch(err => console.log("Share cancelled", err));
 			} else {
-				// Fallback: copy to clipboard
 				navigator.clipboard.writeText(shareText).then(() => {
 					alert("Verse copied to clipboard ✅");
 				}).catch(() => {
@@ -970,6 +973,15 @@
 		});
 
 		loadSurahList();
+
+		// If link has ?surah= and ?ayah= open that verse
+		const params = new URLSearchParams(window.location.search);
+		const qsSurah = params.get("surah");
+		const qsAyah = params.get("ayah");
+		if (qsSurah && qsAyah) {
+			loadSurah(qsSurah, qsAyah);
+		}
+
 		const last = JSON.parse(localStorage.getItem('lastRead'));
 		if (last) loadSurah(last.surah, last.verse);
 
