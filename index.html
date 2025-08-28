@@ -795,7 +795,8 @@
 			if (navigator.share) {
 				navigator.share({
 					title: `Surah ${surah}, Ayah ${ayah}`,
-					text: shareText
+					text: shareText,
+					url: link // also pass link as separate param
 				}).catch(err => console.log("Share cancelled", err));
 			} else {
 				navigator.clipboard.writeText(shareText).then(() => {
