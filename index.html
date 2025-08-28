@@ -706,6 +706,12 @@
 						</audio>
 
 						${tData.hashiyah ? `<div class="hashiyah" style="font-size:${hashiyahFontSize}rem">${tData.hashiyah.replace(/\n/g, "<br>")}</div>` : ""}
+
+						<!-- 🔹 NEW Share Button -->
+						<button class="share-btn" onclick="shareVerse(${currentSurah}, ${ayahNum})" 
+							style="margin-top:6px;padding:4px 8px;border:none;border-radius:6px;background:var(--accent);color:white;cursor:pointer;">
+							➦ Share
+						</button>
 					</div>
 				`;
 			});
@@ -751,6 +757,36 @@
 					const el = document.getElementById(`verse-${pageAyat[0].split(':')[1]}`);
 					if (el) scrollWithOffset(el, 200);
 				}, 200);
+			}
+		}
+
+		// === NEW: Share Verse Function ===
+		function shareVerse(surah, ayah) {
+			const verseEl = document.getElementById(`verse-${ayah}`);
+			if (!verseEl) return;
+
+			const arabic = verseEl.querySelector(".arabic-text")?.innerText || "";
+			const urdu = verseEl.querySelector(".translation")?.innerText || "";
+			const hashiyah = verseEl.querySelector(".hashiyah")?.innerText || "";
+
+			let shareText = `📖 Surah ${surah}, Ayah ${ayah}\n\n`;
+			if (arabic) shareText += `🔹 Arabic:\n${arabic}\n\n`;
+			if (urdu) shareText += `🔸 Tarjumah:\n${urdu}\n\n`;
+			if (hashiyah) shareText += `💡 Hashiyah:\n${hashiyah}\n`;
+
+			// Prefer Web Share API if available
+			if (navigator.share) {
+				navigator.share({
+					title: `Surah ${surah}, Ayah ${ayah}`,
+					text: shareText
+				}).catch(err => console.log("Share cancelled", err));
+			} else {
+				// Fallback: copy to clipboard
+				navigator.clipboard.writeText(shareText).then(() => {
+					alert("Verse copied to clipboard ✅");
+				}).catch(() => {
+					alert("Could not copy verse.");
+				});
 			}
 		}
 
