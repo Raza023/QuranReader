@@ -774,9 +774,17 @@
 			const urdu = verseEl.querySelector(".translation")?.innerText || "";
 			const hashiyah = verseEl.querySelector(".hashiyah")?.innerText || "";
 
+			// 🔹 NEW: Word-by-word
+			let wbwText = "";
+			if (wbwData?.[surah]?.[ayah]) {
+				const wbwAyah = wbwData[surah][ayah];
+				wbwText = "\n📖 WBW:\n" + wbwAyah.map(w => `${w.arabic} = ${w.urdu}`).join("\n");
+			}
+
 			let shareText = `📖 Surah ${surah}, Ayah ${ayah}\n\n`;
 			if (arabic) shareText += `🔹 Arabic:\n${arabic}\n\n`;
 			if (urdu) shareText += `🔸 Tarjumah:\n${urdu}\n\n`;
+			if (wbwText) shareText += wbwText + "\n\n";
 			if (hashiyah) shareText += `💡 Hashiyah:\n${hashiyah}\n`;
 
 			// Prefer Web Share API if available
