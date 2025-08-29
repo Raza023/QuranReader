@@ -562,6 +562,7 @@
 			{ html: "🔁", value: "next" },   // continue to next surah
 			{ html: "<span class='crossed'>🔁</span>", value: "off" } // nothing
 		];
+		let playedIntroForSurahs = {};
 		let currentSurahMode = 2; // default = off
 		let currentPlayingAudio = null;
 		// Pagination variables
@@ -588,6 +589,7 @@
 			document.body.classList.toggle('dark');
 		}
 		function toggleViewMode() {
+			playedIntroForSurahs = {}; // Reset tracking when switching view mode
 			if (currentViewMode === 'surah') {
 				currentViewMode = 'juzz';
 				document.querySelector('.toggle-view').textContent = '📚';
@@ -728,6 +730,7 @@
 			}, 350);
 		}
 		function loadJuzz(juzzIndex) {
+			playedIntroForSurahs = {}; // Reset tracking when loading a new juzz
 			if (currentViewMode !== 'juzz') {
 				// If in surah mode but trying to load a juzz, switch to juzz mode
 				currentViewMode = 'juzz';
@@ -895,7 +898,11 @@
 			const pageAyat = ayatList.slice(start, end);
 			const totalPages = Math.ceil(ayatList.length / ayatPerPage);
 			const remainingPages = totalPages - currentPage;
-			let versesHtml = "";
+			let versesHtml = `
+				<audio id="intro-audio" preload="auto" style="display:none;">
+					<source src="src/audio/verses/001001.mp3" type="audio/mpeg">
+				</audio>
+			`;
 			pageAyat.forEach(k => {
 				const ayahObj = quranData[k];
 				const ayahNum = k.split(':')[1];
@@ -1054,36 +1061,47 @@
 				currentPlayingAudio.pause();
 				currentPlayingAudio.currentTime = 0;
 			}
-			// === INTRO HANDLING for first verse play ===
+			// Check if we need to play the intro verse
 			if (type === "arabic") {
 				let ayahNum;
+				let currentSurahNum;
 				if (currentViewMode === 'juzz') {
 					// Parse the ID which is in format "audio-ar-{surahNum}-{ayahNum}"
 					const idParts = audioEl.id.split('-');
-					ayahNum = parseInt(idParts[idParts.length - 1]);
+					currentSurahNum = parseInt(idParts[2]);
+					ayahNum = parseInt(idParts[3]);
 				} else {
+					currentSurahNum = parseInt(currentSurah);
 					ayahNum = parseInt(audioEl.id.split('-')[2]);
 				}
-				if ((currentViewMode === 'surah' && parseInt(currentSurah) !== 1 && parseInt(currentSurah) !== 9) ||
-					(currentViewMode === 'juzz' && parseInt(ayahNum) === 1)) {
-					const introEl = document.getElementById("intro-audio");
-					if (introEl && !introEl.dataset.played) {
-						audioEl.pause();
-						audioEl.currentTime = 0;
-						introEl.dataset.played = "true";
-						introEl.onended = () => { audioEl.play(); };
-						introEl.play();
-						return; // stop here until intro finishes
+
+				// Check if this is the first verse of a surah (and not Surah 1 or 9)
+				if (ayahNum === 1 && currentSurahNum !== 1 && currentSurahNum !== 9) {
+					// Check if we've already played the intro for this surah in this session
+					if (!playedIntroForSurahs[currentSurahNum]) {
+						const introEl = document.getElementById("intro-audio");
+						if (introEl) {
+							audioEl.pause();
+							audioEl.currentTime = 0;
+							introEl.onended = () => {
+								// Mark this surah as having had its intro played
+								playedIntroForSurahs[currentSurahNum] = true;
+								audioEl.play();
+							};
+							introEl.play();
+							return; // stop here until intro finishes
+						}
 					}
 				}
 			}
+
 			currentPlayingAudio = audioEl;
 			playbackMode = type;
 			// ✅ NEW call for background support
 			if ("mediaSession" in navigator) {
 				let ayahNum;
 				if (currentViewMode === 'juzz') {
-					// Extract ayah number from ID like "audio-ar-1-2" (surah 1, ayah 2)
+					// Extract ayah number from ID like "audio-ar-1-2"
 					const idParts = audioEl.id.split('-');
 					ayahNum = idParts[idParts.length - 1];
 				} else {
@@ -1095,6 +1113,7 @@
 				setMediaSession(audioEl, type, ayahNum, meta);
 			}
 		}
+
 		// === UPDATED: sequence logic with repeat + pagination + surah modes ===
 		function playNext(type, currentAyahNum, currentSurahNum = null) {
 			if (currentViewMode === 'juzz') {
