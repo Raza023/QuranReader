@@ -555,7 +555,6 @@
 		const surahSelect = document.getElementById('surahSelect');
 		const verseSelect = document.getElementById('verseSelect');
 		const bismillahText = document.getElementById('bismillahText');
-
 		// === NEW Repeat Surah/Nothing/Next modes ===
 		const repeatSurahBtn = document.getElementById("repeatSurahBtn");
 		const surahModes = [
@@ -565,17 +564,14 @@
 		];
 		let currentSurahMode = 2; // default = off
 		let currentPlayingAudio = null;
-
 		// Pagination variables
 		let currentSurah = null;
 		let currentJuzz = null;
 		let currentPage = 1;
 		const ayatPerPage = 10;
 		let currentAyatList = [];
-
 		// View mode state
 		let currentViewMode = 'surah'; // 'surah' or 'juzz'
-
 		// === NEW: track mode of sequential playback ===
 		let playbackMode = "arabic"; // or "urdu"
 		// === NEW repeat count variables ===
@@ -588,11 +584,9 @@
 				repeatProgress = {}; // reset
 			});
 		});
-
 		function toggleTheme() {
 			document.body.classList.toggle('dark');
 		}
-
 		function toggleViewMode() {
 			if (currentViewMode === 'surah') {
 				currentViewMode = 'juzz';
@@ -614,7 +608,6 @@
 				}
 			}
 		}
-
 		function changeFontSize(delta) {
 			arabicFontSize += 0.1 * delta;
 			urduFontSize += 0.1 * delta;
@@ -627,16 +620,13 @@
 			document.querySelectorAll('.wbw span div:last-child').forEach(el => el.style.fontSize = wbwUrduFontSize + 'rem');
 			document.querySelectorAll('.hashiyah').forEach(el => el.style.fontSize = hashiyahFontSize + 'rem');
 		}
-
 		function showLoading() {
 			surahContent.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:120px;"><div style="width:40px;height:40px;border:4px solid var(--accent);border-top:4px solid transparent;border-radius:50%;animation:spin 1s linear infinite;"></div></div>`;
 		}
 		document.head.insertAdjacentHTML('beforeend', `<style>@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}</style>`);
-
 		function loadSurahList() {
 			surahList.innerHTML = '';
 			surahSelect.innerHTML = '<option value="">Select Surah</option>';
-
 			surahSelect.onchange = () => {
 				if (surahSelect.value) {
 					if (currentViewMode === 'surah') {
@@ -647,7 +637,6 @@
 					}
 				}
 			};
-
 			if (currentViewMode === 'surah') {
 				const surahMap = {};
 				Object.keys(quranData).forEach(key => {
@@ -674,11 +663,9 @@
 				loadJuzzList();
 			}
 		}
-
 		function loadJuzzList() {
 			surahList.innerHTML = '';
 			surahSelect.innerHTML = '<option value="">Select Juzz</option>';
-
 			juzzmeta.forEach(juzz => {
 				const item = document.createElement('div');
 				item.className = 'surah-item';
@@ -691,14 +678,12 @@
 				item.onclick = () => loadJuzz(juzz.index);
 				item.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') loadJuzz(juzz.index); };
 				surahList.appendChild(item);
-
 				const opt = document.createElement('option');
 				opt.value = juzz.index;
 				opt.textContent = `Juzz ${juzz.index} (${juzz.start.surah}:${juzz.start.verse} to ${juzz.end.surah}:${juzz.end.verse})`;
 				surahSelect.appendChild(opt);
 			});
 		}
-
 		function loadSurah(number, verseToScroll = null) {
 			if (currentViewMode !== 'surah') {
 				// If in juzz mode but trying to load a surah, switch back to surah mode
@@ -706,7 +691,6 @@
 				document.querySelector('.toggle-view').textContent = '📖';
 				loadSurahList();
 			}
-
 			bismillahText.style.display = (parseInt(number) === 9) ? "none" : "block";
 			showLoading();
 			repeatProgress = {}; // reset progress whenever surah loads
@@ -725,13 +709,24 @@
 				});
 				// Save state for pagination
 				currentSurah = number;
-				currentPage = 1;
 				currentAyatList = ayat;
+				// Calculate correct page if a specific verse was requested
+				if (verseToScroll) {
+					// Find the index of the requested verse in the ayat list
+					const requestedVerseIndex = ayat.findIndex(k => parseInt(k.split(':')[1]) === parseInt(verseToScroll));
+					if (requestedVerseIndex !== -1) {
+						// Calculate which page this verse is on (pages are 1-based)
+						currentPage = Math.ceil((requestedVerseIndex + 1) / ayatPerPage);
+					} else {
+						currentPage = 1;
+					}
+				} else {
+					currentPage = 1;
+				}
 				renderPage(meta, verseToScroll);
 				localStorage.setItem('lastRead', JSON.stringify({ surah: number, verse: verseToScroll || 1 }));
 			}, 350);
 		}
-
 		function loadJuzz(juzzIndex) {
 			if (currentViewMode !== 'juzz') {
 				// If in surah mode but trying to load a juzz, switch to juzz mode
@@ -739,23 +734,18 @@
 				document.querySelector('.toggle-view').textContent = '📚';
 				loadJuzzList();
 			}
-
 			const juzz = juzzmeta.find(j => j.index === juzzIndex);
 			if (!juzz) return;
-
 			currentJuzz = juzzIndex;
 			showLoading();
-
 			// Get all verses in this juzz range
 			const ayat = [];
 			const startSurah = parseInt(juzz.start.surah);
 			const endSurah = parseInt(juzz.end.surah);
-
 			for (let s = startSurah; s <= endSurah; s++) {
 				const surahAyat = Object.keys(quranData)
 					.filter(k => parseInt(k.split(':')[0]) === s)
 					.sort((a, b) => parseInt(a.split(':')[1]) - parseInt(b.split(':')[1]));
-
 				if (s === startSurah) {
 					// For start surah, only include verses from start.verse onwards
 					const startVerse = parseInt(juzz.start.verse);
@@ -777,12 +767,10 @@
 					ayat.push(...surahAyat);
 				}
 			}
-
 			if (!ayat.length) {
 				surahContent.innerHTML = "<p>No verses found for this Juzz.</p>";
 				return;
 			}
-
 			// Populate verse dropdown with formatted options
 			verseSelect.innerHTML = '<option value="">Select Verse</option>';
 			ayat.forEach(k => {
@@ -793,25 +781,21 @@
 				opt.textContent = `Surah ${surahNum}:${ayahNum}`;
 				verseSelect.appendChild(opt);
 			});
-
 			// Save state for pagination
 			currentPage = 1;
 			currentAyatList = ayat;
 			renderJuzzPage(juzz, ayat);
-
 			localStorage.setItem('lastReadJuzz', JSON.stringify({
 				juzz: juzzIndex,
 				verse: ayat[0].split(':')[1],
 				surah: ayat[0].split(':')[0]
 			}));
 		}
-
 		// Helper: smooth scroll with offset
 		function scrollWithOffset(el, offset) {
 			const elementPosition = el.getBoundingClientRect().top + window.scrollY;
 			window.scrollTo({ top: elementPosition - offset, behavior: 'smooth' });
 		}
-
 		function renderPage(meta, scrollToVerse = null) {
 			const start = (currentPage - 1) * ayatPerPage;
 			const end = start + ayatPerPage;
@@ -819,7 +803,6 @@
 			const totalPages = Math.ceil(currentAyatList.length / ayatPerPage);
 			const remainingPages = totalPages - currentPage;
 			let versesHtml = "";
-
 			pageAyat.forEach(k => {
 				const ayahObj = quranData[k];
 				const ayahNum = k.split(':')[1];
@@ -829,7 +812,6 @@
 				const ayahStr = String(ayahNum).padStart(3, '0');
 				const audioUrl = `src/audio/verses/${surahStr}${ayahStr}.mp3`;
 				const urduAudioUrl = `src/audio/tarjumah/${surahStr}${ayahStr}.mp3`;
-
 				versesHtml += `
                     <div class='verse' id="verse-${ayahNum}">
                         <div class="arabic-text" style="font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
@@ -865,7 +847,6 @@
                     </div>
                 `;
 			});
-
 			// === INTRO AUDIO (hidden, surah-wide) ===
 			if (parseInt(currentSurah) !== 1 && parseInt(currentSurah) !== 9) {
 				versesHtml =
@@ -873,7 +854,6 @@
                         <source src="src/audio/verses/001001.mp3" type="audio/mpeg">
                     </audio>` + versesHtml;
 			}
-
 			// Pagination controls
 			let paginationHtml = `<div style="margin-top:1rem;display:flex;flex-direction:column;align-items:center;gap:6px;">`;
 			paginationHtml += `<div>Page ${currentPage} / ${totalPages} — Remaining: ${remainingPages}</div>`;
@@ -886,7 +866,6 @@
 			}
 			navBtns += `</div>`;
 			paginationHtml += navBtns + `</div>`;
-
 			surahContent.innerHTML = `
                 <h2 style="margin-bottom:0.5rem;font-size:1.5rem;  direction:rtl;">سورة نمبر: ${meta?.number || ''}</h2>
                 <h2 style="margin-bottom:0.5rem;font-size:1.5rem; direction:rtl;">سورة ${meta?.name || ''}</h2>
@@ -897,7 +876,6 @@
                 <div>${versesHtml}</div>
                 ${paginationHtml}
             `;
-
 			// Auto scroll
 			if (scrollToVerse) {
 				setTimeout(() => {
@@ -911,14 +889,12 @@
 				}, 200);
 			}
 		}
-
 		function renderJuzzPage(juzz, ayatList) {
 			const start = (currentPage - 1) * ayatPerPage;
 			const end = start + ayatPerPage;
 			const pageAyat = ayatList.slice(start, end);
 			const totalPages = Math.ceil(ayatList.length / ayatPerPage);
 			const remainingPages = totalPages - currentPage;
-
 			let versesHtml = "";
 			pageAyat.forEach(k => {
 				const ayahObj = quranData[k];
@@ -930,7 +906,6 @@
 				const ayahStr = String(ayahNum).padStart(3, '0');
 				const audioUrl = `src/audio/verses/${surahStr}${ayahStr}.mp3`;
 				const urduAudioUrl = `src/audio/tarjumah/${surahStr}${ayahStr}.mp3`;
-
 				versesHtml += `
                     <div class='verse' id="verse-${surahNum}-${ayahNum}">
                         <div class="arabic-text" style="font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
@@ -966,7 +941,6 @@
                     </div>
                 `;
 			});
-
 			let paginationHtml = `<div style="margin-top:1rem;display:flex;flex-direction:column;align-items:center;gap:6px;">`;
 			paginationHtml += `<div>Page ${currentPage} / ${totalPages} — Remaining: ${remainingPages}</div>`;
 			let navBtns = `<div style="display:flex;gap:10px;">`;
@@ -978,7 +952,6 @@
 			}
 			navBtns += `</div>`;
 			paginationHtml += navBtns + `</div>`;
-
 			surahContent.innerHTML = `
                 <h2 style="margin-bottom:0.5rem;font-size:1.5rem; direction:rtl;">Juzz ${juzz.index}</h2>
                 <div style="margin-bottom:1rem;font-size:1rem;opacity:0.8;">
@@ -987,7 +960,6 @@
                 <div>${versesHtml}</div>
                 ${paginationHtml}
             `;
-
 			// Auto scroll to first verse
 			if (pageAyat.length > 0) {
 				const firstVerse = pageAyat[0].split(':');
@@ -999,7 +971,6 @@
 				}, 200);
 			}
 		}
-
 		function prevPage() {
 			currentPage--;
 			if (currentViewMode === 'surah') {
@@ -1010,7 +981,6 @@
 				renderJuzzPage(juzz, currentAyatList);
 			}
 		}
-
 		function nextPage() {
 			currentPage++;
 			if (currentViewMode === 'surah') {
@@ -1021,47 +991,39 @@
 				renderJuzzPage(juzz, currentAyatList);
 			}
 		}
-
 		function prevJuzzPage() {
 			currentPage--;
 			const juzz = juzzmeta.find(j => j.index === currentJuzz);
 			renderJuzzPage(juzz, currentAyatList);
 		}
-
 		function nextJuzzPage() {
 			currentPage++;
 			const juzz = juzzmeta.find(j => j.index === currentJuzz);
 			renderJuzzPage(juzz, currentAyatList);
 		}
-
 		// === NEW: Share Verse Function ===
 		function shareVerse(surah, ayah) {
 			const verseEl = document.getElementById(`verse-${surah}-${ayah}`) || document.getElementById(`verse-${ayah}`);
 			if (!verseEl) return;
-
 			let arabic = verseEl.querySelector(".arabic-text")?.innerText || "";
 			// Remove/replace ayah end sign ( and similar)
 			arabic = arabic.replace(/[\uFD00-\uFDFF\u06DD\u06DE]/g, "");
 			arabic = arabic.slice(0, -1);
 			// (optional) add a clean marker at end
-			arabic = arabic.trim() + " ۝";
-
+			arabic = arabic.trim() + "سطس";
 			const urdu = verseEl.querySelector(".translation")?.innerText || "";
 			const hashiyah = verseEl.querySelector(".hashiyah")?.innerText || "";
-
 			// 🔹 NEW: Word-by-word
 			let wbwText = "";
 			const wbwDataForVerse = wbwData?.[surah]?.[ayah];
 			if (wbwDataForVerse) {
 				wbwText = "\n📖 WBW:\n" + wbwDataForVerse.map(w => `${w.arabic} = ${w.urdu}`).join("\n");
 			}
-
 			let shareText = `📖 Surah ${surah}, Ayah ${ayah}\n\n`;
 			if (arabic) shareText += `🔹 Arabic:\n${arabic}\n\n`;
 			if (urdu) shareText += `🔸 Tarjumah:\n${urdu}\n\n`;
 			if (wbwText) shareText += wbwText + "\n\n";
 			if (hashiyah) shareText += `💡 Hashiyah:\n${hashiyah}\n\n`;
-
 			// 🔗 Add sharable verse link
 			const link = `${window.location.origin}${window.location.pathname}?${currentViewMode === 'juzz' ? 'juzz' : 'surah'}=${currentViewMode === 'juzz' ? currentJuzz : surah}&ayah=${ayah}`;
 			if (navigator.share) {
@@ -1086,14 +1048,12 @@
 				});
 			}
 		}
-
 		// === UPDATED: handle play ===
 		function handleAudioPlay(audioEl, type, surahNum = null) {
 			if (currentPlayingAudio && currentPlayingAudio !== audioEl) {
 				currentPlayingAudio.pause();
 				currentPlayingAudio.currentTime = 0;
 			}
-
 			// === INTRO HANDLING for first verse play ===
 			if (type === "arabic") {
 				let ayahNum;
@@ -1104,7 +1064,6 @@
 				} else {
 					ayahNum = parseInt(audioEl.id.split('-')[2]);
 				}
-
 				if ((currentViewMode === 'surah' && parseInt(currentSurah) !== 1 && parseInt(currentSurah) !== 9) ||
 					(currentViewMode === 'juzz' && parseInt(ayahNum) === 1)) {
 					const introEl = document.getElementById("intro-audio");
@@ -1118,10 +1077,8 @@
 					}
 				}
 			}
-
 			currentPlayingAudio = audioEl;
 			playbackMode = type;
-
 			// ✅ NEW call for background support
 			if ("mediaSession" in navigator) {
 				let ayahNum;
@@ -1132,15 +1089,12 @@
 				} else {
 					ayahNum = audioEl.id.split('-')[2];
 				}
-
 				const meta = currentViewMode === 'surah'
 					? surahmeta.Surahs.find(s => s.number === parseInt(currentSurah))
 					: { name: `Juzz ${currentJuzz}`, number: currentJuzz };
-
 				setMediaSession(audioEl, type, ayahNum, meta);
 			}
 		}
-
 		// === UPDATED: sequence logic with repeat + pagination + surah modes ===
 		function playNext(type, currentAyahNum, currentSurahNum = null) {
 			if (currentViewMode === 'juzz') {
@@ -1152,16 +1106,12 @@
 					// Fallback for when surahNum isn't provided (shouldn't happen in juzz view)
 					currentKey = `${currentSurah}:${currentAyahNum}`;
 				}
-
 				const currentIndex = currentAyatList.findIndex(k => k === currentKey);
 				if (currentIndex === -1) return;
-
 				// Get or initialize repeat tracking for this verse
 				if (!repeatProgress[currentKey]) repeatProgress[currentKey] = 1;
 				let currentRepeat = repeatProgress[currentKey];
-
 				let nextAudio = null;
-
 				if (type === "arabic") {
 					nextAudio = document.getElementById(`audio-ur-${currentSurahNum}-${currentAyahNum}`);
 				} else if (type === "urdu") {
@@ -1177,7 +1127,6 @@
 							const nextKey = currentAyatList[nextAyahIndex];
 							const [nextSurahNum, nextAyahNum] = nextKey.split(':');
 							nextAudio = document.getElementById(`audio-ar-${nextSurahNum}-${nextAyahNum}`);
-
 							// Check if we need to load next page
 							if (nextAyahIndex >= currentPage * ayatPerPage) {
 								currentPage++;
@@ -1216,7 +1165,6 @@
 						}
 					}
 				}
-
 				if (nextAudio) {
 					nextAudio.play();
 					scrollWithOffset(nextAudio.closest('.verse'), 120);
@@ -1227,7 +1175,6 @@
 				if (!repeatProgress[currentSurah][currentAyahNum]) repeatProgress[currentSurah][currentAyahNum] = 1;
 				let currentRepeat = repeatProgress[currentSurah][currentAyahNum];
 				let nextAudio = null;
-
 				if (type === "arabic") {
 					nextAudio = document.getElementById(`audio-ur-${currentAyahNum}`);
 				} else if (type === "urdu") {
@@ -1238,9 +1185,8 @@
 						repeatProgress[currentSurah][currentAyahNum] = 1;
 						const nextAyahNum = currentAyahNum + 1;
 						nextAudio = document.getElementById(`audio-ar-${nextAyahNum}`);
-
 						if (!nextAudio) {
-							const ayahIndex = currentAyatList.findIndex(k => parseInt(k.split(':')[1]) === currentAyahNum);
+							const ayahIndex = currentAyatList.findIndex(k => parseInt(k.split(':')[1]) === parseInt(currentAyahNum));
 							if (ayahIndex >= 0 && ayahIndex + 1 < currentAyatList.length) {
 								const nextAyahKey = currentAyatList[ayahIndex + 1];
 								const nextNum = parseInt(nextAyahKey.split(':')[1]);
@@ -1283,11 +1229,9 @@
 				}
 			}
 		}
-
 		// === INTERNET HANDLING + AUDIO RESUME/RETRY ===
 		function saveAudioState(audioEl, forceTime = false) {
 			if (!audioEl) return;
-
 			let ayahNum, surahNum;
 			if (currentViewMode === 'juzz') {
 				// Parse ID like "audio-ar-1-2"
@@ -1298,7 +1242,6 @@
 				surahNum = currentSurah;
 				ayahNum = audioEl.id.split('-')[2];
 			}
-
 			localStorage.setItem("lastAudioState", JSON.stringify({
 				surah: surahNum,
 				ayah: ayahNum,
@@ -1308,7 +1251,6 @@
 				...(currentViewMode === 'juzz' && { juzz: currentJuzz })
 			}));
 		}
-
 		// Pause & save on offline
 		window.addEventListener("offline", () => {
 			if (currentPlayingAudio && !currentPlayingAudio.paused) {
@@ -1316,17 +1258,14 @@
 				currentPlayingAudio.pause();
 			}
 		});
-
 		// Retry on online
 		window.addEventListener("online", () => {
 			const state = localStorage.getItem("lastAudioState");
 			if (state) {
 				const { surah, ayah, type, time, viewMode, juzz } = JSON.parse(state);
-
 				if (viewMode === currentViewMode) {
 					const audioId = `audio-${type === "arabic" ? "ar" : "ur"}-${viewMode === 'juzz' ? `${surah}-` : ''}${ayah}`;
 					const audioEl = document.getElementById(audioId);
-
 					if (audioEl) {
 						// Reload source to avoid disabled state
 						audioEl.load();
@@ -1347,19 +1286,16 @@
 				localStorage.removeItem("lastAudioState");
 			}
 		});
-
 		// Save if audio fails to load
 		document.addEventListener("error", e => {
 			if (e.target.tagName === "AUDIO") {
 				saveAudioState(e.target, true); // start again after restore
 			}
 		}, true);
-
 		// Clear on full refresh
 		window.addEventListener("beforeunload", () => {
 			localStorage.removeItem("lastAudioState");
 		});
-
 		// Handle verse selection from dropdown
 		verseSelect.addEventListener('change', () => {
 			if (verseSelect.value) {
@@ -1375,9 +1311,7 @@
 						const startSurah = parseInt(j.start.surah);
 						const endSurah = parseInt(j.end.surah);
 						const currentSurah = parseInt(surahNum);
-
 						if (currentSurah < startSurah || currentSurah > endSurah) return false;
-
 						if (currentSurah === startSurah && currentSurah === endSurah) {
 							return parseInt(ayahNum) >= parseInt(j.start.verse) &&
 								parseInt(ayahNum) <= parseInt(j.end.verse);
@@ -1389,19 +1323,16 @@
 							return true; // middle surahs are fully included
 						}
 					});
-
 					if (juzz) {
 						currentJuzz = juzz.index;
 						// Get all ayat for this juzz
 						const ayat = [];
 						const startSurah = parseInt(juzz.start.surah);
 						const endSurah = parseInt(juzz.end.surah);
-
 						for (let s = startSurah; s <= endSurah; s++) {
 							const surahAyat = Object.keys(quranData)
 								.filter(k => parseInt(k.split(':')[0]) === s)
 								.sort((a, b) => parseInt(a.split(':')[1]) - parseInt(b.split(':')[1]));
-
 							if (s === startSurah) {
 								const startVerse = parseInt(juzz.start.verse);
 								const filtered = surahAyat.filter(k => {
@@ -1420,7 +1351,6 @@
 								ayat.push(...surahAyat);
 							}
 						}
-
 						// Find the index of our target verse
 						const targetKey = `${surahNum}:${ayahNum}`;
 						const targetIndex = ayat.findIndex(k => k === targetKey);
@@ -1429,7 +1359,6 @@
 							currentPage = Math.ceil((targetIndex + 1) / ayatPerPage);
 							currentAyatList = ayat;
 							renderJuzzPage(juzz, ayat);
-
 							// Scroll to the selected verse
 							setTimeout(() => {
 								const el = document.getElementById(`verse-${surahNum}-${ayahNum}`);
@@ -1440,17 +1369,14 @@
 				}
 			}
 		});
-
 		function updateSurahButton() {
 			repeatSurahBtn.innerHTML = surahModes[currentSurahMode].html;
 		}
-
 		repeatSurahBtn.addEventListener("click", () => {
 			currentSurahMode = (currentSurahMode + 1) % surahModes.length;
 			updateSurahButton();
 		});
 		updateSurahButton();
-
 		// === NEW: Enable background playback via Media Session API ===
 		if ("mediaSession" in navigator) {
 			function setMediaSession(audioEl, type, ayahNum, meta) {
@@ -1466,7 +1392,6 @@
 						{ src: window.location.origin + "/QuranReader/src/favicon.png", sizes: "512x512", type: "image/png" }
 					]
 				});
-
 				// Hook play/pause/next actions
 				navigator.mediaSession.setActionHandler("play", () => { audioEl.play(); });
 				navigator.mediaSession.setActionHandler("pause", () => { audioEl.pause(); });
@@ -1480,18 +1405,15 @@
 				});
 			}
 		}
-
 		// Initialize the app
 		document.addEventListener("DOMContentLoaded", () => {
 			// Load required scripts (assuming they're already included in the HTML)
 			// loadSurahList();
-
 			// Check URL parameters for direct navigation
 			const params = new URLSearchParams(window.location.search);
 			const qsSurah = params.get("surah");
 			const qsAyah = params.get("ayah");
 			const qsJuzz = params.get("juzz");
-
 			if (qsJuzz) {
 				currentViewMode = 'juzz';
 				document.querySelector('.toggle-view').textContent = '📚';
@@ -1523,14 +1445,12 @@
 				currentViewMode = 'surah';
 				document.querySelector('.toggle-view').textContent = '📖';
 				loadSurahList();
-
 				// Try to restore last read position
 				const lastRead = JSON.parse(localStorage.getItem("lastRead"));
 				if (lastRead) {
 					loadSurah(lastRead.surah, lastRead.verse);
 				}
 			}
-
 			// Hide loading screen after initialization
 			window.addEventListener("load", () => {
 				const loader = document.getElementById("loading-screen");
