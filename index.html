@@ -501,6 +501,20 @@
 				padding: 4px 8px;
 			}
 		}
+
+		.verse-number {
+			position: absolute;
+			top: 0;
+			left: 0;
+			background: rgba(0, 0, 0, 0);
+			color: white;
+			padding: 6px 6px;
+			border-radius: 4px;
+			font-size: 0.8rem;
+			font-weight: bold;
+			z-index: 10;
+			margin-left: 4px;
+		}
 	</style>
 </head>
 
@@ -818,8 +832,9 @@
 				const audioUrl = `src/audio/verses/${surahStr}${ayahStr}.mp3`;
 				const urduAudioUrl = `src/audio/tarjumah/${surahStr}${ayahStr}.mp3`;
 				versesHtml += `
-                    <div class='verse' id="verse-${ayahNum}">
-                        <div class="arabic-text" style="font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
+                    <div class='verse' id="verse-${ayahNum}" style="position: relative; margin-top: 16px;">
+						<div class="verse-number">${currentSurah}:${ayahNum}</div>
+                        <div class="arabic-text" style=" margin-top : 5px; font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
                         <audio controls preload="none"
                             id="audio-ar-${ayahNum}"
                             onended="playNext('arabic', ${ayahNum})"
@@ -916,8 +931,9 @@
 				const audioUrl = `src/audio/verses/${surahStr}${ayahStr}.mp3`;
 				const urduAudioUrl = `src/audio/tarjumah/${surahStr}${ayahStr}.mp3`;
 				versesHtml += `
-                    <div class='verse' id="verse-${surahNum}-${ayahNum}">
-                        <div class="arabic-text" style="font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
+                    <div class='verse' id="verse-${surahNum}-${ayahNum}" style="position: relative; margin-top: 16px;">
+						<div class="verse-number">${surahNum}:${ayahNum}</div>
+                        <div class="arabic-text" style="margin-top : 5px; font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
                         <audio controls preload="none"
                             id="audio-ar-${surahNum}-${ayahNum}"
                             onended="playNext('arabic', ${ayahNum}, ${surahNum})"
