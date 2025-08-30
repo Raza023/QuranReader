@@ -711,6 +711,7 @@
 				});
 				// Save state for pagination
 				currentSurah = number;
+				surahSelect.value = number;
 				currentAyatList = ayat;
 				// Calculate correct page if a specific verse was requested
 				if (verseToScroll) {
@@ -740,6 +741,7 @@
 			const juzz = juzzmeta.find(j => j.index === juzzIndex);
 			if (!juzz) return;
 			currentJuzz = juzzIndex;
+			surahSelect.value = juzzIndex;
 			showLoading();
 			// Get all verses in this juzz range
 			const ayat = [];
