@@ -687,7 +687,13 @@
 				item.className = 'surah-item';
 				item.setAttribute('tabindex', '0');
 				item.setAttribute('aria-label', `Juzz ${juzz.index}`);
-				item.innerHTML = `<strong>Juzz ${juzz.index}</strong>
+				item.innerHTML = `<div>
+									<strong>
+										Juzz ${juzz.index}
+									</strong>
+									<br/>
+									<span style="text-align: center; font-family: var(--arabic-font); font-size: 1.5rem; margin: 0.5rem 0;">${juzz.urduname}</span>
+								</div>
                                 <span style="opacity:0.7;font-size:0.95rem;">
                                     From ${juzz.start.surah}:${juzz.start.verse} to ${juzz.end.surah}:${juzz.end.verse}
                                 </span>`;
@@ -887,13 +893,19 @@
 			navBtns += `</div>`;
 			paginationHtml += navBtns + `</div>`;
 			surahContent.innerHTML = `
-                <h2 style="margin-bottom:0.5rem;font-size:1.5rem;  direction:rtl;">سورة نمبر: ${meta?.number || ''}</h2>
-                <h2 style="margin-bottom:0.5rem;font-size:1.5rem; direction:rtl;">سورة ${meta?.name || ''}</h2>
-                <div style="margin-bottom:1rem;font-size:1rem;opacity:0.8;">
-                    Meaning: ${meta?.EngMean || ''} (${meta?.UrduMean || ''})<br>
-					Revelation Place: ${meta?.revelationPlace || ''}<br>
-                    Verses: ${meta?.versesCount || ''}
-                </div>
+                <div style="margin: 1.5rem 0;">
+					<div style="font-size: 1.3rem; display: flex; justify-content: space-between; align-items: center;">
+						<span>Verses: ${meta?.versesCount || ''}</span>
+						<span style= "direction: rtl;">سورة نمبر: ${meta?.number || ''}</span>
+					</div>
+					<div style="font-size: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+						<span>${meta?.EngMean || ''} <br/>(${meta?.UrduMean || ''})</span>
+						<span style= "direction: rtl;">سورة ${meta?.name || ''}</span>
+					</div>
+					<div style="font-size: 1rem; text-align: center; opacity: 0.8;">
+						Revelation Place: ${meta?.revelationPlace || ''}
+					</div>
+				</div>
                 <div>${versesHtml}</div>
                 ${paginationHtml}
             `;
@@ -921,10 +933,34 @@
 					<source src="src/audio/verses/001001.mp3" type="audio/mpeg">
 				</audio>
 			`;
+			let currentSurahNum = null; // Track the current Surah number
 			pageAyat.forEach(k => {
 				const ayahObj = quranData[k];
 				const ayahNum = k.split(':')[1];
 				const surahNum = k.split(':')[0];
+				// If a new Surah starts, add its meta information
+				if (surahNum !== currentSurahNum) {
+					currentSurahNum = surahNum;
+					const meta = surahmeta.Surahs.find(s => s.number === parseInt(surahNum));
+					// Skip Bismillah for Surah 1 and 9
+					const showBismillah = !(parseInt(surahNum) === 1 || parseInt(surahNum) === 9);
+					versesHtml += `
+						<div style="margin: 1.5rem 0;">
+							<div style="font-size: 1.3rem; display: flex; justify-content: space-between; align-items: center;">
+								<span>Verses: ${meta?.versesCount || ''}</span>
+								<span style= "direction: rtl;">سورة نمبر: ${meta?.number || ''}</span>
+							</div>
+							<div style="font-size: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+								<span>${meta?.EngMean || ''} <br/>(${meta?.UrduMean || ''})</span>
+								<span style= "direction: rtl;">سورة ${meta?.name || ''}</span>
+							</div>
+							<div style="font-size: 1rem; text-align: center; opacity: 0.8;">
+								Revelation Place: ${meta?.revelationPlace || ''}
+							</div>
+							${showBismillah ? `<div style="text-align: center; font-family: var(--arabic-font); font-size: 1.5rem; margin: 0.5rem 0;">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِیْمِ</div>` : ''}
+						</div>
+					`;
+				}
 				const wbwAyah = wbwData?.[surahNum]?.[ayahNum] || [];
 				const tData = translationData?.[surahNum]?.[ayahNum] || {};
 				const surahStr = String(surahNum).padStart(3, '0');
@@ -979,8 +1015,12 @@
 			navBtns += `</div>`;
 			paginationHtml += navBtns + `</div>`;
 			surahContent.innerHTML = `
-                <h2 style="margin-bottom:0.5rem;font-size:1.5rem; direction:rtl;">Juzz ${juzz.index}</h2>
-                <div style="margin-bottom:1rem;font-size:1rem;opacity:0.8;">
+                <h2 style="margin-bottom:0.5rem;font-size:1.5rem; text-align: center;">
+					Juzz ${juzz.index} 
+					<br/> 
+					<span style="text-align: center; font-family: var(--arabic-font); font-size: 1.5rem; margin: 0.5rem 0;">${juzz.urduname}</span>
+				</h2>
+                <div style="margin-bottom:1rem;font-size:1rem;opacity:0.8; text-align: center;">
                     Verses: From ${juzz.start.surah}:${juzz.start.verse} to ${juzz.end.surah}:${juzz.end.verse}
                 </div>
                 <div>${versesHtml}</div>
