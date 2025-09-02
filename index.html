@@ -164,7 +164,7 @@
 			flex-wrap: wrap;
 			align-items: center;
 			justify-content: flex-end;
-			overflow: hidden;
+			/* overflow: hidden; */
 		}
 
 		/* Dropdowns - uniform look */
@@ -515,6 +515,128 @@
 			z-index: 10;
 			margin-left: 4px;
 		}
+
+		/* Custom dropdown styling */
+		.surah-dropdown {
+			position: relative;
+			display: inline-block;
+			margin-right: 0.6rem;
+			z-index: 1001;
+			/* Ensure it's above other elements */
+		}
+
+		#surahSearch {
+			padding: 8px 14px;
+			border-radius: 12px;
+			border: none;
+			font-size: 1rem;
+			background: linear-gradient(135deg, #fff9f0, #f0e6d2);
+			box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+			transition: all 0.2s ease;
+			cursor: pointer;
+			font-weight: 500;
+			color: #3b2f2f;
+			width: 180px;
+			outline: none;
+		}
+
+		/* Light mode: brown input */
+		body:not(.dark) #surahSearch {
+			background: linear-gradient(135deg, #deb887, #cd853f);
+			color: #2b1a12;
+		}
+
+		/* Dark mode: black input with white text */
+		body.dark #surahSearch {
+			background: #000;
+			color: #fff;
+		}
+
+		/* Light mode placeholder */
+		body:not(.dark) #surahSearch::placeholder {
+			color: #2b1a12;
+		}
+
+		/* Dark mode placeholder */
+		body.dark #surahSearch::placeholder {
+			color: #fff;
+		}
+
+
+		#surahSearch:focus {
+			outline: none;
+			box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.4);
+		}
+
+		body.dark #surahSearch:focus {
+			box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+		}
+
+		.dropdown-content {
+			display: none;
+			position: absolute;
+			background-color: #fff9f0;
+			min-width: 180px;
+			box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+			z-index: 1002;
+			/* Higher than the header */
+			border-radius: 12px;
+			overflow: hidden;
+			max-height: 300px;
+			overflow-y: auto;
+			margin-top: 4px;
+			left: 0;
+			top: 100%;
+			/* Position below the input */
+		}
+
+		/* Light mode: brown dropdown items */
+		body:not(.dark) .dropdown-content {
+			background: linear-gradient(135deg, #deb887, #cd853f);
+			color: #2b1a12;
+		}
+
+		/* Dark mode: black dropdown items with white text */
+		body.dark .dropdown-content {
+			background: #000;
+			color: #fff;
+		}
+
+		.dropdown-content div {
+			padding: 8px 14px;
+			cursor: pointer;
+			transition: background-color 0.2s;
+		}
+
+		.dropdown-content div:hover {
+			background-color: rgba(0, 0, 0, 0.1);
+		}
+
+		/* Light mode: hover effect for brown */
+		body:not(.dark) .dropdown-content div:hover {
+			background-color: rgba(139, 69, 19, 0.2);
+		}
+
+		/* Dark mode: hover effect for dark */
+		body.dark .dropdown-content div:hover {
+			background-color: rgba(255, 255, 255, 0.1);
+		}
+
+		/* Scrollbar for dropdown */
+		.dropdown-content::-webkit-scrollbar {
+			width: 6px;
+		}
+
+		.dropdown-content::-webkit-scrollbar-thumb {
+			background: var(--accent);
+			border-radius: 6px;
+		}
+
+		/* Remove overflow: hidden from header and buttons */
+		header,
+		.buttons {
+			overflow: visible !important;
+		}
 	</style>
 </head>
 
@@ -535,9 +657,13 @@
 			</select>
 		</div>
 		<div class="buttons">
-			<input type="text" id="surahSearch" placeholder="Search Surah..."
-				style="padding:6px 10px;border-radius:8px;border:1px solid #ccc;max-width:200px;" />
-			<select id="surahSelect" aria-label="Select Surah/Juzz"></select>
+			<!-- New dropdown with search box inside -->
+			<div class="dropdown surah-dropdown">
+				<input type="text" id="surahSearch" placeholder="Search Surah..." />
+				<div id="dropdownList" class="dropdown-content"></div>
+			</div>
+			<!-- Keep original hidden select -->
+			<select id="surahSelect" aria-label="Select Surah/Juzz" style="display:none;"></select>
 			<select id="verseSelect" aria-label="Select Verse"></select>
 			<button class="text-resize" onclick="changeFontSize(1)" aria-label="Increase Font Size"
 				data-tooltip="Increase text">A+</button>
@@ -1554,6 +1680,43 @@
 				});
 			}
 		});
+
+		(function () {
+			const searchBox = document.getElementById("surahSearch");
+			const dropdownList = document.getElementById("dropdownList");
+			const hiddenSelect = document.getElementById("surahSelect");
+
+			function showList(filter = "") {
+				dropdownList.innerHTML = "";
+				const options = Array.from(hiddenSelect.options).filter(opt => opt.value);
+				options
+					.filter(opt => opt.textContent.toLowerCase().includes(filter.toLowerCase()))
+					.forEach(opt => {
+						const div = document.createElement("div");
+						div.textContent = opt.textContent;
+						div.style.padding = "8px";
+						div.style.cursor = "pointer";
+						div.onclick = () => {
+							// Update search box
+							searchBox.value = opt.textContent;
+							// Update hidden select so existing logic works
+							hiddenSelect.value = opt.value;
+							hiddenSelect.dispatchEvent(new Event("change", { bubbles: true }));
+							dropdownList.style.display = "none";
+						};
+						dropdownList.appendChild(div);
+					});
+				dropdownList.style.display = "block";
+			}
+
+			searchBox.addEventListener("focus", () => showList());
+			searchBox.addEventListener("input", e => showList(e.target.value));
+			document.addEventListener("click", e => {
+				if (!e.target.closest(".dropdown")) {
+					dropdownList.style.display = "none";
+				}
+			});
+		})();
 
 	</script>
 </body>
