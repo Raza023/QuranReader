@@ -536,7 +536,7 @@
 			cursor: pointer;
 			font-weight: 500;
 			color: #3b2f2f;
-			width: 180px;
+			width: 250px;
 			outline: none;
 		}
 
@@ -776,7 +776,6 @@
 					if (currentViewMode === 'surah') {
 						loadSurah(surahSelect.value, 1);
 					} else {
-						// In juzz mode, the dropdown shows juzzes
 						loadJuzz(surahSelect.value);
 					}
 				}
@@ -794,9 +793,24 @@
 					item.className = 'surah-item';
 					item.setAttribute('tabindex', '0');
 					item.setAttribute('aria-label', `Surah ${num}`);
-					item.innerHTML = `<strong>${num}. سورة${meta?.name || ''}<br/>(verses: ${meta?.versesCount || ''}) (${meta?.revelationPlace || ''})</strong>  <span style="opacity:0.7;font-size:0.95rem;"> (${meta?.EngMean || ''})<br/>(${meta?.UrduMean || ''})</span>`;
-					item.onclick = () => loadSurah(num, 1); // navigate to first verse
-					item.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') loadSurah(num, 1); };
+					item.innerHTML = `
+						<strong>${num}. سورة${meta?.name || ''}<br/>(verses: ${meta?.versesCount || ''}) (${meta?.revelationPlace || ''})</strong>
+						<span style="opacity:0.7;font-size:0.95rem;"> (${meta?.EngMean || ''})<br/>(${meta?.UrduMean || ''})</span>
+					`;
+					// Update the onclick event handler
+					item.onclick = () => {
+						loadSurah(num, 1);
+						// Set the value of the surahSearch input field
+						document.getElementById('surahSearch').value = `${num}. سورة${meta?.name || ''} (${meta?.engName || ''})`;
+					};
+
+					item.onkeydown = e => {
+						if (e.key === 'Enter' || e.key === ' ') {
+							loadSurah(num, 1);
+							// Set the value of the surahSearch input field
+							document.getElementById('surahSearch').value = `${num}. سورة${meta?.name || ''} (${meta?.engName || ''})`;
+						}
+					};
 					surahList.appendChild(item);
 					const opt = document.createElement('option');
 					opt.value = num;
@@ -815,18 +829,28 @@
 				item.className = 'surah-item';
 				item.setAttribute('tabindex', '0');
 				item.setAttribute('aria-label', `Juzz ${juzz.index}`);
-				item.innerHTML = `<div>
-									<strong>
-										Juzz ${juzz.index}
-									</strong>
-									<br/>
-									<span style="text-align: center; font-family: var(--arabic-font); font-size: 1.5rem; margin: 0.5rem 0;">${juzz.urduname}</span>
-								</div>
-                                <span style="opacity:0.7;font-size:0.95rem;">
-                                    From ${juzz.start.surah}:${juzz.start.verse} to ${juzz.end.surah}:${juzz.end.verse}
-                                </span>`;
-				item.onclick = () => loadJuzz(juzz.index);
-				item.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') loadJuzz(juzz.index); };
+				item.innerHTML = `
+					<div>
+						<strong>Juzz ${juzz.index}</strong>
+						<br/>
+						<span style="text-align: center; font-family: var(--arabic-font); font-size: 1.5rem; margin: 0.5rem 0;">${juzz.urduname}</span>
+					</div>
+					<span style="opacity:0.7;font-size:0.95rem;">
+						From ${juzz.start.surah}:${juzz.start.verse} to ${juzz.end.surah}:${juzz.end.verse}
+					</span>
+				`;
+				// Update the `surahSearch` input field when a Juzz is clicked
+				item.onclick = () => {
+					loadJuzz(juzz.index);
+					document.getElementById('surahSearch').value = `Juzz ${juzz.index} (${juzz.start.surah}:${juzz.start.verse} to ${juzz.end.surah}:${juzz.end.verse})`;
+				};
+				// Update the `surahSearch` input field when a Juzz is selected via keyboard
+				item.onkeydown = (e) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						loadJuzz(juzz.index);
+						document.getElementById('surahSearch').value = `Juzz ${juzz.index} (${juzz.start.surah}:${juzz.start.verse} to ${juzz.end.surah}:${juzz.end.verse})`;
+					}
+				};
 				surahList.appendChild(item);
 				const opt = document.createElement('option');
 				opt.value = juzz.index;
