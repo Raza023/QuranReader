@@ -732,9 +732,11 @@
 		}
 		function toggleViewMode() {
 			playedIntroForSurahs = {}; // Reset tracking when switching view mode
+			document.getElementById("surahSearch").value = ""; // Clear the search input
 			if (currentViewMode === 'surah') {
 				currentViewMode = 'juzz';
 				document.querySelector('.toggle-view').textContent = '📚';
+        		document.getElementById("surahSearch").placeholder = "Search Juzz..."; // Update placeholder
 				loadJuzzList();
 				// Check for saved juzz state
 				const lastJuzz = JSON.parse(localStorage.getItem("lastReadJuzz"));
@@ -744,6 +746,7 @@
 			} else {
 				currentViewMode = 'surah';
 				document.querySelector('.toggle-view').textContent = '📖';
+				document.getElementById("surahSearch").placeholder = "Search Surah..."; // Reset placeholder
 				loadSurahList();
 				// Restore last surah view state if available
 				const last = JSON.parse(localStorage.getItem("lastRead"));
