@@ -535,6 +535,8 @@
 			</select>
 		</div>
 		<div class="buttons">
+			<input type="text" id="surahSearch" placeholder="Search Surah..."
+				style="padding:6px 10px;border-radius:8px;border:1px solid #ccc;max-width:200px;" />
 			<select id="surahSelect" aria-label="Select Surah/Juzz"></select>
 			<select id="verseSelect" aria-label="Select Verse"></select>
 			<button class="text-resize" onclick="changeFontSize(1)" aria-label="Increase Font Size"
@@ -1536,6 +1538,23 @@
 				setTimeout(() => loader.style.display = "none", 500);
 			});
 		});
+		// === Surah search filter ===
+		document.addEventListener("DOMContentLoaded", () => {
+			const surahSearch = document.getElementById("surahSearch");
+			const surahSelect = document.getElementById("surahSelect");
+
+			if (surahSearch && surahSelect) {
+				surahSearch.addEventListener("keyup", function () {
+					const filter = this.value.toLowerCase();
+					Array.from(surahSelect.options).forEach(option => {
+						if (!option.value) return; // skip "Select Surah"
+						const text = option.textContent.toLowerCase();
+						option.style.display = text.includes(filter) ? "" : "none";
+					});
+				});
+			}
+		});
+
 	</script>
 </body>
 
