@@ -637,7 +637,49 @@
 		.buttons {
 			overflow: visible !important;
 		}
+
+		.toggle-translate {
+			cursor: pointer;
+			font-weight: bold;
+			border: none;
+			background: var(--accent-light);
+			color: white;
+			font-size: 1.1rem;
+			border-radius: 10px;
+			padding: 6px 12px;
+			transition: all 0.2s;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+		}
+
+		.toggle-translate:hover {
+			background: var(--accent-light-hover);
+			transform: scale(1.05);
+		}
+
+		body.dark .toggle-translate {
+			background: var(--accent);
+		}
+
+		body.dark .toggle-translate:hover {
+			background: var(--accent-hover);
+		}
 	</style>
+	<script type="text/javascript">
+		function googleTranslateElementInit() {
+			new google.translate.TranslateElement(
+				{
+					pageLanguage: 'ur',
+					includedLanguages: 'en,ur,ar',
+					layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+					autoDisplay: false
+				},
+				'google_translate_element'
+			);
+		}
+	</script>
+	<script type="text/javascript"
+		src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 </head>
 
 <body class="dark">
@@ -675,6 +717,8 @@
 				data-tooltip="Switch between Surah/Juzz view">📖</button>
 			<button id="repeatSurahBtn" class="toggle-theme" aria-label="Repeat Surah Mode"
 				data-tooltip="Repeat Mode"></button>
+			<button class="toggle-translate" onclick="toggleTranslation()" aria-label="Translate to English"
+				data-tooltip="Translate to English">🌍</button>
 		</div>
 	</header>
 	<br>
@@ -736,7 +780,7 @@
 			if (currentViewMode === 'surah') {
 				currentViewMode = 'juzz';
 				document.querySelector('.toggle-view').textContent = '📚';
-        		document.getElementById("surahSearch").placeholder = "Search Juzz..."; // Update placeholder
+				document.getElementById("surahSearch").placeholder = "Search Juzz..."; // Update placeholder
 				loadJuzzList();
 				// Check for saved juzz state
 				const lastJuzz = JSON.parse(localStorage.getItem("lastReadJuzz"));
@@ -1745,7 +1789,44 @@
 			});
 		})();
 
+		function toggleTranslation() {
+			const translateElement = document.getElementById('google_translate_element');
+			const translateButton = document.querySelector('.toggle-translate');
+
+			if (translateElement.style.display === 'none') {
+				// Show the Google Translate widget
+				translateElement.style.display = 'block';
+				// Trigger the translation to English
+				setTimeout(() => {
+					const select = document.querySelector('.goog-te-combo');
+					if (select) {
+						select.value = 'en';
+						select.dispatchEvent(new Event('change'));
+					}
+				}, 500);
+				// Change button appearance to indicate translation is active
+				translateButton.style.background = '#4CAF50';
+				translateButton.textContent = '🌍 EN';
+			} else {
+				// Hide the Google Translate widget
+				translateElement.style.display = 'none';
+				// Change button appearance back to default
+				translateButton.style.background = '';
+				translateButton.textContent = '🌍';
+			}
+		}
+
+		function translateUrduText() {
+    const urduElements = document.querySelectorAll('.urdu-text, .translation, .hashiyah');
+    urduElements.forEach(el => {
+        el.classList.add('goog-te-auto-translated');
+    });
+    toggleTranslation();
+}
+
+
 	</script>
+	<div id="google_translate_element" style="display: none;"></div>
 </body>
 
 </html>
