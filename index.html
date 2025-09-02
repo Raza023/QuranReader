@@ -672,7 +672,7 @@
 					surahList.appendChild(item);
 					const opt = document.createElement('option');
 					opt.value = num;
-					opt.textContent = `${num}. سورة${meta?.name || ''} (${meta?.EngMean || ''})`;
+					opt.textContent = `${num}. سورة${meta?.name || ''} (${meta?.engName || ''})`;
 					surahSelect.appendChild(opt);
 				});
 			} else {
