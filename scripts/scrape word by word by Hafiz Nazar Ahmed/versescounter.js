@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Path to your Quran JSON file
-const filePath = path.join(__dirname, 'wbw-urdu.json');
+const filePath = path.join(__dirname, 'wbw.json');
 
 // Read the file
 let data;
