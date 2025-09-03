@@ -1,8 +1,11 @@
 {
   "dependencies": {
+    "axios": "^0.18.1",
+    "cheerio": "^1.0.0-rc.2",
     "edge-tts": "^1.0.1",
     "google-tts-api": "^2.0.2",
     "gtts": "^0.2.1",
-    "node-edge-tts": "^1.2.8"
+    "node-edge-tts": "^1.2.8",
+    "p-limit": "^7.1.1"
   }
 }
