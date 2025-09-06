@@ -1099,6 +1099,8 @@
 				const ayahStr = String(ayahNum).padStart(3, '0');
 				const audioUrl = `src/audio/verses/${surahStr}${ayahStr}.mp3`;
 				const urduAudioUrl = `src/audio/tarjumah/${surahStr}${ayahStr}.mp3`;
+				const englishAudioUrl = `src/audio/english/${surahStr}${ayahStr}.mp3`;
+				const translationAudioUrl = currentLanguage === 'en' ? englishAudioUrl : urduAudioUrl;
 				versesHtml += `
 					<div class='verse' id="verse-${ayahNum}" style="position: relative; margin-top: 16px;">
 						<div class="verse-number">${currentSurah}:${ayahNum}</div>
@@ -1121,7 +1123,7 @@
 							onended="playNext('urdu', ${ayahNum})"
 							onplay="handleAudioPlay(this, 'urdu')"
 							style="width:100%;margin-top:6px;">
-							<source src="${urduAudioUrl}" type="audio/mpeg">
+							<source src="${translationAudioUrl}" type="audio/mpeg">
 							Your browser does not support the audio element.
 						</audio>
 						${hashiyahHtml}
@@ -1254,6 +1256,8 @@
 				const ayahStr = String(ayahNum).padStart(3, '0');
 				const audioUrl = `src/audio/verses/${surahStr}${ayahStr}.mp3`;
 				const urduAudioUrl = `src/audio/tarjumah/${surahStr}${ayahStr}.mp3`;
+				const englishAudioUrl = `src/audio/english/${surahStr}${ayahStr}.mp3`;
+				const translationAudioUrl = currentLanguage === 'en' ? englishAudioUrl : urduAudioUrl;
 				versesHtml += `
 						<div class='verse' id="verse-${surahNum}-${ayahNum}" style="position: relative; margin-top: 16px;">
 							<div class="verse-number">${surahNum}:${ayahNum}</div>
@@ -1276,7 +1280,7 @@
 							onended="playNext('urdu', ${ayahNum}, ${surahNum})"
 							onplay="handleAudioPlay(this, 'urdu', ${surahNum})"
 							style="width:100%;margin-top:6px;">
-							<source src="${urduAudioUrl}" type="audio/mpeg">
+							<source src="${translationAudioUrl}" type="audio/mpeg">
 							Your browser does not support the audio element.
 							</audio>
 
