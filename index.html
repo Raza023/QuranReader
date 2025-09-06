@@ -760,30 +760,99 @@
 			});
 		});
 
-		function translatePage() {
-			// toggle language
-			currentLanguage = currentLanguage === 'ur' ? 'en' : 'ur';
+		// --- more-robust helper: pick verse element with largest intersection with viewport ---
+		function getCurrentVisibleVerse() {
+			const verses = Array.from(document.querySelectorAll('.verse'));
+			if (!verses.length) return null;
 
-			// update button tooltip / aria (optional helpful)
+			const innerH = window.innerHeight || document.documentElement.clientHeight;
+
+			// 1) Prefer the verse with the largest intersection (most visible)
+			let best = null;
+			let bestIntersect = 0;
+			for (const v of verses) {
+				const r = v.getBoundingClientRect();
+				const intersect = Math.max(0, Math.min(r.bottom, innerH) - Math.max(r.top, 0));
+				if (intersect > bestIntersect) {
+					bestIntersect = intersect;
+					best = v;
+				}
+			}
+			if (best && bestIntersect > 0) return best.id;
+
+			// 2) Fallback: choose verse whose top is nearest the viewport top.
+			// Prefer elements that are below the top (r.top >= 0) over those above it.
+			let fallback = null;
+			let fallbackScore = Infinity;
+			for (const v of verses) {
+				const r = v.getBoundingClientRect();
+				const score = r.top >= 0 ? r.top : Math.abs(r.bottom); // smaller is better
+				if (score < fallbackScore) {
+					fallbackScore = score;
+					fallback = v;
+				}
+			}
+			return fallback ? fallback.id : null;
+		}
+
+		// --- updated translatePage: preserves reading position precisely ---
+		function translatePage() {
+			// remember the verse currently visible (if any)
+			const visibleId = getCurrentVisibleVerse(); // e.g. "verse-12" or "verse-2-5"
+			// toggle language state
+			currentLanguage = currentLanguage === 'ur' ? 'en' : 'ur';
+			// update button tooltip / aria
 			const btn = document.querySelector('.translate-btn');
 			if (btn) {
 				btn.setAttribute('data-tooltip', currentLanguage === 'en' ? 'Switch to Urdu' : 'Translate to English');
 				btn.setAttribute('aria-label', currentLanguage === 'en' ? 'English mode' : 'Urdu mode');
 			}
-
-			// toggle body class so CSS can apply ltr styles in English mode
-			if (currentLanguage === 'en') {
-				document.body.classList.add('lang-en');
-			} else {
-				document.body.classList.remove('lang-en');
-			}
-
-			// Re-render current view so content updates immediately
+			// update body class for CSS direction/styling
+			if (currentLanguage === 'en') document.body.classList.add('lang-en');
+			else document.body.classList.remove('lang-en');
+			// Re-render current view and then scroll to the exact verse we saved
 			if (currentViewMode === 'surah' && currentSurah) {
-				const meta = surahmeta.Surahs.find(s => s.number === parseInt(currentSurah));
-				renderPage(meta);
+				const meta = surahmeta.Surahs.find(s => s.number === parseInt(currentSurah, 10));
+				if (visibleId && visibleId.startsWith('verse-')) {
+					const parts = visibleId.replace('verse-', '').split('-');
+					const ayahNum = parts[0];
+					renderPage(meta, ayahNum);
+					// ensure the exact verse is scrolled into view after render
+					setTimeout(() => {
+						const el = document.getElementById(`verse-${ayahNum}`);
+						if (el) {
+							// scrollWithOffset is assumed to exist in your code; fallback to scrollIntoView
+							if (typeof scrollWithOffset === 'function') scrollWithOffset(el, 120);
+							else el.scrollIntoView({ behavior: 'auto', block: 'center' });
+						}
+					}, 120);
+				} else {
+					renderPage(meta);
+				}
 			} else if (currentViewMode === 'juzz' && currentJuzz) {
 				const j = juzzmeta.find(z => z.index === currentJuzz);
+				if (visibleId && visibleId.startsWith('verse-')) {
+					const parts = visibleId.replace('verse-', '').split('-');
+					if (parts.length >= 2) {
+						const surahNum = parts[0];
+						const ayahNum = parts[1];
+						const targetKey = `${surahNum}:${ayahNum}`;
+						const targetIndex = currentAyatList.findIndex(k => k === targetKey);
+						if (targetIndex !== -1) {
+							currentPage = Math.ceil((targetIndex + 1) / ayatPerPage);
+						}
+						renderJuzzPage(j, currentAyatList);
+						setTimeout(() => {
+							const el = document.getElementById(`verse-${surahNum}-${ayahNum}`);
+							if (el) {
+								if (typeof scrollWithOffset === 'function') scrollWithOffset(el, 120);
+								else el.scrollIntoView({ behavior: 'auto', block: 'center' });
+							}
+						}, 120);
+						return;
+					}
+				}
+				// fallback: just render normally
 				renderJuzzPage(j, currentAyatList);
 			}
 		}
