@@ -665,12 +665,19 @@
 			background: var(--accent-hover);
 		}
 
-		/* Add this to the existing CSS */
+		/* Add these to the existing styles */
+		.audio-controls {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-end;
+			margin-left: 10px;
+		}
+
 		#audioCheckboxes {
 			display: flex;
 			align-items: center;
-			margin-right: 10px;
-			float: right;
+			margin-top: 5px;
+			flex-wrap: wrap;
 		}
 
 		#audioCheckboxes label {
@@ -680,16 +687,36 @@
 			color: white;
 			font-size: 0.9rem;
 			font-weight: 500;
+			margin-bottom: 5px;
 		}
 
-		#audioCheckboxes input[type="checkbox"] {
-			margin-right: 5px;
-			cursor: pointer;
-		}
+		@media (max-width: 767px) {
+			.audio-controls {
+				flex-direction: row;
+				align-items: center;
+				flex-wrap: wrap;
+				justify-content: flex-end;
+				margin-left: 0;
+				width: 100%;
+			}
 
-		/* Dark mode adjustments */
-		body.dark #audioCheckboxes label {
-			color: white;
+			#audioCheckboxes {
+				flex-direction: row;
+				margin-top: 0;
+				margin-left: 10px;
+				width: 100%;
+				justify-content: flex-end;
+			}
+
+			#audioCheckboxes label {
+				margin-right: 10px;
+				margin-bottom: 0;
+			}
+
+			#repeatSelect {
+				width: 100%;
+				margin-bottom: 10px;
+			}
 		}
 	</style>
 </head>
@@ -709,9 +736,6 @@
 				<option value="10">Repeat 10x</option>
 				<option value="15">Repeat 15x</option>
 			</select>
-			<div id="audioCheckboxes" style="float: right; margin-left: 10px;">
-				<!-- Checkboxes will be added here dynamically -->
-			</div>
 		</div>
 		<div class="buttons">
 			<!-- New dropdown with search box inside -->
@@ -734,6 +758,7 @@
 				data-tooltip="Repeat Mode"></button>
 			<button class="translate-btn" onclick="translatePage()" aria-label="Translate to English"
 				data-tooltip="Translate to English">🌍</button>
+			<div id="audioCheckboxes"></div>
 		</div>
 	</header>
 	<br>
