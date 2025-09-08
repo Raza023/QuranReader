@@ -847,11 +847,11 @@
 			<button class="text-resize" onclick="changeFontSize(-1)" aria-label="Decrease Font Size"
 				data-tooltip="Decrease text">A-</button>
 			<button class="toggle-view" onclick="toggleViewMode()" aria-label="Toggle View Mode"
-				data-tooltip="Switch between Surah/Juzz view">📖</button>
+				data-tooltip="Switch to Juzz View">📖</button>
 			<button class="translate-btn" onclick="translatePage()" aria-label="Switch to English"
 				data-tooltip="Switch to English">🌍</button>
-			<button class="toggle-theme" onclick="toggleTheme()" aria-label="Toggle Theme"
-				data-tooltip="Light / Dark mode">🌓</button>
+			<button id="toggle-theme-view" class="toggle-theme" onclick="toggleTheme()" aria-label="Toggle Theme"
+				data-tooltip="Light mode">🌓</button>
 			<button id="repeatSurahBtn" class="toggle-theme" aria-label="Repeat Surah Mode"
 				data-tooltip="Repeat Mode"></button>
 			<div id="audioCheckboxes"></div>
@@ -1091,16 +1091,26 @@
 				renderJuzzPage(j, currentAyatList);
 			}
 		}
-
-
+		// Theme toggle
 		function toggleTheme() {
 			document.body.classList.toggle('dark');
+			const isDark = document.body.classList.contains('dark');
+			const btn = document.getElementById('toggle-theme-view');
+			if (btn) {
+				btn.setAttribute('data-tooltip', isDark ? 'Light mode' : 'Dark mode');
+				btn.setAttribute('aria-label', isDark ? 'Light mode' : 'Dark mode');
+			} else {
+				console.warn("Toggle theme button not found");
+			}
 		}
 		function toggleViewMode() {
 			document.getElementById("surahSearch").value = ""; // Clear the search input
+			const toggleBtn = document.querySelector('.toggle-view');
 			if (currentViewMode === 'surah') {
 				currentViewMode = 'juzz';
-				document.querySelector('.toggle-view').textContent = '📚';
+				toggleBtn.textContent = '📚';
+				toggleBtn.setAttribute('data-tooltip', 'Switch to Surah View');
+				toggleBtn.setAttribute('aria-label', 'Switch to Surah View');
 				document.getElementById("surahSearch").placeholder = "Search Juzz..."; // Update placeholder
 				loadJuzzList();
 				// Check for saved juzz state
@@ -1110,7 +1120,9 @@
 				}
 			} else {
 				currentViewMode = 'surah';
-				document.querySelector('.toggle-view').textContent = '📖';
+				toggleBtn.textContent = '📖';
+				toggleBtn.setAttribute('data-tooltip', 'Switch to Juzz View');
+				toggleBtn.setAttribute('aria-label', 'Switch to Juzz View');
 				document.getElementById("surahSearch").placeholder = "Search Surah..."; // Reset placeholder
 				loadSurahList();
 				// Restore last surah view state if available
