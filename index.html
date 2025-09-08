@@ -808,6 +808,12 @@
 				height: 10px;
 			}
 		}
+
+		@media (max-width: 767px) {
+			button[data-tooltip]::after {
+				display: none !important;
+			}
+		}
 	</style>
 </head>
 
@@ -840,14 +846,14 @@
 				data-tooltip="Increase text">A+</button>
 			<button class="text-resize" onclick="changeFontSize(-1)" aria-label="Decrease Font Size"
 				data-tooltip="Decrease text">A-</button>
-			<button class="toggle-theme" onclick="toggleTheme()" aria-label="Toggle Theme"
-				data-tooltip="Light / Dark mode">🌓</button>
 			<button class="toggle-view" onclick="toggleViewMode()" aria-label="Toggle View Mode"
 				data-tooltip="Switch between Surah/Juzz view">📖</button>
+			<button class="translate-btn" onclick="translatePage()" aria-label="Switch to English"
+				data-tooltip="Switch to English">🌍</button>
+			<button class="toggle-theme" onclick="toggleTheme()" aria-label="Toggle Theme"
+				data-tooltip="Light / Dark mode">🌓</button>
 			<button id="repeatSurahBtn" class="toggle-theme" aria-label="Repeat Surah Mode"
 				data-tooltip="Repeat Mode"></button>
-			<button class="translate-btn" onclick="translatePage()" aria-label="Translate to English"
-				data-tooltip="Translate to English">🌍</button>
 			<div id="audioCheckboxes"></div>
 		</div>
 	</header>
@@ -1033,7 +1039,7 @@
 			// update button tooltip / aria
 			const btn = document.querySelector('.translate-btn');
 			if (btn) {
-				btn.setAttribute('data-tooltip', currentLanguage === 'en' ? 'Switch to Urdu' : 'Translate to English');
+				btn.setAttribute('data-tooltip', currentLanguage === 'en' ? 'Switch to Urdu' : 'Switch to English');
 				btn.setAttribute('aria-label', currentLanguage === 'en' ? 'English mode' : 'Urdu mode');
 			}
 			// update body class for CSS direction/styling
