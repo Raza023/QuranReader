@@ -664,6 +664,33 @@
 		body.dark button.translate-btn:hover {
 			background: var(--accent-hover);
 		}
+
+		/* Add this to the existing CSS */
+		#audioCheckboxes {
+			display: flex;
+			align-items: center;
+			margin-right: 10px;
+			float: right;
+		}
+
+		#audioCheckboxes label {
+			display: flex;
+			align-items: center;
+			margin-right: 10px;
+			color: white;
+			font-size: 0.9rem;
+			font-weight: 500;
+		}
+
+		#audioCheckboxes input[type="checkbox"] {
+			margin-right: 5px;
+			cursor: pointer;
+		}
+
+		/* Dark mode adjustments */
+		body.dark #audioCheckboxes label {
+			color: white;
+		}
 	</style>
 </head>
 
@@ -682,6 +709,9 @@
 				<option value="10">Repeat 10x</option>
 				<option value="15">Repeat 15x</option>
 			</select>
+			<div id="audioCheckboxes" style="float: right; margin-left: 10px;">
+				<!-- Checkboxes will be added here dynamically -->
+			</div>
 		</div>
 		<div class="buttons">
 			<!-- New dropdown with search box inside -->
@@ -758,7 +788,92 @@
 				repeatCount = parseInt(e.target.value) || 1;
 				repeatProgress = {}; // reset
 			});
+			// Add our audio checkboxes
+			updateAudioCheckboxes();
+
+			// Call updateAudioCheckboxes whenever language changes
+			const translateBtn = document.querySelector('.translate-btn');
+			if (translateBtn) {
+				const originalOnClick = translateBtn.onclick;
+				translateBtn.onclick = function () {
+					originalOnClick.call(this);
+					updateAudioCheckboxes();
+				};
+			}
 		});
+
+		// Add this new function
+		function updateAudioCheckboxes() {
+			const container = document.getElementById('audioCheckboxes');
+			if (!container) return;
+
+			container.innerHTML = '';
+
+			// Create Arabic checkbox (always shown)
+			const arabicCheck = document.createElement('label');
+			arabicCheck.style.marginLeft = '10px';
+			arabicCheck.style.display = 'flex';
+			arabicCheck.style.alignItems = 'center';
+			arabicCheck.innerHTML = `
+                <input type="checkbox" id="arabicAudioCheck" checked>
+                <span style="margin-left: 5px;">Arabic</span>
+            `;
+			container.appendChild(arabicCheck);
+
+			// Create translation checkbox based on language
+			const transCheck = document.createElement('label');
+			transCheck.style.marginLeft = '10px';
+			transCheck.style.display = 'flex';
+			transCheck.style.alignItems = 'center';
+
+			if (currentLanguage === 'en') {
+				transCheck.innerHTML = `
+                    <input type="checkbox" id="translationAudioCheck">
+                    <span style="margin-left: 5px;">English</span>
+                `;
+			} else {
+				transCheck.innerHTML = `
+                    <input type="checkbox" id="translationAudioCheck">
+                    <span style="margin-left: 5px;">Urdu</span>
+                `;
+			}
+			container.appendChild(transCheck);
+
+			// Add event listeners
+			if (document.getElementById('arabicAudioCheck')) {
+				document.getElementById('arabicAudioCheck').addEventListener('change', saveAudioCheckboxState);
+			}
+			if (document.getElementById('translationAudioCheck')) {
+				document.getElementById('translationAudioCheck').addEventListener('change', saveAudioCheckboxState);
+			}
+
+			// Load saved state
+			loadAudioCheckboxState();
+		}
+
+		function saveAudioCheckboxState() {
+			const state = {
+				arabic: document.getElementById('arabicAudioCheck')?.checked ?? true,
+				translation: document.getElementById('translationAudioCheck')?.checked ?? false,
+				language: currentLanguage
+			};
+			localStorage.setItem('audioCheckboxState', JSON.stringify(state));
+		}
+
+		function loadAudioCheckboxState() {
+			const savedState = localStorage.getItem('audioCheckboxState');
+			if (savedState) {
+				const state = JSON.parse(savedState);
+				if (state.language === currentLanguage) {
+					if (document.getElementById('arabicAudioCheck')) {
+						document.getElementById('arabicAudioCheck').checked = state.arabic !== false;
+					}
+					if (document.getElementById('translationAudioCheck')) {
+						document.getElementById('translationAudioCheck').checked = state.translation !== false;
+					}
+				}
+			}
+		}
 
 		// --- more-robust helper: pick verse element with largest intersection with viewport ---
 		function getCurrentVisibleVerse() {
@@ -1033,6 +1148,12 @@
 				}
 				renderPage(meta, verseToScroll);
 				localStorage.setItem('lastRead', JSON.stringify({ surah: number, verse: verseToScroll || 1 }));
+
+				// Reset intro audio state
+				const introAudio = document.getElementById("intro-audio");
+				if (introAudio) {
+					introAudio.removeAttribute('data-played');
+				}
 			}, 350);
 		}
 		function loadJuzz(juzzIndex) {
@@ -1099,6 +1220,12 @@
 				verse: ayat[0].split(':')[1],
 				surah: ayat[0].split(':')[0]
 			}));
+
+			// Reset intro audio state
+			const introAudio = document.getElementById("intro-audio");
+			if (introAudio) {
+				introAudio.removeAttribute('data-played');
+			}
 		}
 		// Helper: smooth scroll with offset
 		function scrollWithOffset(el, offset) {
@@ -1472,13 +1599,37 @@
 		}
 		// === UPDATED: handle play ===
 		function handleAudioPlay(audioEl, type, surahNum = null) {
+			// Check if this audio type is enabled
+			const isTranslationAudio = type !== "arabic";
+			const checkboxId = isTranslationAudio ? "translationAudioCheck" : "arabicAudioCheck";
+			const checkbox = document.getElementById(checkboxId);
+
+			if (checkbox && !checkbox.checked) {
+				// Audio type is disabled - don't play and skip to next
+				audioEl.pause();
+				// Find the current audio's info to determine what to play next
+				let ayahNum, currentSurahNum;
+				if (currentViewMode === 'juzz') {
+					const idParts = audioEl.id.split('-');
+					currentSurahNum = parseInt(idParts[2]);
+					ayahNum = parseInt(idParts[3]);
+				} else {
+					currentSurahNum = parseInt(currentSurah);
+					ayahNum = parseInt(audioEl.id.split('-')[2]);
+				}
+
+				// Skip to the next appropriate audio
+				playNext(type, ayahNum, currentSurahNum);
+				return;
+			}
+
 			if (currentPlayingAudio && currentPlayingAudio !== audioEl) {
 				currentPlayingAudio.pause();
 				currentPlayingAudio.currentTime = 0;
 			}
 
 			// Play intro audio only once at the start of each surah playback
-			if (type === "arabic") {
+			if (type === "arabic" || (type === "urdu" && !document.getElementById('arabicAudioCheck').checked) || (type === "english" && !document.getElementById('arabicAudioCheck').checked)) {
 				let ayahNum, currentSurahNum;
 				if (currentViewMode === 'juzz') {
 					const idParts = audioEl.id.split('-'); // audio-ar-{surahNum}-{ayahNum}
@@ -1515,8 +1666,10 @@
 				if (currentViewMode === 'juzz') {
 					const idParts = audioEl.id.split('-');
 					ayahNum = idParts[idParts.length - 1];
+					currentSurahNum = idParts[2];
 				} else {
 					ayahNum = audioEl.id.split('-')[2];
+					currentSurahNum = currentSurah;
 				}
 				const meta = currentViewMode === 'surah'
 					? surahmeta.Surahs.find(s => s.number === parseInt(currentSurah))
@@ -1527,6 +1680,10 @@
 
 		// === UPDATED: sequence logic with repeat + pagination + surah modes ===
 		function playNext(type, currentAyahNum, currentSurahNum = null) {
+			// Get current checkbox states
+			const arabicEnabled = document.getElementById('arabicAudioCheck')?.checked ?? true;
+			const translationEnabled = document.getElementById('translationAudioCheck')?.checked ?? false;
+
 			if (currentViewMode === 'juzz') {
 				// Juzz view handling
 				let currentKey;
@@ -1538,13 +1695,35 @@
 				}
 				const currentIndex = currentAyatList.findIndex(k => k === currentKey);
 				if (currentIndex === -1) return;
+
 				// Get or initialize repeat tracking for this verse
 				if (!repeatProgress[currentKey]) repeatProgress[currentKey] = 1;
 				let currentRepeat = repeatProgress[currentKey];
 				let nextAudio = null;
+
+				// Determine what should play next based on current type and checkbox states
 				if (type === "arabic") {
-					nextAudio = document.getElementById(`audio-ur-${currentSurahNum}-${currentAyahNum}`);
-				} else if (type === "urdu") {
+					if (translationEnabled) {
+						// Play Urdu/English if enabled
+						nextAudio = document.getElementById(`audio-ur-${currentSurahNum}-${currentAyahNum}`);
+					} else {
+						// Skip to next Arabic verse if translation is disabled
+						// But first check if we need to repeat this verse
+						if (currentRepeat < repeatCount) {
+							repeatProgress[currentKey]++;
+							nextAudio = document.getElementById(`audio-ar-${currentSurahNum}-${currentAyahNum}`);
+						} else {
+							// Move to next verse's Arabic
+							repeatProgress[currentKey] = 1;
+							const nextAyahIndex = currentIndex + 1;
+							if (nextAyahIndex < currentAyatList.length) {
+								const nextKey = currentAyatList[nextAyahIndex];
+								const [nextSurahNum, nextAyahNum] = nextKey.split(':');
+								nextAudio = document.getElementById(`audio-ar-${nextSurahNum}-${nextAyahNum}`);
+							}
+						}
+					}
+				} else if (type === "urdu" || type === "english") {
 					if (currentRepeat < repeatCount) {
 						// Increment repeat count and play arabic again
 						repeatProgress[currentKey]++;
@@ -1557,57 +1736,118 @@
 							const nextKey = currentAyatList[nextAyahIndex];
 							const [nextSurahNum, nextAyahNum] = nextKey.split(':');
 							nextAudio = document.getElementById(`audio-ar-${nextSurahNum}-${nextAyahNum}`);
-							// Check if we need to load next page
-							if (nextAyahIndex >= currentPage * ayatPerPage) {
-								currentPage++;
-								const juzz = juzzmeta.find(j => j.index === currentJuzz);
-								renderJuzzPage(juzz, currentAyatList);
-								setTimeout(() => {
-									nextAudio = document.getElementById(`audio-ar-${nextSurahNum}-${nextAyahNum}`);
-									if (nextAudio) nextAudio.play();
-								}, 500);
-								return;
-							}
-						} else {
-							// End of juzz - handle based on mode
-							if (currentSurahMode === 0) {
-								// Repeat same juzz
-								loadJuzz(currentJuzz);
-								setTimeout(() => {
-									const firstAudio = document.getElementById(`audio-ar-${currentAyatList[0].split(':')[0]}-${currentAyatList[0].split(':')[1]}`);
-									if (firstAudio) firstAudio.play();
-								}, 600);
-								return;
-							} else if (currentSurahMode === 1) {
-								// Continue to next juzz
-								const nextJuzzIndex = parseInt(currentJuzz) + 1;
-								if (nextJuzzIndex <= 30) {
-									loadJuzz(String(nextJuzzIndex).padStart(2, '0'));
-									setTimeout(() => {
-										const firstAudio = document.getElementById(`audio-ar-${currentAyatList[0].split(':')[0]}-${currentAyatList[0].split(':')[1]}`);
-										if (firstAudio) firstAudio.play();
-									}, 600);
-									return;
-								}
-							}
-							// Default: stop at end of juzz
-							return;
 						}
 					}
 				}
+
+				// Handle pagination if needed
+				if (!nextAudio && currentIndex + 1 < currentAyatList.length) {
+					// Check if we need to load next page
+					const nextAyahIndex = currentIndex + 1;
+					if (nextAyahIndex >= currentPage * ayatPerPage) {
+						currentPage++;
+						const juzz = juzzmeta.find(j => j.index === currentJuzz);
+						renderJuzzPage(juzz, currentAyatList);
+						setTimeout(() => {
+							const nextKey = currentAyatList[nextAyahIndex];
+							const [nextSurahNum, nextAyahNum] = nextKey.split(':');
+							nextAudio = document.getElementById(`audio-ar-${nextSurahNum}-${nextAyahNum}`);
+							if (nextAudio) nextAudio.play();
+						}, 500);
+						return;
+					}
+				}
+
+				// Handle end of juzz
+				if (!nextAudio) {
+					if (currentSurahMode === 0) {
+						// Repeat same juzz
+						loadJuzz(currentJuzz);
+						setTimeout(() => {
+							const firstAudio = document.getElementById(`audio-ar-${currentAyatList[0].split(':')[0]}-${currentAyatList[0].split(':')[1]}`);
+							if (firstAudio) firstAudio.play();
+						}, 600);
+						return;
+					} else if (currentSurahMode === 1) {
+						// Continue to next juzz
+						const nextJuzzIndex = parseInt(currentJuzz) + 1;
+						if (nextJuzzIndex <= 30) {
+							loadJuzz(String(nextJuzzIndex).padStart(2, '0'));
+							setTimeout(() => {
+								const firstAudio = document.getElementById(`audio-ar-${currentAyatList[0].split(':')[0]}-${currentAyatList[0].split(':')[1]}`);
+								if (firstAudio) firstAudio.play();
+							}, 600);
+							return;
+						}
+					}
+					// Default: stop at end of juzz
+					return;
+				}
+
 				if (nextAudio) {
 					nextAudio.play();
 					scrollWithOffset(nextAudio.closest('.verse'), 120);
 				}
 			} else {
-				// Original surah view logic
+				// Original surah view logic with audio checkbox support
+				const arabicEnabled = document.getElementById('arabicAudioCheck')?.checked ?? true;
+				const translationEnabled = document.getElementById('translationAudioCheck')?.checked ?? false;
+
 				if (!repeatProgress[currentSurah]) repeatProgress[currentSurah] = {};
 				if (!repeatProgress[currentSurah][currentAyahNum]) repeatProgress[currentSurah][currentAyahNum] = 1;
 				let currentRepeat = repeatProgress[currentSurah][currentAyahNum];
 				let nextAudio = null;
+
 				if (type === "arabic") {
-					nextAudio = document.getElementById(`audio-ur-${currentAyahNum}`);
-				} else if (type === "urdu") {
+					if (translationEnabled) {
+						nextAudio = document.getElementById(`audio-ur-${currentAyahNum}`);
+					} else {
+						if (currentRepeat < repeatCount) {
+							repeatProgress[currentSurah][currentAyahNum]++;
+							nextAudio = document.getElementById(`audio-ar-${currentAyahNum}`);
+						} else {
+							repeatProgress[currentSurah][currentAyahNum] = 1;
+							const nextAyahNum = currentAyahNum + 1;
+							nextAudio = document.getElementById(`audio-ar-${nextAyahNum}`);
+							if (!nextAudio) {
+								const ayahIndex = currentAyatList.findIndex(k => parseInt(k.split(':')[1]) === parseInt(currentAyahNum));
+								if (ayahIndex >= 0 && ayahIndex + 1 < currentAyatList.length) {
+									const nextAyahKey = currentAyatList[ayahIndex + 1];
+									const nextNum = parseInt(nextAyahKey.split(':')[1]);
+									const meta = surahmeta.Surahs.find(s => s.number === parseInt(currentSurah));
+									currentPage = Math.ceil((ayahIndex + 2) / ayatPerPage);
+									renderPage(meta, nextNum);
+									setTimeout(() => {
+										const el = document.getElementById(`audio-ar-${nextNum}`);
+										if (el) el.play();
+									}, 500);
+									return;
+								} else {
+									if (currentSurahMode === 0) {
+										loadSurah(currentSurah, 1);
+										setTimeout(() => {
+											const firstAudio = document.getElementById("audio-ar-1");
+											if (firstAudio) firstAudio.play();
+										}, 600);
+										return;
+									} else if (currentSurahMode === 1) {
+										const nextSurah = parseInt(currentSurah) + 1;
+										const metaNext = surahmeta.Surahs.find(s => s.number === nextSurah);
+										if (metaNext) {
+											loadSurah(nextSurah, 1);
+											setTimeout(() => {
+												const firstAudio = document.getElementById("audio-ar-1");
+												if (firstAudio) firstAudio.play();
+											}, 600);
+											return;
+										}
+									}
+									return;
+								}
+							}
+						}
+					}
+				} else if (type === "urdu" || type === "english") {
 					if (currentRepeat < repeatCount) {
 						repeatProgress[currentSurah][currentAyahNum]++;
 						nextAudio = document.getElementById(`audio-ar-${currentAyahNum}`);
@@ -1629,6 +1869,7 @@
 								}, 500);
 								return;
 							} else {
+								// Handle end of surah
 								if (currentSurahMode === 0) {
 									loadSurah(currentSurah, 1);
 									setTimeout(() => {
