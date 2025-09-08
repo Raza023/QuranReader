@@ -672,56 +672,139 @@
 		}
 
 		/* Add these to the existing styles */
-		.audio-controls {
-			display: flex;
-			flex-direction: column;
-			align-items: flex-end;
-			margin-left: 10px;
-		}
-
+		/* Custom Checkbox Styling */
 		#audioCheckboxes {
 			display: flex;
 			align-items: center;
-			margin-top: 5px;
 			flex-wrap: wrap;
+			justify-content: flex-end;
+			gap: 8px;
+			margin-top: 5px;
 		}
 
-		#audioCheckboxes label {
+		.custom-checkbox {
+			position: relative;
 			display: flex;
 			align-items: center;
-			margin-right: 10px;
-			color: white;
-			font-size: 0.9rem;
-			font-weight: 500;
-			margin-bottom: 5px;
+			margin-right: 12px;
+			cursor: pointer;
+			transition: transform 0.2s ease;
 		}
 
+		.custom-checkbox:hover {
+			transform: scale(1.05);
+		}
+
+		.custom-checkbox input {
+			position: absolute;
+			opacity: 0;
+			cursor: pointer;
+			width: 0;
+			height: 0;
+		}
+
+		.checkmark {
+			position: relative;
+			width: 18px;
+			height: 18px;
+			background-color: #eee;
+			border-radius: 4px;
+			transition: all 0.2s ease;
+			border: 1px solid rgba(0, 0, 0, 0.1);
+			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+			margin-right: 6px;
+		}
+
+		body.dark .checkmark {
+			background-color: #333;
+			border-color: rgba(255, 255, 255, 0.1);
+			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+		}
+
+		.custom-checkbox:hover input~.checkmark {
+			background-color: #ddd;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+		}
+
+		body.dark .custom-checkbox:hover input~.checkmark {
+			background-color: #444;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+		}
+
+		.custom-checkbox input:checked~.checkmark {
+			background-color: var(--accent-light);
+			border-color: transparent;
+			box-shadow: 0 2px 5px rgba(59, 130, 246, 0.3);
+		}
+
+		body.dark .custom-checkbox input:checked~.checkmark {
+			background-color: var(--accent);
+			box-shadow: 0 2px 5px rgba(59, 130, 246, 0.3);
+		}
+
+		.custom-checkbox .checkmark:after {
+			content: "";
+			position: absolute;
+			display: none;
+			left: 6px;
+			top: 2px;
+			width: 6px;
+			height: 12px;
+			border: solid white;
+			border-width: 0 2px 2px 0;
+			transform: rotate(45deg);
+		}
+
+		.custom-checkbox input:checked~.checkmark:after {
+			display: block;
+		}
+
+		.custom-checkbox label {
+			display: flex;
+			align-items: center;
+			cursor: pointer;
+			font-size: 0.9rem;
+			font-weight: 500;
+			transition: all 0.2s ease;
+		}
+
+		body:not(.dark) .custom-checkbox label {
+			color: #3b2f2f;
+		}
+
+		.custom-checkbox label:hover {
+			color: var(--accent);
+		}
+
+		/* Responsive adjustments */
 		@media (max-width: 767px) {
-			.audio-controls {
-				flex-direction: row;
-				align-items: center;
-				flex-wrap: wrap;
-				justify-content: flex-end;
-				margin-left: 0;
-				width: 100%;
-			}
-
 			#audioCheckboxes {
-				flex-direction: row;
-				margin-top: 0;
-				margin-left: 10px;
 				width: 100%;
 				justify-content: flex-end;
+				margin-top: 8px;
 			}
 
-			#audioCheckboxes label {
-				margin-right: 10px;
-				margin-bottom: 0;
+			.custom-checkbox {
+				margin-right: 8px;
+				margin-bottom: 8px;
+			}
+		}
+
+		@media (max-width: 480px) {
+			.custom-checkbox label {
+				font-size: 0.8rem;
 			}
 
-			#repeatSelect {
-				width: 100%;
-				margin-bottom: 10px;
+			.checkmark {
+				width: 16px;
+				height: 16px;
+			}
+
+			.custom-checkbox .checkmark:after {
+				left: 5px;
+				top: 1px;
+				width: 5px;
+				height: 10px;
 			}
 		}
 	</style>
@@ -837,45 +920,44 @@
 		function updateAudioCheckboxes() {
 			const container = document.getElementById('audioCheckboxes');
 			if (!container) return;
-
 			container.innerHTML = '';
 
 			// Create Arabic checkbox (always shown)
-			const arabicCheck = document.createElement('label');
-			arabicCheck.style.marginLeft = '10px';
-			arabicCheck.style.display = 'flex';
-			arabicCheck.style.alignItems = 'center';
-			arabicCheck.innerHTML = `
-                <input type="checkbox" id="arabicAudioCheck" checked>
-                <span style="margin-left: 5px;">Arabic</span>
-            `;
-			container.appendChild(arabicCheck);
+			const arabicLabel = document.createElement('label');
+			arabicLabel.className = 'custom-checkbox';
+			arabicLabel.innerHTML = `
+				<input type="checkbox" id="arabicAudioCheck" checked>
+				<span class="checkmark"></span>
+				<span style="margin-left: 5px;">Arabic</span>
+			`;
+			container.appendChild(arabicLabel);
 
 			// Create translation checkbox based on language
-			const transCheck = document.createElement('label');
-			transCheck.style.marginLeft = '10px';
-			transCheck.style.display = 'flex';
-			transCheck.style.alignItems = 'center';
-
+			const transLabel = document.createElement('label');
+			transLabel.className = 'custom-checkbox';
 			if (currentLanguage === 'en') {
-				transCheck.innerHTML = `
-                    <input type="checkbox" id="translationAudioCheck">
-                    <span style="margin-left: 5px;">English</span>
-                `;
+				transLabel.innerHTML = `
+					<input type="checkbox" id="translationAudioCheck">
+					<span class="checkmark"></span>
+					<span style="margin-left: 5px;">English</span>
+				`;
 			} else {
-				transCheck.innerHTML = `
-                    <input type="checkbox" id="translationAudioCheck">
-                    <span style="margin-left: 5px;">Urdu</span>
-                `;
+				transLabel.innerHTML = `
+					<input type="checkbox" id="translationAudioCheck">
+					<span class="checkmark"></span>
+					<span style="margin-left: 5px;">Urdu</span>
+				`;
 			}
-			container.appendChild(transCheck);
+			container.appendChild(transLabel);
 
 			// Add event listeners
-			if (document.getElementById('arabicAudioCheck')) {
-				document.getElementById('arabicAudioCheck').addEventListener('change', saveAudioCheckboxState);
+			const arabicCheckbox = document.getElementById('arabicAudioCheck');
+			if (arabicCheckbox) {
+				arabicCheckbox.addEventListener('change', saveAudioCheckboxState);
 			}
-			if (document.getElementById('translationAudioCheck')) {
-				document.getElementById('translationAudioCheck').addEventListener('change', saveAudioCheckboxState);
+			const transCheckbox = document.getElementById('translationAudioCheck');
+			if (transCheckbox) {
+				transCheckbox.addEventListener('change', saveAudioCheckboxState);
 			}
 
 			// Load saved state
