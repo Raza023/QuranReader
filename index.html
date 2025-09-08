@@ -1252,10 +1252,20 @@
 				introAudio.removeAttribute('data-played');
 			}
 		}
+
+		// Add this helper function to detect mobile devices
+		function isMobileDevice() {
+			return window.innerWidth <= 767; // Matches the CSS breakpoint
+		}
 		// Helper: smooth scroll with offset
-		function scrollWithOffset(el, offset) {
+		// Update the scrollWithOffset function to add extra offset on mobile
+		function scrollWithOffset(el, baseOffset) {
+			// Add additional offset for mobile devices
+			const mobileOffset = isMobileDevice() ? 110 : 0; // Add 80px extra on mobile
+			const finalOffset = baseOffset + mobileOffset;
+
 			const elementPosition = el.getBoundingClientRect().top + window.scrollY;
-			window.scrollTo({ top: elementPosition - offset, behavior: 'smooth' });
+			window.scrollTo({ top: elementPosition - finalOffset, behavior: 'smooth' });
 		}
 		function renderPage(meta, scrollToVerse = null) {
 			const start = (currentPage - 1) * ayatPerPage;
