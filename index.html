@@ -440,6 +440,7 @@
 		/* Tooltip styling for header buttons */
 		button[data-tooltip] {
 			position: relative;
+			z-index: 50001;
 		}
 
 		button[data-tooltip]::after {
@@ -747,8 +748,8 @@
 			position: absolute;
 			display: none;
 			left: 6px;
-			top: 2px;
-			width: 6px;
+			top: 1px;
+			width: 4px;
 			height: 12px;
 			border: solid white;
 			border-width: 0 2px 2px 0;
@@ -801,9 +802,9 @@
 			}
 
 			.custom-checkbox .checkmark:after {
-				left: 5px;
+				left: 6px;
 				top: 1px;
-				width: 5px;
+				width: 4px;
 				height: 10px;
 			}
 		}
