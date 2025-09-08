@@ -923,6 +923,41 @@
 			}
 		});
 
+		function applyAudioVisibility() {
+			const arabicEnabled = document.getElementById('arabicAudioCheck')?.checked ?? true;
+			const transEnabled = document.getElementById('translationAudioCheck')?.checked ?? false;
+
+			// Arabic players
+			document.querySelectorAll("audio[id^='audio-ar-']").forEach(el => {
+				el.style.display = arabicEnabled ? "block" : "none";
+			});
+
+			// Translation players
+			document.querySelectorAll("audio[id^='audio-ur-']").forEach(el => {
+				el.style.display = transEnabled ? "block" : "none";
+			});
+
+			// If both disabled → stop any playing audio
+			if (!arabicEnabled && !transEnabled) {
+				document.querySelectorAll("audio").forEach(el => {
+					if (!el.paused) el.pause();
+				});
+				currentPlayingAudio = null; // reset your tracker
+			}
+		}
+
+		// Also apply when language changes or page loads
+		document.addEventListener("DOMContentLoaded", () => {
+			applyAudioVisibility();
+		});
+
+		// After updateAudioCheckboxes runs, call visibility update too
+		const origUpdateAudioCheckboxes = updateAudioCheckboxes;
+		updateAudioCheckboxes = function () {
+			origUpdateAudioCheckboxes();
+			applyAudioVisibility();
+		};
+
 		// Add this new function
 		function updateAudioCheckboxes() {
 			const container = document.getElementById('audioCheckboxes');
@@ -978,6 +1013,7 @@
 				language: currentLanguage
 			};
 			localStorage.setItem('audioCheckboxState', JSON.stringify(state));
+			applyAudioVisibility(); // apply immediately
 		}
 
 		function loadAudioCheckboxState() {
@@ -1511,6 +1547,7 @@
 					if (el) scrollWithOffset(el, 200);
 				}, 200);
 			}
+			applyAudioVisibility();
 		}
 		function renderJuzzPage(juzz, ayatList) {
 			const start = (currentPage - 1) * ayatPerPage;
@@ -1661,6 +1698,7 @@
 					if (el) scrollWithOffset(el, 200);
 				}, 200);
 			}
+			applyAudioVisibility();
 		}
 		function prevPage() {
 			currentPage--;
