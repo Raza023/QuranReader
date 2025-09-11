@@ -106,7 +106,13 @@ Licensed under the **MIT License**. See [LICENSE](LICENSE).
 ## 🙏 Acknowledgments
 
 * **Quran Text & Translations** – Authentic Islamic resources
-* **Audio Recitations** – Professional Qaris
+1. Urdu Translation by "Allama Sheikh Mohsin Ali Najfi"
+2. Word-By-Word Urdu Translation by "Hafiz Nazar Ahmed"
+3. English Translation: Saheeh International translation of the Quran was produced by three American women who converted to Islam: "Umm Muhammad" (Emily Assami), "Mary Kennedy", and "Amatullah Bantley"
+4. Word-By-Word English is also for  Saheeh International.
+* **Audio Recitations** – Professional Qaris (, Urdu Recitation By Hussain Shaheed Mirza)
+1. Arabic Recitation by "Mishary Rashid Alafasy"
+2. Urdu Recitation By "Hussain Shaheed Mirza"
 * **Fonts** – Indopak Nastaleeq, Noto Nastaliq Urdu
 
 ---
