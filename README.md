@@ -105,15 +105,19 @@ Licensed under the **MIT License**. See [LICENSE](LICENSE).
 
 ## 🙏 Acknowledgments
 
-* **Quran Text & Translations** – Authentic Islamic resources
-1. Urdu Translation by "Allama Sheikh Mohsin Ali Najfi"
-2. Word-By-Word Urdu Translation by "Hafiz Nazar Ahmed"
-3. English Translation: Saheeh International translation of the Quran was produced by three American women who converted to Islam: "Umm Muhammad" (Emily Assami), "Mary Kennedy", and "Amatullah Bantley"
-4. Word-By-Word English is also for  Saheeh International.
-* **Audio Recitations** – Professional Qaris (, Urdu Recitation By Hussain Shaheed Mirza)
-1. Arabic Recitation by "Mishary Rashid Alafasy"
-2. Urdu Recitation By "Hussain Shaheed Mirza"
-* **Fonts** – Indopak Nastaleeq, Noto Nastaliq Urdu
+### 📖 Quran Text & Translations
+* **Urdu Translation** – by *Allama Sheikh Mohsin Ali Najfi*
+* **Word-By-Word Urdu** – by *Hafiz Nazar Ahmed*
+* **English Translation (Saheeh International)** – produced by three American Muslim women: *Umm Muhammad (Emily Assami)*, *Mary Kennedy*, and *Amatullah Bantley*
+* **Word-By-Word English** – based on *Saheeh International*
+
+### 🎙️ Audio Recitations
+* **Arabic Recitation** – by *Mishary Rashid Alafasy*
+* **Urdu Recitation** – by *Hussain Shaheed Mirza*
+
+### ✍️ Fonts
+* **Indopak Nastaleeq** (for Arabic)
+* **Noto Nastaliq Urdu** (for Urdu)
 
 ---
 
