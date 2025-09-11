@@ -57,7 +57,7 @@
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/quran-majeed.git
+git clone https://github.com/Raza023/QuranReader.git
 
 # Open in browser
 cd quran-majeed
