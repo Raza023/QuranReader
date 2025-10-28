@@ -2360,7 +2360,84 @@
 				}
 			});
 		})();
+		window.addEventListener('load', function () {
+			// Create overlay background
+			const overlay = document.createElement('div');
+			overlay.style.position = 'fixed';
+			overlay.style.top = 0;
+			overlay.style.left = 0;
+			overlay.style.width = '100%';
+			overlay.style.height = '100%';
+			overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+			overlay.style.display = 'flex';
+			overlay.style.justifyContent = 'center';
+			overlay.style.alignItems = 'center';
+			overlay.style.zIndex = '9999';
 
+			// Create popup box
+			const popup = document.createElement('div');
+			popup.style.background = '#fff';
+			popup.style.padding = '25px 30px';
+			popup.style.borderRadius = '12px';
+			popup.style.maxWidth = '600px';
+			popup.style.width = '90%';
+			popup.style.textAlign = 'left';
+			popup.style.lineHeight = '1.6';
+			popup.style.fontFamily = 'Arial, sans-serif';
+			popup.style.color = '#333';
+			popup.style.boxShadow = '0 0 15px rgba(0,0,0,0.3)';
+			popup.style.overflowY = 'auto';
+			popup.style.maxHeight = '80vh';
+
+			// Popup message
+			popup.innerHTML = `
+			<h2 style="text-align:center; margin-bottom: 10px;">Acknowledgements & Credits</h2>
+			<p>
+				I respectfully acknowledge the following sources for the Quranic content used in this website:
+			</p>
+			<ul style="margin-left: 20px;">
+				<li>Arabic text: <a href="https://qul.tarteel.ai/resources/quran-script" target="_blank">Qul Tarteel</a></li>
+				<li>Urdu text & audio: <a href="https://www.balaghulquran.com/" target="_blank">Balagh-ul-Quran</a></li>
+				<li>Urdu word-by-word text: <a href="https://equranlibrary.com/wordbyword/nazar/maududi/1/1" target="_blank">eQuran Library (Hafiz Nazar Ahmed)</a></li>
+				<li>English word-by-word and verses text: <a href="https://equranlibrary.com/wordbyword/1/1" target="_blank">eQuran Library (Sahih International)</a></li>
+				<li>Arabic and English audio verses: <a href="https://everyayah.com/" target="_blank">EveryAyah.com</a></li>
+			</ul>
+
+			<p style="margin-top: 15px;">All respective rights of the Quranic text, translations, and recitations belong to their original sources and contributors.</p>
+
+			<h3 style="margin-top: 20px;">Quran Audio:</h3>
+			<ul style="margin-left: 20px;">
+				<li>Arabic Recitation: Mishari Rashid Al-‘Afasy</li>
+				<li>English Recitation: Ibrahim Walk</li>
+				<li>Urdu Recitation: Hussain Shaheed Mirza</li>
+			</ul>
+
+			<h3 style="margin-top: 20px;">Quran Text:</h3>
+			<ul style="margin-left: 20px;">
+				<li>Arabic Text: Allah S.W.T 🥰</li>
+				<li>Urdu Translation: Sheikh Mohsin Ali Najfi</li>
+				<li>Urdu Word-by-Word: Hafiz Nazar Ahmed</li>
+				<li>English Translation: Sahih International</li>
+			</ul>
+
+			<p style="margin-top: 20px; font-size: 14px; color: #555; text-align:center;">
+				This acknowledgment is made with deep respect and gratitude to all contributors.
+			</p>
+
+			<div style="text-align:center; margin-top: 20px;">
+				<button id="closePopup" style="background:#007BFF; color:#fff; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">Close</button>
+			</div>
+			`;
+
+			// Add popup and overlay to body
+			overlay.appendChild(popup);
+			document.body.appendChild(overlay);
+
+			// Close popup button
+			document.getElementById('closePopup').addEventListener('click', function () {
+				document.body.removeChild(overlay);
+			});
+		});
 	</script>
 </body>
 
