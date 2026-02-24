@@ -812,6 +812,421 @@
 				display: none !important;
 			}
 		}
+
+		/* === BOOKMARK STYLES === */
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 10000;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.6);
+			align-items: center;
+			justify-content: center;
+		}
+
+		.modal.show {
+			display: flex;
+		}
+
+		.modal-content {
+			background: linear-gradient(135deg, #fdfbf7, #f9f4ed);
+			margin: auto;
+			padding: 2.5rem;
+			border-radius: 18px;
+			box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+			max-width: 520px;
+			width: 90%;
+			max-height: 85vh;
+			overflow-y: auto;
+			border: 1px solid rgba(205, 133, 63, 0.15);
+		}
+
+		body.dark .modal-content {
+			background: linear-gradient(135deg, #1e293b, #172031);
+			border: 1px solid rgba(59, 130, 246, 0.15);
+			box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+		}
+
+		.modal-header {
+			font-size: 1.5rem;
+			font-weight: 700;
+			margin-bottom: 1.5rem;
+			color: var(--text-light);
+			padding-bottom: 1rem;
+			border-bottom: 2px solid rgba(205, 133, 63, 0.2);
+		}
+
+		body.dark .modal-header {
+			color: #f0f4f9;
+			border-bottom-color: rgba(59, 130, 246, 0.2);
+		}
+
+		.modal-body {
+			margin: 1.5rem 0;
+		}
+
+		.form-group {
+			margin-bottom: 1.3rem;
+		}
+
+		.form-group label {
+			display: block;
+			margin-bottom: 0.6rem;
+			font-weight: 600;
+			color: var(--text-light);
+			font-size: 0.95rem;
+		}
+
+		body.dark .form-group label {
+			color: #e2e8f0;
+		}
+
+		.form-group input,
+		.form-group textarea {
+			width: 100%;
+			padding: 0.85rem;
+			border: 2px solid #e0c9b1;
+			border-radius: 10px;
+			font-size: 1rem;
+			family-family: inherit;
+			background: white;
+			color: #333;
+			box-sizing: border-box;
+			transition: all 0.2s ease;
+		}
+
+		body.dark .form-group input,
+		body.dark .form-group textarea {
+			background: #0f172a;
+			color: #f9fafb;
+			border-color: #2d3e52;
+		}
+
+		.form-group input:focus,
+		.form-group textarea:focus {
+			outline: none;
+			border-color: var(--accent-light);
+			box-shadow: 0 0 0 3px rgba(205, 133, 63, 0.15);
+		}
+
+		body.dark .form-group input:focus,
+		body.dark .form-group textarea:focus {
+			border-color: var(--accent);
+			box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+		}
+
+		.form-group textarea {
+			resize: vertical;
+			min-height: 110px;
+			font-family: inherit;
+		}
+
+		.modal-footer {
+			display: flex;
+			gap: 1rem;
+			justify-content: flex-end;
+			margin-top: 2rem;
+			padding-top: 1.5rem;
+			border-top: 2px solid rgba(205, 133, 63, 0.15);
+		}
+
+		body.dark .modal-footer {
+			border-top-color: rgba(59, 130, 246, 0.15);
+		}
+
+		.modal-btn {
+			padding: 0.8rem 1.8rem;
+			border: none;
+			border-radius: 10px;
+			font-weight: 600;
+			cursor: pointer;
+			transition: all 0.2s ease;
+			font-size: 0.95rem;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		}
+
+		.btn-primary {
+			background: linear-gradient(135deg, var(--accent-light), var(--accent-light-hover));
+			color: white;
+			box-shadow: 0 4px 12px rgba(205, 133, 63, 0.25);
+		}
+
+		.btn-primary:hover {
+			background: linear-gradient(135deg, var(--accent-light-hover), #7a2e0f);
+			transform: translateY(-2px);
+			box-shadow: 0 6px 16px rgba(205, 133, 63, 0.35);
+		}
+
+		body.dark .btn-primary {
+			background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+			box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+		}
+
+		body.dark .btn-primary:hover {
+			background: linear-gradient(135deg, var(--accent-hover), #1d47b6);
+			box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
+		}
+
+		.btn-secondary {
+			background: linear-gradient(135deg, #e8e8e8, #d5d5d5);
+			color: #333;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		}
+
+		.btn-secondary:hover {
+			background: linear-gradient(135deg, #d5d5d5, #c0c0c0);
+			transform: translateY(-1px);
+		}
+
+		body.dark .btn-secondary {
+			background: linear-gradient(135deg, #3f4752, #2d3541);
+			color: #f9fafb;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+		}
+
+		body.dark .btn-secondary:hover {
+			background: linear-gradient(135deg, #2d3541, #1a1f28);
+			transform: translateY(-1px);
+		}
+
+		.bookmarks-list {
+			max-height: 500px;
+			overflow-y: auto;
+			border: 2px solid #e0c9b1;
+			border-radius: 12px;
+			background: linear-gradient(135deg, #fdfbf7, #f9f4ed);
+			box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+		}
+
+		body.dark .bookmarks-list {
+			background: linear-gradient(135deg, #1e293b, #172031);
+			border-color: #2d3e52;
+			box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+		}
+
+		.bookmark-item {
+			padding: 1.2rem;
+			border-bottom: 1px solid rgba(205, 133, 63, 0.2);
+			cursor: pointer;
+			transition: all 0.25s ease;
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-start;
+			gap: 0.8rem;
+		}
+
+		body.dark .bookmark-item {
+			border-bottom-color: rgba(59, 130, 246, 0.15);
+		}
+
+		.bookmark-item:hover {
+			background-color: rgba(205, 133, 63, 0.12);
+			padding-left: 1.4rem;
+			transform: translateX(2px);
+		}
+
+		body.dark .bookmark-item:hover {
+			background-color: rgba(59, 130, 246, 0.15);
+		}
+
+		.bookmark-item:last-child {
+			border-bottom: none;
+		}
+
+		.bookmark-info {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			gap: 0.3rem;
+		}
+
+		.bookmark-title {
+			font-weight: 700;
+			font-size: 1.05rem;
+			color: var(--text-light);
+			line-height: 1.3;
+		}
+
+		body.dark .bookmark-title {
+			color: #f0f4f9;
+		}
+
+		.bookmark-verse {
+			font-size: 0.9rem;
+			color: var(--accent-light);
+			font-weight: 600;
+			background: rgba(205, 133, 63, 0.12);
+			padding: 0.3rem 0.6rem;
+			border-radius: 6px;
+			width: fit-content;
+		}
+
+		body.dark .bookmark-verse {
+			color: #82d4f5;
+			background: rgba(59, 130, 246, 0.15);
+		}
+
+		.bookmark-desc {
+			font-size: 0.85rem;
+			color: #777;
+			font-style: italic;
+			line-height: 1.4;
+		}
+
+		body.dark .bookmark-desc {
+			color: #a0aec0;
+		}
+
+		.bookmark-delete {
+			background: linear-gradient(135deg, #ff6b6b, #ff5252);
+			color: white;
+			border: none;
+			padding: 0.5rem 1rem;
+			border-radius: 8px;
+			cursor: pointer;
+			font-size: 0.85rem;
+			font-weight: 600;
+			transition: all 0.2s ease;
+			box-shadow: 0 2px 8px rgba(255, 68, 68, 0.2);
+			white-space: nowrap;
+			flex-shrink: 0;
+		}
+
+		.bookmark-delete:hover {
+			background: linear-gradient(135deg, #ff5252, #ff1744);
+			transform: translateY(-2px);
+			box-shadow: 0 4px 12px rgba(255, 68, 68, 0.4);
+		}
+
+		.bookmark-delete:active {
+			transform: translateY(0);
+		}
+
+		.bookmarks-dropdown {
+			display: none;
+			position: absolute;
+			background: linear-gradient(135deg, #fdfbf7, #f9f4ed);
+			border: 2px solid #e0c9b1;
+			border-radius: 12px;
+			top: 100%;
+			right: 0;
+			width: 300px;
+			max-height: 450px;
+			overflow-y: auto;
+			z-index: 1003;
+			margin-top: 8px;
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+		}
+
+		body.dark .bookmarks-dropdown {
+			background: linear-gradient(135deg, #1e293b, #172031);
+			border-color: #2d3e52;
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+		}
+
+		.bookmarks-dropdown.show {
+			display: block;
+			animation: slideDown 0.2s ease;
+		}
+
+		@keyframes slideDown {
+			from {
+				opacity: 0;
+				transform: translateY(-8px);
+			}
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		.bookmarks-empty {
+			padding: 2rem 1rem;
+			text-align: center;
+			color: #999;
+			font-size: 0.95rem;
+		}
+
+		body.dark .bookmarks-empty {
+			color: #7a8c9e;
+		}
+
+		.bookmark-btn {
+			position: relative;
+		}
+
+		/* Theme-aware small action buttons inside verses */
+		.share-btn,
+		.bookmark-btn-verse {
+			padding: 6px 10px;
+			border: none;
+			border-radius: 8px;
+			font-weight: 600;
+			cursor: pointer;
+			transition: transform .12s ease, box-shadow .12s ease;
+			background: #8B6914;
+			color: white;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 6px;
+			font-size: 0.95rem;
+		}
+
+		.share-btn:hover,
+		.bookmark-btn-verse:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+		}
+
+		body.dark .share-btn,
+		body.dark .bookmark-btn-verse {
+			background: #3b82f6;
+			color: white;
+			box-shadow: 0 6px 18px rgba(59,130,246,0.18);
+		}
+
+		body:not(.dark) .share-btn,
+		body:not(.dark) .bookmark-btn-verse {
+			background: #8B6914;
+			color: white;
+			box-shadow: 0 6px 18px rgba(139,105,20,0.12);
+		}
+
+		.bookmark-counter {
+			position: absolute;
+			top: -12px;
+			right: -12px;
+			background: linear-gradient(135deg, #ff6b6b, #ff5252);
+			color: white;
+			border-radius: 50%;
+			width: 26px;
+			height: 26px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 0.85rem;
+			font-weight: 700;
+			box-shadow: 0 3px 10px rgba(255, 68, 68, 0.3);
+			border: 2px solid white;
+			animation: pulse 2s infinite;
+		}
+
+		body.dark .bookmark-counter {
+			border-color: #1e293b;
+		}
+
+		@keyframes pulse {
+			0%, 100% {
+				box-shadow: 0 3px 10px rgba(255, 68, 68, 0.3);
+			}
+			50% {
+				box-shadow: 0 3px 15px rgba(255, 68, 68, 0.5);
+			}
+		}
 	</style>
 </head>
 
@@ -852,6 +1267,11 @@
 				data-tooltip="Light mode">🌓</button>
 			<button id="repeatSurahBtn" class="toggle-theme" aria-label="Repeat Surah Mode"
 				data-tooltip="Repeat Mode"></button>
+			<button class="toggle-theme bookmark-btn" id="bookmarkBtn" aria-label="Bookmarks"
+				data-tooltip="My Bookmarks" onclick="toggleBookmarksDropdown()">
+				📑 <span class="bookmark-counter" id="bookmarkCounter" style="display:none;">0</span>
+			</button>
+			<div id="bookmarksDropdown" class="bookmarks-dropdown"></div>
 			<div id="audioCheckboxes"></div>
 		</div>
 	</header>
@@ -862,6 +1282,73 @@
 		<div class="surah-list" id="surahList">Loading...</div>
 		<div class="surah-content" id="surahContent">Select a Surah or Juzz to view</div>
 	</div>
+
+	<!-- Auth Modal -->
+	<div id="authModal" class="modal">
+		<div class="modal-content">
+			<div class="modal-header">Admin Authentication</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label>Username:</label>
+					<input type="text" id="authUsername" placeholder="Enter username">
+				</div>
+				<div class="form-group">
+					<label>Password:</label>
+					<input type="password" id="authPassword" placeholder="Enter password">
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="modal-btn btn-secondary" onclick="closeAuthModal()">Cancel</button>
+				<button class="modal-btn btn-primary" onclick="verifyAuth()">Login</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Bookmark Form Modal -->
+	<div id="bookmarkModal" class="modal">
+		<div class="modal-content">
+			<div class="modal-header">Add Bookmark</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label>Title:</label>
+					<input type="text" id="bookmarkTitle" placeholder="Enter bookmark title">
+				</div>
+				<div class="form-group">
+					<label>Description:</label>
+					<textarea id="bookmarkDesc" placeholder="Enter description (optional)"></textarea>
+				</div>
+				<div class="form-group" style="display: none;">
+					<label>Verse:</label>
+					<input type="text" id="bookmarkVerse" readonly style="background:#f0f0f0;cursor:not-allowed;">
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="modal-btn btn-secondary" onclick="closeBookmarkModal()">Cancel</button>
+				<button class="modal-btn btn-primary" onclick="saveBookmark()">Save Bookmark</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Bookmarks View Modal -->
+	<div id="bookmarksViewModal" class="modal">
+		<div class="modal-content">
+			<div class="modal-header">
+				My Bookmarks 
+				<button class="modal-btn btn-secondary" onclick="downloadBookmarks()" style="float:right;margin-top:-0.5rem;padding:0.4rem 0.8rem;font-size:0.8rem;">
+					⬇️ JSON
+				</button>
+			</div>
+			<div class="modal-body">
+				<div id="bookmarksListContainer" class="bookmarks-list">
+					<div class="bookmarks-empty">No bookmarks yet</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="modal-btn btn-secondary" onclick="closeBookmarksViewModal()">Close</button>
+			</div>
+		</div>
+	</div>
+
 	<script src="src/script/surahmeta.js"></script>
 	<script src="src/script/indopak.js"></script>
 	<script src="src/script/tarjumah.js"></script>
@@ -1499,10 +1986,16 @@
 							Your browser does not support the audio element.
 						</audio>
 						${hashiyahHtml}
-						<button class="share-btn" onclick="shareVerse(${currentSurah}, ${ayahNum})"
-						style="margin-top:6px;padding:4px 8px;border:none;border-radius:6px;background:var(--accent);color:white;cursor:pointer;">
-						➦ Share
-						</button>
+						<div style="margin-top:6px;display:flex;gap:6px;">
+							<button class="share-btn" onclick="shareVerse(${currentSurah}, ${ayahNum})"
+							style="flex:1;padding:6px 10px;border:none;border-radius:6px;cursor:pointer;">
+							➦ Share
+							</button>
+							<button class="bookmark-btn-verse" onclick="addBookmarkForVerse(${currentSurah}, ${ayahNum})"
+							style="flex:1;padding:6px 10px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">
+							📑 Bookmark
+							</button>
+						</div>
 					</div>
 					`;
 			});
@@ -1659,10 +2152,16 @@
 
 							${hashiyahHtml}
 
-							<button class="share-btn" onclick="shareVerse(${surahNum}, ${ayahNum})"
-							style="margin-top:6px;padding:4px 8px;border:none;border-radius:6px;background:var(--accent);color:white;cursor:pointer;">
-							➦ Share
-							</button>
+							<div style="margin-top:6px;display:flex;gap:6px;">
+								<button class="share-btn" onclick="shareVerse(${surahNum}, ${ayahNum})"
+								style="flex:1;padding:4px 8px;border:none;border-radius:6px;background:var(--accent);color:white;cursor:pointer;">
+								➦ Share
+								</button>
+								<button class="bookmark-btn-verse" onclick="addBookmarkForVerse(${surahNum}, ${ayahNum})"
+								style="flex:1;padding:4px 8px;border:none;border-radius:6px;background:#8B6914;color:white;cursor:pointer;font-weight:bold;">
+								📑 Bookmark
+								</button>
+							</div>
 						</div>
 						`;
 			});
@@ -2437,6 +2936,515 @@
 			document.getElementById('closePopup').addEventListener('click', function () {
 				document.body.removeChild(overlay);
 			});
+		});
+
+		// === BOOKMARK FUNCTIONALITY ===
+		let bookmarks = [];
+		let isAuthenticated = false;
+		const BOOKMARKS_FILE = 'bookmarks.json';
+		let fileHandle = null; // Store file handle for direct writing
+		
+		// IndexedDB for persisting file handle across reloads
+		async function saveFileHandle(handle) {
+			if (!handle) return;
+			try {
+				const db = await new Promise((resolve, reject) => {
+					const request = indexedDB.open('QuranDB', 1);
+					request.onsuccess = () => resolve(request.result);
+					request.onerror = () => reject(request.error);
+					request.onupgradeneeded = (e) => {
+						const db = e.target.result;
+						if (!db.objectStoreNames.contains('files')) {
+							db.createObjectStore('files');
+						}
+					};
+				});
+				
+				const tx = db.transaction('files', 'readwrite');
+				tx.objectStore('files').put(handle, 'bookmarks');
+			} catch (err) {
+				console.log('Could not save file handle to IndexedDB');
+			}
+		}
+
+		async function restoreFileHandle() {
+			try {
+			console.log('Attempting to restore file handle from IndexedDB...');
+			const db = await new Promise((resolve, reject) => {
+				const request = indexedDB.open('QuranDB', 1);
+				request.onsuccess = () => resolve(request.result);
+				request.onerror = () => reject(request.error);
+				request.onupgradeneeded = (e) => {
+					const db = e.target.result;
+					if (!db.objectStoreNames.contains('files')) {
+						db.createObjectStore('files');
+					}
+				};
+			});
+			
+			const handle = await new Promise((resolve) => {
+				const tx = db.transaction('files', 'readonly');
+				const request = tx.objectStore('files').get('bookmarks');
+				request.onsuccess = () => resolve(request.result);
+			});
+			
+			if (handle) {
+				console.log('File handle found in IndexedDB, verifying permission...');
+				// Verify permission is still granted
+				const permission = await handle.queryPermission({ mode: 'readwrite' });
+				console.log('Permission status:', permission);
+				if (permission === 'granted') {
+					fileHandle = handle;
+					console.log('✓ File handle restored and permission granted');
+					// Read bookmarks from the file handle
+					await readBookmarksFromFileHandle();
+				} else {
+					console.log('Permission not granted for restored handle');
+				}
+			} else {
+				console.log('No file handle found in IndexedDB (first time?)');
+			}
+		} catch (err) {
+			console.error('Error restoring file handle:', err);
+		}
+	}
+
+	async function readBookmarksFromFileHandle() {
+		if (!fileHandle) return;
+		try {
+			console.log('Reading bookmarks from file via file handle...');
+			const file = await fileHandle.getFile();
+			const text = await file.text();
+			console.log('File content:', text);
+			if (!text || text.trim() === '') {
+				bookmarks = [];
+				console.log('ℹ bookmarks.json is empty, starting fresh');
+			} else {
+				try {
+					const data = JSON.parse(text);
+					bookmarks = Array.isArray(data) ? data : [];
+					console.log('✓ Loaded', bookmarks.length, 'bookmarks from file');
+				} catch (e) {
+					console.error('Invalid JSON in bookmarks.json:', e);
+					bookmarks = [];
+				}
+			}
+			updateBookmarkCounter();
+		} catch (err) {
+			console.error('Error reading from file handle:', err);
+		}
+	}
+
+	function loadBookmarks() {
+		// Note: fetch from local file will fail due to CORS policy
+		// File will be loaded by restoreFileHandle() if handle exists
+		// Otherwise start with empty bookmarks
+		console.log('Starting with empty bookmarks (will be populated by restoreFileHandle if available)');
+		bookmarks = [];
+		updateBookmarkCounter();
+	}
+
+	function saveBookmarks() {
+		// Update counter and trigger sync
+		updateBookmarkCounter();
+		autoSyncBookmarksToFile();
+	}
+
+	function autoSyncBookmarksToFile() {
+		// If we have file handle, write directly
+		if (fileHandle) {
+			writeBookmarksToFile();
+		} else {
+			// First time - ask user to select the file
+			openBookmarksFile();
+		}
+	}
+
+	async function openBookmarksFile() {
+		try {
+				console.log('Opening file picker...');
+				const selectedFiles = await window.showOpenFilePicker({
+					types: [{
+						description: 'JSON Files',
+						accept: { 'application/json': ['.json'] }
+					}]
+				});
+				fileHandle = selectedFiles[0];
+				console.log('File selected:', fileHandle.name);
+				await saveFileHandle(fileHandle);
+				console.log('File handle saved to IndexedDB');
+				writeBookmarksToFile();
+			} catch (err) {
+				console.log('File selection cancelled:', err.message);
+			}
+		}
+		
+		async function writeBookmarksToFile() {
+			if (!fileHandle) {
+				console.error('No file handle available');
+				return;
+			}
+			try {
+				console.log('Writing bookmarks to file...', bookmarks.length, 'items');
+				const writable = await fileHandle.createWritable();
+				const jsonData = JSON.stringify(bookmarks, null, 2);
+				console.log('JSON data length:', jsonData.length, 'bytes');
+				await writable.write(jsonData);
+				await writable.truncate(jsonData.length);
+				await writable.close();
+				console.log('✓ Successfully wrote to bookmarks.json');
+			} catch (err) {
+				console.error('Error writing to file:', err);
+			}
+		}
+
+		function updateBookmarkCounter() {
+			const counter = document.getElementById('bookmarkCounter');
+			if (bookmarks.length > 0) {
+				counter.textContent = bookmarks.length;
+				counter.style.display = 'flex';
+			} else {
+				counter.style.display = 'none';
+			}
+		}
+
+		function startAddBookmark() {
+			isAuthenticated = false;
+			openAuthModal();
+		}
+
+		function addBookmarkForVerse(surah, ayah) {
+			const surahStr = String(surah).padStart(3, '0');
+			const ayahStr = String(ayah).padStart(3, '0');
+			const verseRef = `${surahStr}:${ayahStr}`;
+			
+			document.getElementById('bookmarkVerse').value = verseRef;
+			
+			if (!isAuthenticated) {
+				openAuthModal();
+			} else {
+				openBookmarkModal();
+			}
+		}
+
+		function openAuthModal() {
+			const modal = document.getElementById('authModal');
+			modal.classList.add('show');
+			document.getElementById('authUsername').focus();
+			
+			// Add Enter key support
+			document.getElementById('authUsername').onkeypress = (e) => {
+				if (e.key === 'Enter') {
+					document.getElementById('authPassword').focus();
+				}
+			};
+			document.getElementById('authPassword').onkeypress = (e) => {
+				if (e.key === 'Enter') {
+					verifyAuth();
+				}
+			};
+		}
+
+		function closeAuthModal() {
+			const modal = document.getElementById('authModal');
+			modal.classList.remove('show');
+			document.getElementById('authUsername').value = '';
+			document.getElementById('authPassword').value = '';
+			isAuthenticated = false;
+		}
+
+		function verifyAuth() {
+			const username = document.getElementById('authUsername').value.trim();
+			const password = document.getElementById('authPassword').value.trim();
+			
+			if (username === 'admin' && password === 'admin') {
+				isAuthenticated = true;
+				closeAuthModal();
+				setTimeout(() => {
+					getCurrentVerse();
+				}, 300);
+			} else {
+				alert('Invalid credentials! Please use admin/admin');
+				document.getElementById('authPassword').value = '';
+				document.getElementById('authUsername').focus();
+			}
+		}
+
+		function getCurrentVerse() {
+			let surah = currentSurah || 1;
+			let ayah = 1;
+			
+			// Try to get current visible verse from page
+			if (currentViewMode === 'surah') {
+				// In surah view, get from localStorage or first verse
+				const saved = localStorage.getItem('lastAyahViewed');
+				if (saved) {
+					ayah = parseInt(saved) || 1;
+				}
+			} else {
+				// In juzz view, get from currently visible verse
+				const visibleId = getCurrentVisibleVerse();
+				if (visibleId && visibleId.startsWith('verse-')) {
+					const parts = visibleId.replace('verse-', '').split('-');
+					if (parts.length === 2) {
+						// Format: verse-surah-ayah
+						surah = parseInt(parts[0]) || surah;
+						ayah = parseInt(parts[1]) || 1;
+					}
+				}
+			}
+
+			const surahStr = String(surah).padStart(3, '0');
+			const ayahStr = String(ayah).padStart(3, '0');
+			const verseRef = `${surahStr}:${ayahStr}`;
+			
+			document.getElementById('bookmarkVerse').value = verseRef;
+			openBookmarkModal();
+		}
+
+		function openBookmarkModal() {
+			const modal = document.getElementById('bookmarkModal');
+			modal.classList.add('show');
+			document.getElementById('bookmarkTitle').value = '';
+			document.getElementById('bookmarkDesc').value = '';
+			document.getElementById('bookmarkTitle').focus();
+			
+			// Add Enter key support for title field
+			document.getElementById('bookmarkTitle').onkeypress = (e) => {
+				if (e.key === 'Enter' && e.ctrlKey) {
+					saveBookmark();
+				}
+			};
+		}
+
+		function closeBookmarkModal() {
+			const modal = document.getElementById('bookmarkModal');
+			modal.classList.remove('show');
+			document.getElementById('bookmarkTitle').value = '';
+			document.getElementById('bookmarkDesc').value = '';
+			isAuthenticated = false;
+		}
+
+		function saveBookmark() {
+			const title = document.getElementById('bookmarkTitle').value.trim();
+			const desc = document.getElementById('bookmarkDesc').value.trim();
+			const verse = document.getElementById('bookmarkVerse').value;
+
+			if (!title) {
+				alert('Please enter a title for the bookmark');
+				return;
+			}
+
+			const bookmark = {
+				id: Date.now(),
+				title: title,
+				description: desc,
+				verse: verse,
+				date: new Date().toLocaleString()
+			};
+
+			bookmarks.push(bookmark);
+			saveBookmarks();
+			closeBookmarkModal();
+			alert('Bookmark saved successfully! ✅');
+			renderBookmarksDropdown();
+		}
+
+		function deleteBookmark(id) {
+			// Require admin authentication to delete
+			const password = prompt('Admin password required to delete bookmark:');
+			if (password === 'admin') {
+				if (confirm('Delete this bookmark?')) {
+					bookmarks = bookmarks.filter(b => b.id !== id);
+					saveBookmarks();
+					alert('Bookmark deleted! ✅');
+					renderBookmarksDropdown();
+					renderBookmarksListView();
+				}
+			} else if (password !== null) {
+				alert('Invalid password! Only admin can delete.');
+			}
+		}
+
+		function toggleBookmarksDropdown() {
+			// Open My Bookmarks modal directly
+			openBookmarksViewModal();
+		}
+
+		function renderBookmarksDropdown() {
+			const dropdown = document.getElementById('bookmarksDropdown');
+			
+			if (bookmarks.length === 0) {
+				dropdown.innerHTML = `
+					<div class="bookmarks-empty">No bookmarks</div>
+					<div style="padding:0.5rem;text-align:center;">
+						<button class="modal-btn btn-primary" onclick="startAddBookmark()" style="width:100%;margin-bottom:0.5rem;">
+							📑 Add Bookmark
+						</button>
+						<button class="modal-btn btn-secondary" onclick="openBookmarksViewModal()" style="width:100%;">
+							📖 View All
+						</button>
+					</div>
+				`;
+				return;
+			}
+
+			let html = '<div class="bookmarks-list">';
+			bookmarks.slice(-5).reverse().forEach(bookmark => {
+				html += `
+					<div class="bookmark-item">
+						<div class="bookmark-info" style="cursor:pointer;" onclick="navigateToBookmark('${bookmark.verse}')">
+							<div class="bookmark-title">${bookmark.title}</div>
+							<div class="bookmark-verse">${bookmark.verse}</div>
+							${bookmark.description ? `<div class="bookmark-desc">${bookmark.description}</div>` : ''}
+						</div>
+						<button class="bookmark-delete" onclick="deleteBookmark(${bookmark.id})">✕</button>
+					</div>
+				`;
+			});
+			html += '</div>';
+			html += `
+				<div style="padding:0.5rem;display:flex;gap:0.5rem;">
+					<button class="modal-btn btn-primary" onclick="startAddBookmark()" style="flex:1;">
+						➕ Add
+					</button>
+					<button class="modal-btn btn-secondary" onclick="openBookmarksViewModal()" style="flex:1;">
+						📖 View All
+					</button>
+				</div>
+			`;
+
+			dropdown.innerHTML = html;
+		}
+
+		function openBookmarksViewModal() {
+			const modal = document.getElementById('bookmarksViewModal');
+			modal.classList.add('show');
+			renderBookmarksListView();
+		}
+
+		function closeBookmarksViewModal() {
+			const modal = document.getElementById('bookmarksViewModal');
+			modal.classList.remove('show');
+		}
+
+		function renderBookmarksListView() {
+			const container = document.getElementById('bookmarksListContainer');
+			
+			if (bookmarks.length === 0) {
+				container.innerHTML = '<div class="bookmarks-empty">No bookmarks yet</div>';
+				return;
+			}
+
+			let html = '';
+			bookmarks.forEach(bookmark => {
+				html += `
+					<div class="bookmark-item">
+						<div class="bookmark-info" style="cursor:pointer;" onclick="navigateToBookmark('${bookmark.verse}')">
+							<div class="bookmark-title">${bookmark.title}</div>
+							<div class="bookmark-verse">${bookmark.verse}</div>
+							${bookmark.description ? `<div class="bookmark-desc">${bookmark.description}</div>` : ''}
+							<div style="font-size:0.7rem;color:#999;margin-top:0.3rem;">${bookmark.date}</div>
+						</div>
+						<button class="bookmark-delete" onclick="deleteBookmark(${bookmark.id})">✕</button>
+					</div>
+				`;
+			});
+
+			container.innerHTML = html;
+		}
+
+		function navigateToBookmark(verse) {
+			const [surah, ayah] = verse.split(':');
+			const surahNum = parseInt(surah);
+			const ayahNum = parseInt(ayah);
+
+			if (currentViewMode === 'surah') {
+				loadSurah(surahNum, ayahNum);
+			} else {
+				// Find juzz and load it
+				const juzz = juzzmeta.find(j => {
+					const startSurah = parseInt(j.start.surah);
+					const endSurah = parseInt(j.end.surah);
+					if (surahNum < startSurah || surahNum > endSurah) return false;
+					if (surahNum === startSurah && surahNum === endSurah) {
+						return ayahNum >= parseInt(j.start.verse) && ayahNum <= parseInt(j.end.verse);
+					} else if (surahNum === startSurah) {
+						return ayahNum >= parseInt(j.start.verse);
+					} else if (surahNum === endSurah) {
+						return ayahNum <= parseInt(j.end.verse);
+					}
+					return true;
+				});
+
+				if (juzz) {
+					loadJuzz(juzz.index);
+					setTimeout(() => {
+						const verseEl = document.getElementById(`verse-${surahNum}-${ayahNum}`);
+						if (verseEl) scrollWithOffset(verseEl, 200);
+					}, 600);
+				}
+			}
+
+			// Close dropdowns
+			document.getElementById('bookmarksDropdown').classList.remove('show');
+			closeBookmarksViewModal();
+		}
+
+		function downloadBookmarks() {
+			if (bookmarks.length === 0) {
+				alert('No bookmarks to download');
+				return;
+			}
+
+			const dataStr = JSON.stringify(bookmarks, null, 2);
+			const dataBlob = new Blob([dataStr], { type: 'application/json' });
+			const url = URL.createObjectURL(dataBlob);
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = 'bookmarks.json';
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+			URL.revokeObjectURL(url);
+			alert('Bookmarks exported to bookmarks.json ✅\nReplace the existing file in your project directory.');
+		}
+
+		// Initialize bookmarks on page load
+		document.addEventListener('DOMContentLoaded', () => {
+			loadBookmarks();
+			restoreFileHandle();
+			console.log('Bookmarks initialized');
+		});
+
+		// Track current ayah being viewed
+		document.addEventListener('scroll', () => {
+			const visibleId = getCurrentVisibleVerse();
+			if (visibleId && visibleId.startsWith('verse-')) {
+				const parts = visibleId.replace('verse-', '').split('-');
+				localStorage.setItem('lastAyahViewed', parts[parts.length - 1]);
+			}
+		});
+
+		// Close dropdown when clicking outside
+		document.addEventListener('click', (e) => {
+			const bookmarkBtn = document.getElementById('bookmarkBtn');
+			const dropdown = document.getElementById('bookmarksDropdown');
+			
+			if (!e.target.closest('.bookmark-btn') && !e.target.closest('.bookmarks-dropdown')) {
+				dropdown.classList.remove('show');
+			}
+		});
+
+		// Add Escape key to close modals
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape') {
+				document.getElementById('authModal').classList.remove('show');
+				document.getElementById('bookmarkModal').classList.remove('show');
+				document.getElementById('bookmarksViewModal').classList.remove('show');
+				document.getElementById('bookmarksDropdown').classList.remove('show');
+				isAuthenticated = false;
+			}
 		});
 	</script>
 </body>
