@@ -1275,6 +1275,9 @@
 			<div id="audioCheckboxes"></div>
 		</div>
 	</header>
+
+	<!-- Hidden file input for manual bookmarks.json selection (fallback to fetch) -->
+	<input type="file" id="bookmarksFileInput" accept=".json,application/json" style="display:none" />
 	<br>
 	<div class="bismillah" id="bismillahText">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِیْمِ</div>
 	<br>
@@ -3008,6 +3011,40 @@
 			console.error('Error restoring file handle:', err);
 		}
 	}
+	// Prompt-based file selection fallback (works without HTTP server)
+	function promptBookmarksFileSelection() {
+		const input = document.getElementById('bookmarksFileInput');
+		if (!input) return;
+		input.value = null; // reset
+		// When the user picks a file, read and parse it
+		input.onchange = async (e) => {
+			const file = e.target.files && e.target.files[0];
+			if (!file) return;
+			try {
+				const text = await file.text();
+				if (!text || text.trim() === '') {
+					bookmarks = [];
+					console.log('Selected bookmarks file is empty');
+				} else {
+					try {
+						const data = JSON.parse(text);
+						bookmarks = Array.isArray(data) ? data : [];
+						console.log('Loaded', bookmarks.length, 'bookmarks from selected file');
+					} catch (err) {
+						console.error('Invalid JSON in selected bookmarks file', err);
+						alert('Selected file does not contain valid JSON');
+						bookmarks = [];
+					}
+				}
+				updateBookmarkCounter();
+				renderBookmarksDropdown();
+			} catch (err) {
+				console.error('Error reading selected file', err);
+			}
+		};
+		// Trigger the file picker
+		input.click();
+	}
 
 	async function readBookmarksFromFileHandle() {
 		if (!fileHandle) return;
@@ -3036,12 +3073,43 @@
 	}
 
 	function loadBookmarks() {
-		// Note: fetch from local file will fail due to CORS policy
-		// File will be loaded by restoreFileHandle() if handle exists
-		// Otherwise start with empty bookmarks
-		console.log('Starting with empty bookmarks (will be populated by restoreFileHandle if available)');
-		bookmarks = [];
-		updateBookmarkCounter();
+		// Attempt to load bookmarks from the static JSON file first (works when
+		// the site is served over HTTP). If that fails (file:// or CORS), fall
+		// back to file-handle / IndexedDB approach and empty bookmarks.
+		fetch(BOOKMARKS_FILE, { cache: 'no-cache' })
+			.then(resp => {
+				if (!resp.ok) throw new Error('bookmarks.json not found');
+				return resp.text();
+			})
+			.then(text => {
+				if (!text || text.trim() === '') {
+					bookmarks = [];
+					console.log('bookmarks.json empty — starting fresh');
+				} else {
+					try {
+						const data = JSON.parse(text);
+						bookmarks = Array.isArray(data) ? data : [];
+						console.log('Loaded', bookmarks.length, 'bookmarks from', BOOKMARKS_FILE);
+					} catch (e) {
+						console.error('Invalid JSON in', BOOKMARKS_FILE, e);
+						bookmarks = [];
+					}
+				}
+				updateBookmarkCounter();
+				renderBookmarksDropdown();
+			})
+			.catch(err => {
+				console.log('Could not fetch', BOOKMARKS_FILE, '— falling back to file-handle or empty. Error:', err.message);
+				bookmarks = [];
+				updateBookmarkCounter();
+				// Prompt user to select the file manually (works without an HTTP server)
+				try {
+					promptBookmarksFileSelection();
+				} catch (e) {
+					console.log('Could not prompt for file selection:', e);
+				}
+				// restoreFileHandle() will also run on DOMContentLoaded to try IndexedDB/file-handle
+			});
 	}
 
 	function saveBookmarks() {
