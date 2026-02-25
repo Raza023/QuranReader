@@ -13,3 +13,9 @@ package-lock.json
 # Optional: OS-generated files
 .DS_Store
 Thumbs.db
+
+# Ignore local firebase config that contains credentials
+firebase-config.json
+
+# Ignore any sensitive local files
+.env

@@ -1278,6 +1278,10 @@
 
 	<!-- Hidden file input for manual bookmarks.json selection (fallback to fetch) -->
 	<input type="file" id="bookmarksFileInput" accept=".json,application/json" style="display:none" />
+
+	<!-- Firebase SDK (compat build for global `firebase` namespace) -->
+	<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 	<br>
 	<div class="bismillah" id="bismillahText">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِیْمِ</div>
 	<br>
@@ -3478,11 +3482,20 @@
 			alert('Bookmarks exported to bookmarks.json ✅\nReplace the existing file in your project directory.');
 		}
 
-		// Initialize bookmarks on page load
+		// Initialize bookmarks on page load — wait for Firebase init attempt first
+		// `firebaseInitPromise` will be set by the runtime config loader below.
+		window.firebaseInitPromise = Promise.resolve();
 		document.addEventListener('DOMContentLoaded', () => {
-			loadBookmarks();
-			restoreFileHandle();
-			console.log('Bookmarks initialized');
+			window.firebaseInitPromise.then(() => {
+				loadBookmarks();
+				restoreFileHandle();
+				console.log('Bookmarks initialized');
+			}).catch(() => {
+				// still attempt local load on any error
+				loadBookmarks();
+				restoreFileHandle();
+				console.log('Bookmarks initialized (after firebase init error)');
+			});
 		});
 
 		// Track current ayah being viewed
@@ -3514,6 +3527,182 @@
 				isAuthenticated = false;
 			}
 		});
+
+		/* ================== FIREBASE INTEGRATION ================= */
+
+		// We intentionally do NOT hard-code credentials here.
+		// Instead the app will try to fetch a local `firebase-config.json`
+		// placed alongside `index.html` (this file should NOT be committed).
+		let firebaseConfig = null;
+		let firebaseApp = null;
+		let firebaseDatabase = null;
+		let firebaseReady = false;
+		let lastSyncTime = 0;
+		let isSyncingToFirebase = false;
+
+		// Initialize Firebase (only if config is available)
+		function initializeFirebase() {
+			if (!firebaseConfig) {
+				console.log('No firebase-config.json found — skipping Firebase initialization');
+				return;
+			}
+			try {
+				firebaseApp = firebase.initializeApp(firebaseConfig);
+				firebaseDatabase = firebase.database();
+				firebaseReady = true;
+				console.log('✓ Firebase initialized successfully');
+				setupFirebaseListeners();
+			} catch (error) {
+				console.warn('Firebase initialization failed:', error.message);
+				console.log('Bookmarks will sync to local storage only');
+				firebaseReady = false;
+			}
+		}
+
+		// Setup real-time listeners from Firebase
+		function setupFirebaseListeners() {
+			if (!firebaseReady || !firebaseDatabase) return;
+
+			try {
+				const bookmarksRef = firebaseDatabase.ref('bookmarks');
+				bookmarksRef.on('value', (snapshot) => {
+					if (Date.now() - lastSyncTime > 1000) {
+						const data = snapshot.val();
+						if (data) {
+							const remoteBookmarks = Array.isArray(data) ? data : Object.values(data);
+							if (JSON.stringify(remoteBookmarks) !== JSON.stringify(bookmarks)) {
+								console.log('Synced bookmarks from Firebase:', remoteBookmarks.length, 'items');
+								bookmarks = remoteBookmarks.sort((a, b) => b.id - a.id);
+								updateBookmarkCounter();
+								renderBookmarksDropdown();
+								renderBookmarksListView();
+							}
+						}
+					}
+				}, (error) => {
+					console.warn('Firebase listener error:', error.message);
+				});
+			} catch (error) {
+				console.warn('Could not setup Firebase listeners:', error.message);
+			}
+		}
+
+		// Sync bookmarks to Firebase
+		async function syncBookmarksToFirebase() {
+			if (!firebaseReady || !firebaseDatabase || isSyncingToFirebase) return;
+
+			isSyncingToFirebase = true;
+			lastSyncTime = Date.now();
+
+			try {
+				const bookmarksRef = firebaseDatabase.ref('bookmarks');
+				await bookmarksRef.set(bookmarks);
+				console.log('✓ Bookmarks synced to Firebase:', bookmarks.length, 'items');
+				isSyncingToFirebase = false;
+			} catch (error) {
+				console.error('Failed to sync bookmarks to Firebase:', error.message);
+				console.log('Bookmarks saved locally, will retry sync when online');
+				isSyncingToFirebase = false;
+			}
+		}
+
+		// Load bookmarks - First try Firebase (if available), then fallback to local JSON
+		function loadBookmarks() {
+			// Only use Firebase as the primary source. Do NOT auto-load local bookmarks.json.
+			if (firebaseReady && firebaseDatabase) {
+				firebaseDatabase.ref('bookmarks').once('value', (snapshot) => {
+					const data = snapshot.val();
+					if (data) {
+						bookmarks = Array.isArray(data) ? data : Object.values(data);
+						bookmarks = bookmarks.sort((a, b) => b.id - a.id);
+						console.log('Loaded', bookmarks.length, 'bookmarks from Firebase');
+					} else {
+						// No data in Firebase yet — start with empty bookmarks (do not load local file)
+						bookmarks = [];
+						console.log('No bookmarks found in Firebase — starting with empty list');
+					}
+					updateBookmarkCounter();
+					renderBookmarksDropdown();
+				}).catch(error => {
+					console.warn('Firebase read failed:', error.message);
+					bookmarks = [];
+					updateBookmarkCounter();
+					renderBookmarksDropdown();
+				});
+			} else {
+				// Firebase wasn't initialized — start empty rather than loading bookmarks.json
+				console.log('Firebase not initialized — starting with empty bookmarks (not loading bookmarks.json)');
+				bookmarks = [];
+				updateBookmarkCounter();
+				renderBookmarksDropdown();
+			}
+		}
+
+		// Load bookmarks from local JSON file (fallback)
+		function loadBookmarksFromFile() {
+			fetch(BOOKMARKS_FILE, { cache: 'no-cache' })
+				.then(resp => {
+					if (!resp.ok) throw new Error('bookmarks.json not found');
+					return resp.text();
+				})
+				.then(text => {
+					if (!text || text.trim() === '') {
+						bookmarks = [];
+						console.log('bookmarks.json empty — starting fresh');
+					} else {
+						try {
+							const data = JSON.parse(text);
+							bookmarks = Array.isArray(data) ? data : [];
+							console.log('Loaded', bookmarks.length, 'bookmarks from', BOOKMARKS_FILE);
+							if (firebaseReady) {
+								syncBookmarksToFirebase();
+							}
+						} catch (e) {
+							console.error('Invalid JSON in', BOOKMARKS_FILE, e);
+							bookmarks = [];
+						}
+					}
+					updateBookmarkCounter();
+					renderBookmarksDropdown();
+				})
+				.catch(err => {
+					console.log('Could not fetch', BOOKMARKS_FILE, '— falling back to file-handle or empty. Error:', err.message);
+					bookmarks = [];
+					updateBookmarkCounter();
+					try {
+						promptBookmarksFileSelection();
+					} catch (e) {
+						console.log('Could not prompt for file selection:', e);
+					}
+				});
+		}
+
+		// Override saveBookmarks to sync with Firebase
+		function saveBookmarks() {
+			updateBookmarkCounter();
+			autoSyncBookmarksToFile();
+			if (firebaseReady) {
+				syncBookmarksToFirebase();
+			}
+		}
+
+		// Try to load firebase-config.json at runtime (keeps credentials out of VCS)
+		(function loadExternalFirebaseConfig() {
+			// set a promise so DOMContentLoaded handler can wait for this
+			window.firebaseInitPromise = fetch('firebase-config.json', { cache: 'no-cache' }).then(resp => {
+				if (!resp.ok) throw new Error('No local firebase-config.json');
+				return resp.json();
+			}).then(cfg => {
+				firebaseConfig = cfg;
+				console.log('Loaded firebase-config.json');
+				initializeFirebase();
+			}).catch(() => {
+				console.log('No firebase-config.json found. To enable Firebase create firebase-config.json (see README)');
+				// still attempt to initialize if a default DB URL exists in example
+				// (you can edit this behavior by providing firebase-config.json)
+				return Promise.resolve();
+			});
+		})();
 	</script>
 </body>
 

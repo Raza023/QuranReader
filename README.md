@@ -125,3 +125,28 @@ Licensed under the **MIT License**. See [LICENSE](LICENSE).
 
 **Hassan Raza**
 📩 [Email](mailto:imhraza023@gmail.com) | 🌍 [GitHub](https://github.com/Raza023)
+
+---
+
+## Firebase credentials (security)
+
+This project can use Firebase Realtime Database for bookmarks. Do NOT commit your Firebase credentials.
+Example `firebase-config.json` (place at project root):
+
+```
+{
+  "apiKey": "YOUR_API_KEY",
+  "authDomain": "YOUR_PROJECT.firebaseapp.com",
+  "databaseURL": "FIREBASE_DATABASE_URL",
+  "projectId": "YOUR_PROJECT",
+  "storageBucket": "YOUR_PROJECT.appspot.com",
+  "messagingSenderId": "SENDER_ID",
+  "appId": "APP_ID"
+}
+```
+
+Notes:
+- General. Make sure to replace the placeholders (FIREBASE_DATABASE_URL) 
+- Even with this file kept out of VCS, any credentials present in a client-side app can be observed by users who inspect network requests or page source. To fully hide credentials you must move database access to a server-side component (Cloud Function or your backend) using the Firebase Admin SDK, and have the frontend call your secure endpoints.
+- Alternatively, tighten your Realtime Database Rules so only authenticated users (via Firebase Auth) can read/write bookmarks.
+
