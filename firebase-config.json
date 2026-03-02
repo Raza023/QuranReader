@@ -1,9 +1,10 @@
 {
-  "apiKey": "YOUR_API_KEY",
-  "authDomain": "YOUR_PROJECT.firebaseapp.com",
-  "databaseURL": "https://bookmarks-cad3d-default-rtdb.firebaseio.com", 
-  "projectId": "YOUR_PROJECT",
-  "storageBucket": "YOUR_PROJECT.appspot.com",
-  "messagingSenderId": "SENDER_ID",
-  "appId": "APP_ID"
+  "apiKey": "AIzaSyAzHEVkQTIBsZKWLdhUmXFOB5F5ynsYkCg",
+  "authDomain": "bookmarks-cad3d.firebaseapp.com",
+  "databaseURL": "https://bookmarks-cad3d-default-rtdb.firebaseio.com",
+  "projectId": "bookmarks-cad3d",
+  "storageBucket": "bookmarks-cad3d.firebasestorage.app",
+  "messagingSenderId": "493918145708",
+  "appId": "1:493918145708:web:1a8ec105d658e4287d2309",
+  "measurementId": "G-K7NDZP1VYL"
 }

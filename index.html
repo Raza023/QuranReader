@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -1275,9 +1275,6 @@
 			<div id="audioCheckboxes"></div>
 		</div>
 	</header>
-
-	<!-- Hidden file input for manual bookmarks.json selection (fallback to fetch) -->
-	<input type="file" id="bookmarksFileInput" accept=".json,application/json" style="display:none" />
 
 	<!-- Firebase SDK (compat build for global `firebase` namespace) -->
 	<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -2948,228 +2945,6 @@
 		// === BOOKMARK FUNCTIONALITY ===
 		let bookmarks = [];
 		let isAuthenticated = false;
-		const BOOKMARKS_FILE = 'bookmarks.json';
-		let fileHandle = null; // Store file handle for direct writing
-		
-		// IndexedDB for persisting file handle across reloads
-		async function saveFileHandle(handle) {
-			if (!handle) return;
-			try {
-				const db = await new Promise((resolve, reject) => {
-					const request = indexedDB.open('QuranDB', 1);
-					request.onsuccess = () => resolve(request.result);
-					request.onerror = () => reject(request.error);
-					request.onupgradeneeded = (e) => {
-						const db = e.target.result;
-						if (!db.objectStoreNames.contains('files')) {
-							db.createObjectStore('files');
-						}
-					};
-				});
-				
-				const tx = db.transaction('files', 'readwrite');
-				tx.objectStore('files').put(handle, 'bookmarks');
-			} catch (err) {
-				console.log('Could not save file handle to IndexedDB');
-			}
-		}
-
-		async function restoreFileHandle() {
-			try {
-			console.log('Attempting to restore file handle from IndexedDB...');
-			const db = await new Promise((resolve, reject) => {
-				const request = indexedDB.open('QuranDB', 1);
-				request.onsuccess = () => resolve(request.result);
-				request.onerror = () => reject(request.error);
-				request.onupgradeneeded = (e) => {
-					const db = e.target.result;
-					if (!db.objectStoreNames.contains('files')) {
-						db.createObjectStore('files');
-					}
-				};
-			});
-			
-			const handle = await new Promise((resolve) => {
-				const tx = db.transaction('files', 'readonly');
-				const request = tx.objectStore('files').get('bookmarks');
-				request.onsuccess = () => resolve(request.result);
-			});
-			
-			if (handle) {
-				console.log('File handle found in IndexedDB, verifying permission...');
-				// Verify permission is still granted
-				const permission = await handle.queryPermission({ mode: 'readwrite' });
-				console.log('Permission status:', permission);
-				if (permission === 'granted') {
-					fileHandle = handle;
-					console.log('✓ File handle restored and permission granted');
-					// Read bookmarks from the file handle
-					await readBookmarksFromFileHandle();
-				} else {
-					console.log('Permission not granted for restored handle');
-				}
-			} else {
-				console.log('No file handle found in IndexedDB (first time?)');
-			}
-		} catch (err) {
-			console.error('Error restoring file handle:', err);
-		}
-	}
-	// Prompt-based file selection fallback (works without HTTP server)
-	function promptBookmarksFileSelection() {
-		const input = document.getElementById('bookmarksFileInput');
-		if (!input) return;
-		input.value = null; // reset
-		// When the user picks a file, read and parse it
-		input.onchange = async (e) => {
-			const file = e.target.files && e.target.files[0];
-			if (!file) return;
-			try {
-				const text = await file.text();
-				if (!text || text.trim() === '') {
-					bookmarks = [];
-					console.log('Selected bookmarks file is empty');
-				} else {
-					try {
-						const data = JSON.parse(text);
-						bookmarks = Array.isArray(data) ? data : [];
-						console.log('Loaded', bookmarks.length, 'bookmarks from selected file');
-					} catch (err) {
-						console.error('Invalid JSON in selected bookmarks file', err);
-						alert('Selected file does not contain valid JSON');
-						bookmarks = [];
-					}
-				}
-				updateBookmarkCounter();
-				renderBookmarksDropdown();
-			} catch (err) {
-				console.error('Error reading selected file', err);
-			}
-		};
-		// Trigger the file picker
-		input.click();
-	}
-
-	async function readBookmarksFromFileHandle() {
-		if (!fileHandle) return;
-		try {
-			console.log('Reading bookmarks from file via file handle...');
-			const file = await fileHandle.getFile();
-			const text = await file.text();
-			console.log('File content:', text);
-			if (!text || text.trim() === '') {
-				bookmarks = [];
-				console.log('ℹ bookmarks.json is empty, starting fresh');
-			} else {
-				try {
-					const data = JSON.parse(text);
-					bookmarks = Array.isArray(data) ? data : [];
-					console.log('✓ Loaded', bookmarks.length, 'bookmarks from file');
-				} catch (e) {
-					console.error('Invalid JSON in bookmarks.json:', e);
-					bookmarks = [];
-				}
-			}
-			updateBookmarkCounter();
-		} catch (err) {
-			console.error('Error reading from file handle:', err);
-		}
-	}
-
-	function loadBookmarks() {
-		// Attempt to load bookmarks from the static JSON file first (works when
-		// the site is served over HTTP). If that fails (file:// or CORS), fall
-		// back to file-handle / IndexedDB approach and empty bookmarks.
-		fetch(BOOKMARKS_FILE, { cache: 'no-cache' })
-			.then(resp => {
-				if (!resp.ok) throw new Error('bookmarks.json not found');
-				return resp.text();
-			})
-			.then(text => {
-				if (!text || text.trim() === '') {
-					bookmarks = [];
-					console.log('bookmarks.json empty — starting fresh');
-				} else {
-					try {
-						const data = JSON.parse(text);
-						bookmarks = Array.isArray(data) ? data : [];
-						console.log('Loaded', bookmarks.length, 'bookmarks from', BOOKMARKS_FILE);
-					} catch (e) {
-						console.error('Invalid JSON in', BOOKMARKS_FILE, e);
-						bookmarks = [];
-					}
-				}
-				updateBookmarkCounter();
-				renderBookmarksDropdown();
-			})
-			.catch(err => {
-				console.log('Could not fetch', BOOKMARKS_FILE, '— falling back to file-handle or empty. Error:', err.message);
-				bookmarks = [];
-				updateBookmarkCounter();
-				// Prompt user to select the file manually (works without an HTTP server)
-				try {
-					promptBookmarksFileSelection();
-				} catch (e) {
-					console.log('Could not prompt for file selection:', e);
-				}
-				// restoreFileHandle() will also run on DOMContentLoaded to try IndexedDB/file-handle
-			});
-	}
-
-	function saveBookmarks() {
-		// Update counter and trigger sync
-		updateBookmarkCounter();
-		autoSyncBookmarksToFile();
-	}
-
-	function autoSyncBookmarksToFile() {
-		// If we have file handle, write directly
-		if (fileHandle) {
-			writeBookmarksToFile();
-		} else {
-			// First time - ask user to select the file
-			openBookmarksFile();
-		}
-	}
-
-	async function openBookmarksFile() {
-		try {
-				console.log('Opening file picker...');
-				const selectedFiles = await window.showOpenFilePicker({
-					types: [{
-						description: 'JSON Files',
-						accept: { 'application/json': ['.json'] }
-					}]
-				});
-				fileHandle = selectedFiles[0];
-				console.log('File selected:', fileHandle.name);
-				await saveFileHandle(fileHandle);
-				console.log('File handle saved to IndexedDB');
-				writeBookmarksToFile();
-			} catch (err) {
-				console.log('File selection cancelled:', err.message);
-			}
-		}
-		
-		async function writeBookmarksToFile() {
-			if (!fileHandle) {
-				console.error('No file handle available');
-				return;
-			}
-			try {
-				console.log('Writing bookmarks to file...', bookmarks.length, 'items');
-				const writable = await fileHandle.createWritable();
-				const jsonData = JSON.stringify(bookmarks, null, 2);
-				console.log('JSON data length:', jsonData.length, 'bytes');
-				await writable.write(jsonData);
-				await writable.truncate(jsonData.length);
-				await writable.close();
-				console.log('✓ Successfully wrote to bookmarks.json');
-			} catch (err) {
-				console.error('Error writing to file:', err);
-			}
-		}
-
 		function updateBookmarkCounter() {
 			const counter = document.getElementById('bookmarkCounter');
 			if (bookmarks.length > 0) {
@@ -3488,12 +3263,10 @@
 		document.addEventListener('DOMContentLoaded', () => {
 			window.firebaseInitPromise.then(() => {
 				loadBookmarks();
-				restoreFileHandle();
 				console.log('Bookmarks initialized');
 			}).catch(() => {
 				// still attempt local load on any error
 				loadBookmarks();
-				restoreFileHandle();
 				console.log('Bookmarks initialized (after firebase init error)');
 			});
 		});
@@ -3638,49 +3411,9 @@
 			}
 		}
 
-		// Load bookmarks from local JSON file (fallback)
-		function loadBookmarksFromFile() {
-			fetch(BOOKMARKS_FILE, { cache: 'no-cache' })
-				.then(resp => {
-					if (!resp.ok) throw new Error('bookmarks.json not found');
-					return resp.text();
-				})
-				.then(text => {
-					if (!text || text.trim() === '') {
-						bookmarks = [];
-						console.log('bookmarks.json empty — starting fresh');
-					} else {
-						try {
-							const data = JSON.parse(text);
-							bookmarks = Array.isArray(data) ? data : [];
-							console.log('Loaded', bookmarks.length, 'bookmarks from', BOOKMARKS_FILE);
-							if (firebaseReady) {
-								syncBookmarksToFirebase();
-							}
-						} catch (e) {
-							console.error('Invalid JSON in', BOOKMARKS_FILE, e);
-							bookmarks = [];
-						}
-					}
-					updateBookmarkCounter();
-					renderBookmarksDropdown();
-				})
-				.catch(err => {
-					console.log('Could not fetch', BOOKMARKS_FILE, '— falling back to file-handle or empty. Error:', err.message);
-					bookmarks = [];
-					updateBookmarkCounter();
-					try {
-						promptBookmarksFileSelection();
-					} catch (e) {
-						console.log('Could not prompt for file selection:', e);
-					}
-				});
-		}
-
 		// Override saveBookmarks to sync with Firebase
 		function saveBookmarks() {
 			updateBookmarkCounter();
-			autoSyncBookmarksToFile();
 			if (firebaseReady) {
 				syncBookmarksToFirebase();
 			}
