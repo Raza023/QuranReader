@@ -1059,10 +1059,43 @@
 			box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 		}
 
+		.bookmark-search-wrap {
+			margin-bottom: 0.8rem;
+		}
+
+		#bookmarkSearchInput {
+			width: 100%;
+			padding: 0.8rem 0.95rem;
+			border: 2px solid #e0c9b1;
+			border-radius: 10px;
+			background: #fff;
+			color: #3b2f2f;
+			font-size: 0.95rem;
+			box-sizing: border-box;
+			transition: border-color 0.2s ease, box-shadow 0.2s ease;
+		}
+
+		#bookmarkSearchInput:focus {
+			outline: none;
+			border-color: var(--accent-light);
+			box-shadow: 0 0 0 3px rgba(205, 133, 63, 0.15);
+		}
+
 		body.dark .bookmarks-list {
 			background: linear-gradient(135deg, #1e293b, #172031);
 			border-color: #2d3e52;
 			box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+		}
+
+		body.dark #bookmarkSearchInput {
+			background: #0f172a;
+			color: #f9fafb;
+			border-color: #2d3e52;
+		}
+
+		body.dark #bookmarkSearchInput:focus {
+			border-color: var(--accent);
+			box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 		}
 
 		.bookmark-item {
@@ -1128,6 +1161,47 @@
 			padding: 0.3rem 0.6rem;
 			border-radius: 6px;
 			width: fit-content;
+			cursor: pointer;
+		}
+
+		.bookmark-verse-group {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.35rem;
+		}
+
+		.bookmark-entry-list {
+			display: flex;
+			flex-direction: column;
+			gap: 0.45rem;
+			margin-top: 0.1rem;
+		}
+
+		.bookmark-entry-item {
+			padding: 0.45rem 0.55rem;
+			border-radius: 8px;
+			background: rgba(205, 133, 63, 0.08);
+			cursor: pointer;
+			transition: background-color 0.2s ease;
+		}
+
+		.bookmark-entry-item:hover {
+			background: rgba(205, 133, 63, 0.15);
+		}
+
+		.bookmark-entry-head {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 0.45rem;
+		}
+
+		body.dark .bookmark-entry-item {
+			background: rgba(59, 130, 246, 0.12);
+		}
+
+		body.dark .bookmark-entry-item:hover {
+			background: rgba(59, 130, 246, 0.2);
 		}
 
 		body.dark .bookmark-verse {
@@ -1177,6 +1251,12 @@
 
 		.bookmark-delete:active {
 			transform: translateY(0);
+		}
+
+		.bookmark-delete-verse {
+			padding: 0.3rem 0.55rem;
+			font-size: 0.78rem;
+			border-radius: 7px;
 		}
 
 		@media (max-width: 820px) {
@@ -1487,6 +1567,14 @@
 				</button>
 			</div>
 			<div class="modal-body">
+				<div class="bookmark-search-wrap">
+					<input
+						type="text"
+						id="bookmarkSearchInput"
+						dir="ltr"
+						placeholder="Search bookmarks by title..."
+						oninput="onBookmarkSearchInput(this)" />
+				</div>
 				<div id="bookmarksListContainer" class="bookmarks-list">
 					<div class="bookmarks-empty">No bookmarks yet</div>
 				</div>
@@ -3089,6 +3177,7 @@
 		// === BOOKMARK FUNCTIONALITY ===
 		let bookmarks = [];
 		let isAuthenticated = false;
+		let bookmarkSearchTerm = '';
 
 		function isUrduOrArabicText(text) {
 			return /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(text || '');
@@ -3104,6 +3193,112 @@
 			el.style.textAlign = dir === 'rtl' ? 'right' : 'left';
 		}
 
+		function getBookmarkVerses(bookmark) {
+			if (!bookmark) return [];
+			if (Array.isArray(bookmark.verses)) {
+				return [...new Set(bookmark.verses.map(v => String(v || '').trim()).filter(Boolean))];
+			}
+			if (bookmark.verse) {
+				return [String(bookmark.verse).trim()].filter(Boolean);
+			}
+			return [];
+		}
+
+		function getBookmarkEntries(bookmark) {
+			if (!bookmark) return [];
+
+			if (Array.isArray(bookmark.entries)) {
+				return bookmark.entries
+					.map(entry => ({
+						id: Number(entry?.id) || Date.now(),
+						verse: String(entry?.verse || '').trim(),
+						description: String(entry?.description || '').trim(),
+						date: entry?.date || bookmark?.date || ''
+					}))
+					.filter(entry => entry.verse);
+			}
+
+			if (Array.isArray(bookmark.verses)) {
+				return bookmark.verses
+					.map(v => String(v || '').trim())
+					.filter(Boolean)
+					.map(v => ({
+						id: Number(bookmark?.id) || Date.now(),
+						verse: v,
+						description: String(bookmark?.description || '').trim(),
+						date: bookmark?.date || ''
+					}));
+			}
+
+			if (bookmark.verse) {
+				return [{
+					id: Number(bookmark?.id) || Date.now(),
+					verse: String(bookmark.verse).trim(),
+					description: String(bookmark?.description || '').trim(),
+					date: bookmark?.date || ''
+				}];
+			}
+
+			return [];
+		}
+
+		function normalizeBookmarks(list) {
+			const input = Array.isArray(list) ? list : [];
+			const grouped = new Map();
+
+			input.forEach((item, index) => {
+				const title = String(item?.title || '').trim();
+				if (!title) return;
+
+				const key = title.toLowerCase();
+				const itemId = Number(item?.id) || (Date.now() + index);
+				const itemDate = item?.date || '';
+				const itemDesc = String(item?.description || '').trim();
+				const itemEntries = getBookmarkEntries(item);
+				if (itemEntries.length === 0) return;
+
+				if (!grouped.has(key)) {
+					grouped.set(key, {
+						id: itemId,
+						title,
+						description: itemDesc,
+						entries: itemEntries,
+						verses: itemEntries.map(entry => entry.verse),
+						date: itemDate
+					});
+					return;
+				}
+
+				const existing = grouped.get(key);
+				const existingEntries = getBookmarkEntries(existing);
+				itemEntries.forEach(incomingEntry => {
+					const matchedEntry = existingEntries.find(e => e.verse === incomingEntry.verse);
+					if (matchedEntry) {
+						if (!matchedEntry.description && incomingEntry.description) {
+							matchedEntry.description = incomingEntry.description;
+						}
+						if ((Number(incomingEntry.id) || 0) > (Number(matchedEntry.id) || 0)) {
+							matchedEntry.id = Number(incomingEntry.id) || matchedEntry.id;
+							matchedEntry.date = incomingEntry.date || matchedEntry.date;
+						}
+					} else {
+						existingEntries.push(incomingEntry);
+					}
+				});
+				existing.entries = existingEntries.sort((a, b) => Number(a.id || 0) - Number(b.id || 0));
+				existing.verses = existing.entries.map(entry => entry.verse);
+				if (!existing.description && itemDesc) {
+					existing.description = itemDesc;
+				}
+				if (itemId > Number(existing.id || 0)) {
+					existing.id = itemId;
+					existing.date = itemDate || existing.date;
+				}
+			});
+
+			return Array.from(grouped.values()).sort((a, b) => Number(b.id || 0) - Number(a.id || 0));
+		}
+
 		function updateBookmarkCounter() {
 			const counter = document.getElementById('bookmarkCounter');
 			if (bookmarks.length > 0) {
@@ -3112,6 +3307,16 @@
 			} else {
 				counter.style.display = 'none';
 			}
+		}
+
+		function setBookmarkSearchTerm(value) {
+			bookmarkSearchTerm = (value || '').trim().toLowerCase();
+			renderBookmarksListView();
+		}
+
+		function onBookmarkSearchInput(el) {
+			applyInputDirection(el);
+			setBookmarkSearchTerm(el.value);
 		}
 
 		function startAddBookmark() {
@@ -3247,18 +3452,55 @@
 				return;
 			}
 
-			const bookmark = {
-				id: Date.now(),
-				title: title,
-				description: desc,
-				verse: verse,
-				date: new Date().toLocaleString()
-			};
+			const nowId = Date.now();
+			const normalizedTitle = title.toLowerCase();
+			const existing = bookmarks.find(b => String(b.title || '').trim().toLowerCase() === normalizedTitle);
+			const entryDate = new Date().toLocaleString();
 
-			bookmarks.push(bookmark);
+			if (existing) {
+				const existingEntries = getBookmarkEntries(existing);
+				const matchedEntry = existingEntries.find(entry => entry.verse === verse);
+				if (matchedEntry) {
+					if (desc) {
+						matchedEntry.description = desc;
+					}
+					matchedEntry.id = nowId;
+					matchedEntry.date = entryDate;
+				} else {
+					existingEntries.push({
+						id: nowId,
+						verse: verse,
+						description: desc,
+						date: entryDate
+					});
+				}
+				existing.entries = existingEntries.sort((a, b) => Number(a.id || 0) - Number(b.id || 0));
+				existing.verses = existing.entries.map(entry => entry.verse);
+				existing.id = nowId;
+				existing.date = entryDate;
+				if (!existing.description && desc) {
+					existing.description = desc;
+				}
+			} else {
+				bookmarks.push({
+					id: nowId,
+					title: title,
+					description: desc,
+					entries: [{
+						id: nowId,
+						verse: verse,
+						description: desc,
+						date: entryDate
+					}],
+					verses: [verse],
+					date: entryDate
+				});
+			}
+
+			bookmarks = normalizeBookmarks(bookmarks);
 			saveBookmarks();
 			closeBookmarkModal();
-			alert('Bookmark saved successfully! ✅');
+			alert(existing ? 'Verse added under existing title ✅' : 'Bookmark saved successfully! ✅');
 			renderBookmarksDropdown();
 		}
 
@@ -3272,6 +3514,36 @@
 					alert('Bookmark deleted! ✅');
 					renderBookmarksDropdown();
 					renderBookmarksListView();
+				}
+			} else if (password !== null) {
+				alert('Invalid password! Only admin can delete.');
+			}
+		}
+
+		function deleteBookmarkVerse(groupId, verse) {
+			const password = prompt('Admin password required to delete verse bookmark:');
+			if (password === 'admin') {
+				if (confirm(`Delete verse ${verse} from this title group?`)) {
+					const groupIndex = bookmarks.findIndex(b => Number(b.id) === Number(groupId));
+					if (groupIndex === -1) return;
+
+					const entries = getBookmarkEntries(bookmarks[groupIndex]).filter(entry => entry.verse !== verse);
+					if (entries.length === 0) {
+						bookmarks.splice(groupIndex, 1);
+					} else {
+						bookmarks[groupIndex].entries = entries;
+						bookmarks[groupIndex].verses = entries.map(entry => entry.verse);
+						const latestEntry = entries.reduce((latest, current) => {
+							return Number(current.id || 0) > Number(latest.id || 0) ? current : latest;
+						}, entries[0]);
+						bookmarks[groupIndex].id = Number(latestEntry.id) || bookmarks[groupIndex].id;
+						bookmarks[groupIndex].date = latestEntry.date || bookmarks[groupIndex].date;
+					}
+
+					saveBookmarks();
+					renderBookmarksDropdown();
+					renderBookmarksListView();
+					alert('Verse bookmark deleted! ✅');
 				}
 			} else if (password !== null) {
 				alert('Invalid password! Only admin can delete.');
@@ -3302,17 +3574,28 @@
 			}
 
 			let html = '<div class="bookmarks-list">';
-			bookmarks.slice(-5).reverse().forEach(bookmark => {
+			bookmarks.slice(0, 5).forEach(bookmark => {
 				const titleDir = getTextDirection(bookmark.title);
-				const descDir = getTextDirection(bookmark.description);
+				const entries = getBookmarkEntries(bookmark);
+				const countLabel = entries.length > 1 ? ` (${entries.length})` : '';
+				const entriesHtml = entries.map(entry => {
+					const descDir = getTextDirection(entry.description);
+					return `
+						<div class="bookmark-entry-item" onclick="navigateToBookmark('${entry.verse}')">
+							<div class="bookmark-entry-head">
+								<div class="bookmark-verse">${entry.verse}</div>
+								<button class="bookmark-delete bookmark-delete-verse" onclick="event.stopPropagation();deleteBookmarkVerse(${bookmark.id}, '${entry.verse}')">✕</button>
+							</div>
+							${entry.description ? `<div class="bookmark-desc" dir="${descDir}">${entry.description}</div>` : ''}
+						</div>
+					`;
+				}).join('');
 				html += `
 					<div class="bookmark-item">
-						<div class="bookmark-info" style="cursor:pointer;" onclick="navigateToBookmark('${bookmark.verse}')">
-							<div class="bookmark-title" dir="${titleDir}">${bookmark.title}</div>
-							<div class="bookmark-verse">${bookmark.verse}</div>
-							${bookmark.description ? `<div class="bookmark-desc" dir="${descDir}">${bookmark.description}</div>` : ''}
+						<div class="bookmark-info">
+							<div class="bookmark-title" dir="${titleDir}">${bookmark.title}${countLabel}</div>
+							<div class="bookmark-entry-list">${entriesHtml}</div>
 						</div>
-						<button class="bookmark-delete" onclick="deleteBookmark(${bookmark.id})">✕</button>
 					</div>
 				`;
 			});
@@ -3334,6 +3617,12 @@
 		function openBookmarksViewModal() {
 			const modal = document.getElementById('bookmarksViewModal');
 			modal.classList.add('show');
+			const searchInput = document.getElementById('bookmarkSearchInput');
+			if (searchInput) {
+				searchInput.value = '';
+				applyInputDirection(searchInput);
+			}
+			bookmarkSearchTerm = '';
 			renderBookmarksListView();
 		}
 
@@ -3344,25 +3633,44 @@
 
 		function renderBookmarksListView() {
 			const container = document.getElementById('bookmarksListContainer');
+			const filteredBookmarks = bookmarkSearchTerm
+				? bookmarks.filter(bookmark => (bookmark.title || '').toLowerCase().includes(bookmarkSearchTerm))
+				: bookmarks;
 			
 			if (bookmarks.length === 0) {
 				container.innerHTML = '<div class="bookmarks-empty">No bookmarks yet</div>';
 				return;
 			}
 
+			if (filteredBookmarks.length === 0) {
+				container.innerHTML = '<div class="bookmarks-empty">No bookmarks match your search</div>';
+				return;
+			}
+
 			let html = '';
-			bookmarks.forEach(bookmark => {
+			filteredBookmarks.forEach(bookmark => {
 				const titleDir = getTextDirection(bookmark.title);
-				const descDir = getTextDirection(bookmark.description);
+				const entries = getBookmarkEntries(bookmark);
+				const countLabel = entries.length > 1 ? ` (${entries.length})` : '';
+				const entriesHtml = entries.map(entry => {
+					const descDir = getTextDirection(entry.description);
+					return `
+						<div class="bookmark-entry-item" onclick="navigateToBookmark('${entry.verse}')">
+							<div class="bookmark-entry-head">
+								<div class="bookmark-verse">${entry.verse}</div>
+								<button class="bookmark-delete bookmark-delete-verse" onclick="event.stopPropagation();deleteBookmarkVerse(${bookmark.id}, '${entry.verse}')">✕</button>
+							</div>
+							${entry.description ? `<div class="bookmark-desc" dir="${descDir}">${entry.description}</div>` : ''}
+							<div style="font-size:0.7rem;color:#999;margin-top:0.25rem;">${entry.date || bookmark.date}</div>
+						</div>
+					`;
+				}).join('');
 				html += `
 					<div class="bookmark-item">
-						<div class="bookmark-info" style="cursor:pointer;" onclick="navigateToBookmark('${bookmark.verse}')">
-							<div class="bookmark-title" dir="${titleDir}">${bookmark.title}</div>
-							<div class="bookmark-verse">${bookmark.verse}</div>
-							${bookmark.description ? `<div class="bookmark-desc" dir="${descDir}">${bookmark.description}</div>` : ''}
-							<div style="font-size:0.7rem;color:#999;margin-top:0.3rem;">${bookmark.date}</div>
+						<div class="bookmark-info">
+							<div class="bookmark-title" dir="${titleDir}">${bookmark.title}${countLabel}</div>
+							<div class="bookmark-entry-list">${entriesHtml}</div>
 						</div>
-						<button class="bookmark-delete" onclick="deleteBookmark(${bookmark.id})">✕</button>
 					</div>
 				`;
 			});
@@ -3490,6 +3798,14 @@
 			}
 			try {
 				firebaseApp = firebase.initializeApp(firebaseConfig);
+				// Prefer WebSocket transport to avoid .lp iframe/polling warnings in some browsers.
+				try {
+					if (firebase.database && firebase.database.INTERNAL && firebase.database.INTERNAL.forceWebSockets) {
+						firebase.database.INTERNAL.forceWebSockets();
+					}
+				} catch (transportErr) {
+					console.log('Could not force Firebase WebSockets:', transportErr.message);
+				}
 				firebaseDatabase = firebase.database();
 				firebaseReady = true;
 				console.log('✓ Firebase initialized successfully');
@@ -3512,9 +3828,10 @@
 						const data = snapshot.val();
 						if (data) {
 							const remoteBookmarks = Array.isArray(data) ? data : Object.values(data);
-							if (JSON.stringify(remoteBookmarks) !== JSON.stringify(bookmarks)) {
-								console.log('Synced bookmarks from Firebase:', remoteBookmarks.length, 'items');
-								bookmarks = remoteBookmarks.sort((a, b) => b.id - a.id);
+							const normalizedRemoteBookmarks = normalizeBookmarks(remoteBookmarks);
+							if (JSON.stringify(normalizedRemoteBookmarks) !== JSON.stringify(bookmarks)) {
+								console.log('Synced bookmarks from Firebase:', normalizedRemoteBookmarks.length, 'items');
+								bookmarks = normalizedRemoteBookmarks;
 								updateBookmarkCounter();
 								renderBookmarksDropdown();
 								renderBookmarksListView();
@@ -3555,8 +3872,7 @@
 				firebaseDatabase.ref('bookmarks').once('value', (snapshot) => {
 					const data = snapshot.val();
 					if (data) {
-						bookmarks = Array.isArray(data) ? data : Object.values(data);
-						bookmarks = bookmarks.sort((a, b) => b.id - a.id);
+						bookmarks = normalizeBookmarks(Array.isArray(data) ? data : Object.values(data));
 						console.log('Loaded', bookmarks.length, 'bookmarks from Firebase');
 					} else {
 						// No data in Firebase yet — start with empty bookmarks (do not load local file)
