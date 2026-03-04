@@ -1451,6 +1451,51 @@
 				box-shadow: 0 3px 15px rgba(255, 68, 68, 0.5);
 			}
 		}
+
+		/* Custom scrollbar styling for acknowledgements popup */
+		.acknowledgementsPopup::-webkit-scrollbar {
+			width: 8px;
+		}
+
+		.acknowledgementsPopup::-webkit-scrollbar-track {
+			background: rgba(59, 130, 246, 0.05);
+			border-radius: 10px;
+		}
+
+		.acknowledgementsPopup::-webkit-scrollbar-thumb {
+			background: linear-gradient(180deg, #3b82f6, #2563eb);
+			border-radius: 10px;
+			box-shadow: 0 0 6px rgba(59, 130, 246, 0.3);
+			transition: all 0.2s ease;
+		}
+
+		.acknowledgementsPopup::-webkit-scrollbar-thumb:hover {
+			background: linear-gradient(180deg, #2563eb, #1d4ed8);
+			box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+		}
+
+		/* Firefox scrollbar */
+		.acknowledgementsPopup {
+			scrollbar-color: #3b82f6 rgba(59, 130, 246, 0.05);
+			scrollbar-width: thin;
+		}
+
+		/* Mobile responsive adjustments */
+		@media (max-width: 480px) {
+			.acknowledgementsPopup {
+				padding: clamp(15px, 4vw, 30px) !important;
+				margin: 0.5rem !important;
+				max-width: calc(100vw - 1rem) !important;
+			}
+		}
+
+		/* Desktop responsive adjustments */
+		@media (min-width: 481px) {
+			.acknowledgementsPopup {
+				margin-top: clamp(2rem, 5vh, 4rem) !important;
+				margin-bottom: clamp(2rem, 5vh, 4rem) !important;
+			}
+		}
 	</style>
 </head>
 
@@ -2390,11 +2435,11 @@
 
 							<div style="margin-top:6px;display:flex;gap:6px;">
 								<button class="share-btn" onclick="shareVerse(${surahNum}, ${ayahNum})"
-								style="flex:1;padding:4px 8px;border:none;border-radius:6px;background:var(--accent);color:white;cursor:pointer;">
+								style="flex:1;padding:6px 10px;border:none;border-radius:6px;cursor:pointer;">
 								➦ Share
 								</button>
 								<button class="bookmark-btn-verse" onclick="addBookmarkForVerse(${surahNum}, ${ayahNum})"
-								style="flex:1;padding:4px 8px;border:none;border-radius:6px;background:#8B6914;color:white;cursor:pointer;font-weight:bold;">
+								style="flex:1;padding:6px 10px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">
 								📑 Bookmark
 								</button>
 							</div>
@@ -3103,42 +3148,62 @@
 			overlay.style.left = 0;
 			overlay.style.width = '100%';
 			overlay.style.height = '100%';
-			overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+			overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
 			overlay.style.display = 'flex';
 			overlay.style.justifyContent = 'center';
 			overlay.style.alignItems = 'center';
 			overlay.style.zIndex = '9999';
+			overlay.style.padding = 'clamp(0.5rem, 2vw, 1rem)';
+			overlay.style.boxSizing = 'border-box';
+			overlay.style.backdropFilter = 'blur(2px)';
+			// Add vertical padding for desktop view
+			if (window.innerWidth >= 481) {
+				overlay.style.paddingTop = 'clamp(2rem, 5vh, 4rem)';
+				overlay.style.paddingBottom = 'clamp(2rem, 5vh, 4rem)';
+				overlay.style.alignItems = 'flex-start';
+			}
 
 			// Create popup box
 			const popup = document.createElement('div');
-			popup.style.background = '#fff';
-			popup.style.padding = '25px 30px';
-			popup.style.borderRadius = '12px';
-			popup.style.maxWidth = '600px';
-			popup.style.width = '90%';
+			popup.classList.add('acknowledgementsPopup');
+			popup.style.background = 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)';
+			popup.style.padding = 'clamp(20px, 5vw, 40px)';
+			popup.style.borderRadius = '16px';
+			popup.style.maxWidth = '700px';
+			popup.style.width = '100%';
 			popup.style.textAlign = 'left';
-			popup.style.lineHeight = '1.6';
-			popup.style.fontFamily = 'Arial, sans-serif';
-			popup.style.color = '#333';
-			popup.style.boxShadow = '0 0 15px rgba(0,0,0,0.3)';
+			popup.style.lineHeight = '1.8';
+			popup.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+			popup.style.color = '#2c3e50';
+			popup.style.boxShadow = '0 20px 60px rgba(0, 0, 0, 0.3), 0 0 1px rgba(0, 0, 0, 0.1)';
 			popup.style.overflowY = 'auto';
-			popup.style.maxHeight = '80vh';
+			popup.style.maxHeight = '70vh';
+			popup.style.overflowX = 'hidden';
+			popup.style.border = '1px solid rgba(255, 255, 255, 0.8)';
+			popup.style.position = 'relative';
 
 			// Popup message
 			popup.innerHTML = `
-			<h2 style="text-align:center; margin-bottom: 10px;">Acknowledgements & Credits</h2>
-			<p>
+			<button id="closePopupTopRight" style="position: absolute; top: 1rem; right: 1rem; width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1.2rem; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center; padding: 0; line-height: 1;">✕</button>
+			<div style="text-align: center; margin-bottom: 2rem;"></div>
+				
+			<h2 style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-align: center; margin: 0 0 1.5rem 0; font-size: clamp(1.5rem, 5vw, 2rem); font-weight: 700; letter-spacing: -0.5px;">Acknowledgements & Credits</h2>
+			
+			<p style="font-size: clamp(0.95rem, 2vw, 1rem); color: #34495e; margin: 0 0 1.5rem 0; line-height: 1.8;">
 				I respectfully acknowledge the following sources for the Quranic content used in this website:
 			</p>
-			<ul style="margin-left: 20px;">
-				<li>Arabic text: <a href="https://qul.tarteel.ai/resources/quran-script" target="_blank">Qul Tarteel</a></li>
-				<li>Urdu text & audio: <a href="https://www.balaghulquran.com/" target="_blank">Balagh-ul-Quran</a></li>
-				<li>Urdu word-by-word text: <a href="https://equranlibrary.com/wordbyword/nazar/maududi/1/1" target="_blank">eQuran Library (Hafiz Nazar Ahmed)</a></li>
-				<li>English word-by-word and verses text: <a href="https://equranlibrary.com/wordbyword/1/1" target="_blank">eQuran Library (Sahih International)</a></li>
-				<li>Arabic and English audio verses: <a href="https://everyayah.com/" target="_blank">EveryAyah.com</a></li>
-			</ul>
+			
+			<div style="background: rgba(59, 130, 246, 0.05); border-left: 4px solid #3b82f6; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+				<ul style="margin: 0; padding-left: 1.5rem; list-style: none;">
+					<li style="margin-bottom: 0.8rem; font-size: clamp(0.9rem, 2vw, 0.95rem);"><strong>Arabic text:</strong> <a href="https://qul.tarteel.ai/resources/quran-script" target="_blank" style="color: #3b82f6; text-decoration: none; transition: color 0.2s;">Qul Tarteel</a></li>
+					<li style="margin-bottom: 0.8rem; font-size: clamp(0.9rem, 2vw, 0.95rem);"><strong>Urdu text & audio:</strong> <a href="https://www.balaghulquran.com/" target="_blank" style="color: #3b82f6; text-decoration: none; transition: color 0.2s;">Balagh-ul-Quran</a></li>
+					<li style="margin-bottom: 0.8rem; font-size: clamp(0.9rem, 2vw, 0.95rem);"><strong>Urdu word-by-word text:</strong> <a href="https://equranlibrary.com/wordbyword/nazar/maududi/1/1" target="_blank" style="color: #3b82f6; text-decoration: none; transition: color 0.2s;">eQuran Library (Hafiz Nazar Ahmed)</a></li>
+					<li style="margin-bottom: 0.8rem; font-size: clamp(0.9rem, 2vw, 0.95rem);"><strong>English word-by-word and verses text:</strong> <a href="https://equranlibrary.com/wordbyword/1/1" target="_blank" style="color: #3b82f6; text-decoration: none; transition: color 0.2s;">eQuran Library (Sahih International)</a></li>
+					<li style="margin-bottom: 0; font-size: clamp(0.9rem, 2vw, 0.95rem);"><strong>Arabic and English audio verses:</strong> <a href="https://everyayah.com/" target="_blank" style="color: #3b82f6; text-decoration: none; transition: color 0.2s;">EveryAyah.com</a></li>
+				</ul>
+			</div>
 
-			<p style="margin-top: 15px;">All respective rights of the Quranic text, translations, and recitations belong to their original sources and contributors.</p>
+			<p style="margin-top: 1.5rem; margin-bottom: 1.5rem; font-size: clamp(0.9rem, 2vw, 0.95rem); font-style: italic; color: #555; padding: 0.8rem 1rem; background: rgba(0, 0, 0, 0.02); border-radius: 8px;">All respective rights of the Quranic text, translations, and recitations belong to their original sources and contributors.</p>
 
 			<h3 style="margin-top: 20px;">Quran Audio:</h3>
 			<ul style="margin-left: 20px;">
@@ -3147,20 +3212,33 @@
 				<li>Urdu Recitation: Hussain Shaheed Mirza</li>
 			</ul>
 
-			<h3 style="margin-top: 20px;">Quran Text:</h3>
-			<ul style="margin-left: 20px;">
-				<li>Arabic Text: Allah S.W.T 🥰</li>
-				<li>Urdu Translation: Sheikh Mohsin Ali Najfi</li>
-				<li>Urdu Word-by-Word: Hafiz Nazar Ahmed</li>
-				<li>English Translation: Sahih International</li>
-			</ul>
+			<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+				<div style="background: rgba(100, 160, 255, 0.05); padding: 1rem; border-radius: 10px; border: 1px solid rgba(59, 130, 246, 0.1);">
+					<h3 style="color: #2563eb; margin: 0 0 0.8rem 0; font-size: clamp(1rem, 2.5vw, 1.1rem);">Quran Audio:</h3>
+					<ul style="margin: 0; padding-left: 1.2rem; font-size: clamp(0.85rem, 1.8vw, 0.9rem); color: #34495e;">
+						<li style="margin-bottom: 0.5rem;">Mishari Rashid Al-'Afasy</li>
+						<li style="margin-bottom: 0.5rem;">Ibrahim Walk</li>
+						<li style="margin-bottom: 0;">Hussain Shaheed Mirza</li>
+					</ul>
+				</div>
 
-			<p style="margin-top: 20px; font-size: 14px; color: #555; text-align:center;">
+				<div style="background: rgba(100, 165, 220, 0.05); padding: 1rem; border-radius: 10px; border: 1px solid rgba(59, 130, 246, 0.08);">
+					<h3 style="color: #2563eb; margin: 0 0 0.8rem 0; font-size: clamp(1rem, 2.5vw, 1.1rem);">Quran Text:</h3>
+					<ul style="margin: 0; padding-left: 1.2rem; font-size: clamp(0.85rem, 1.8vw, 0.9rem); color: #34495e;">
+						<li style="margin-bottom: 0.5rem;">Arabic Text: Allah S.W.T 🥰</li>
+						<li style="margin-bottom: 0.5rem;">Urdu Translation: Sheikh Mohsin Ali Najfi</li>
+						<li style="margin-bottom: 0.5rem;">Urdu Word-by-Word: Hafiz Nazar Ahmed</li>
+						<li style="margin-bottom: 0;">English Translation: Sahih International</li>
+					</ul>
+				</div>
+			</div>
+
+			<p style="margin-top: 1.5rem; font-size: clamp(0.85rem, 1.8vw, 0.9rem); color: #666; text-align: center; font-weight: 500;">
 				This acknowledgment is made with deep respect and gratitude to all contributors.
 			</p>
 
-			<div style="text-align:center; margin-top: 20px;">
-				<button id="closePopup" style="background:#007BFF; color:#fff; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">Close</button>
+			<div style="text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(0, 0, 0, 0.05);">
+				<button id="closePopup" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: none; padding: clamp(8px, 2vw, 12px) clamp(16px, 3vw, 24px); border-radius: 8px; cursor: pointer; font-weight: 600; font-size: clamp(0.9rem, 2vw, 1rem); transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);">Close</button>
 			</div>
 			`;
 
@@ -3170,6 +3248,11 @@
 
 			// Close popup button
 			document.getElementById('closePopup').addEventListener('click', function () {
+				document.body.removeChild(overlay);
+			});
+
+			// Close popup button (top right)
+			document.getElementById('closePopupTopRight').addEventListener('click', function () {
 				document.body.removeChild(overlay);
 			});
 		});
@@ -3368,14 +3451,14 @@
 			const username = document.getElementById('authUsername').value.trim();
 			const password = document.getElementById('authPassword').value.trim();
 			
-			if (username === 'admin' && password === 'admin') {
+			if (username === 'quran' && password === 'quran') {
 				isAuthenticated = true;
 				closeAuthModal();
 				setTimeout(() => {
 					getCurrentVerse();
 				}, 300);
 			} else {
-				alert('Invalid credentials! Please use admin/admin');
+				alert('Invalid credentials! Only admin can add bookmarks.');
 				document.getElementById('authPassword').value = '';
 				document.getElementById('authUsername').focus();
 			}
@@ -3507,7 +3590,7 @@
 		function deleteBookmark(id) {
 			// Require admin authentication to delete
 			const password = prompt('Admin password required to delete bookmark:');
-			if (password === 'admin') {
+			if (password === 'quran') {
 				if (confirm('Delete this bookmark?')) {
 					bookmarks = bookmarks.filter(b => b.id !== id);
 					saveBookmarks();
@@ -3522,7 +3605,7 @@
 
 		function deleteBookmarkVerse(groupId, verse) {
 			const password = prompt('Admin password required to delete verse bookmark:');
-			if (password === 'admin') {
+			if (password === 'quran') {
 				if (confirm(`Delete verse ${verse} from this title group?`)) {
 					const groupIndex = bookmarks.findIndex(b => Number(b.id) === Number(groupId));
 					if (groupIndex === -1) return;
