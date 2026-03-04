@@ -3559,17 +3559,7 @@
 			const dropdown = document.getElementById('bookmarksDropdown');
 			
 			if (bookmarks.length === 0) {
-				dropdown.innerHTML = `
-					<div class="bookmarks-empty">No bookmarks</div>
-					<div style="padding:0.5rem;text-align:center;">
-						<button class="modal-btn btn-primary" onclick="startAddBookmark()" style="width:100%;margin-bottom:0.5rem;">
-							📑 Add Bookmark
-						</button>
-						<button class="modal-btn btn-secondary" onclick="openBookmarksViewModal()" style="width:100%;">
-							📖 View All
-						</button>
-					</div>
-				`;
+				dropdown.innerHTML = '';
 				return;
 			}
 
@@ -3600,16 +3590,6 @@
 				`;
 			});
 			html += '</div>';
-			html += `
-				<div style="padding:0.5rem;display:flex;gap:0.5rem;">
-					<button class="modal-btn btn-primary" onclick="startAddBookmark()" style="flex:1;">
-						➕ Add
-					</button>
-					<button class="modal-btn btn-secondary" onclick="openBookmarksViewModal()" style="flex:1;">
-						📖 View All
-					</button>
-				</div>
-			`;
 
 			dropdown.innerHTML = html;
 		}
@@ -3721,17 +3701,30 @@
 				return;
 			}
 
+			// Generate filename with timestamp: bookmarks_dd_MM_yyyy_EEEE_hh-mm-ss_a.json
+			const now = new Date();
+			const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+			const dd = String(now.getDate()).padStart(2, '0');
+			const MM = String(now.getMonth() + 1).padStart(2, '0');
+			const yyyy = now.getFullYear();
+			const EEEE = days[now.getDay()];
+			const hh = String(now.getHours() % 12 || 12).padStart(2, '0');
+			const mm = String(now.getMinutes()).padStart(2, '0');
+			const ss = String(now.getSeconds()).padStart(2, '0');
+			const a = now.getHours() >= 12 ? 'PM' : 'AM';
+			const filename = `bookmarks_${dd}_${MM}_${yyyy}_${EEEE}_${hh}-${mm}-${ss}_${a}.json`;
+
 			const dataStr = JSON.stringify(bookmarks, null, 2);
 			const dataBlob = new Blob([dataStr], { type: 'application/json' });
 			const url = URL.createObjectURL(dataBlob);
 			const link = document.createElement('a');
 			link.href = url;
-			link.download = 'bookmarks.json';
+			link.download = filename;
 			document.body.appendChild(link);
 			link.click();
 			document.body.removeChild(link);
 			URL.revokeObjectURL(url);
-			alert('Bookmarks exported to bookmarks.json ✅\nReplace the existing file in your project directory.');
+			alert(`Bookmarks exported to:\n\t${filename} ✅`);
 		}
 
 		// Initialize bookmarks on page load — wait for Firebase init attempt first
@@ -3867,7 +3860,7 @@
 
 		// Load bookmarks - First try Firebase (if available), then fallback to local JSON
 		function loadBookmarks() {
-			// Only use Firebase as the primary source. Do NOT auto-load local bookmarks.json.
+			// Only use Firebase as the primary source.
 			if (firebaseReady && firebaseDatabase) {
 				firebaseDatabase.ref('bookmarks').once('value', (snapshot) => {
 					const data = snapshot.val();
@@ -3888,8 +3881,8 @@
 					renderBookmarksDropdown();
 				});
 			} else {
-				// Firebase wasn't initialized — start empty rather than loading bookmarks.json
-				console.log('Firebase not initialized — starting with empty bookmarks (not loading bookmarks.json)');
+				// Firebase wasn't initialized
+				console.log('Firebase not initialized — starting with empty bookmarks.');
 				bookmarks = [];
 				updateBookmarkCounter();
 				renderBookmarksDropdown();
