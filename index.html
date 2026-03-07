@@ -3305,7 +3305,7 @@
 				return bookmark.verses
 					.map(v => String(v || '').trim())
 					.filter(Boolean)
-					.map(v => ({
+					.map(v => ({ 
 						id: Number(bookmark?.id) || Date.now(),
 						verse: v,
 						description: String(bookmark?.description || '').trim(),
