@@ -1496,6 +1496,48 @@
 				margin-bottom: clamp(2rem, 5vh, 4rem) !important;
 			}
 		}
+		@media (min-width: 768px) {
+			.verse {
+				display: flex;
+				flex-direction: column;
+				align-items: stretch;
+				gap: 12px;
+			}
+
+			.verse-content {
+				display: flex;
+				justify-content: space-between;
+				align-items: flex-start;
+				gap: 20px;
+			}
+
+			.arabic-section {
+				flex: 1;
+				text-align: right;
+				direction: rtl;
+			}
+
+			.translation-section {
+				flex: 1;
+				text-align: left;
+				direction: ltr;
+			}
+
+			.verse-audios {
+				display: flex;
+				justify-content: space-between;
+				gap: 20px;
+			}
+
+			.verse-audios audio {
+				flex: 1;
+			}
+
+			.wbw {
+				width: 100%;
+			}
+		}
+
 	</style>
 </head>
 
@@ -2244,29 +2286,31 @@
 				versesHtml += `
 					<div class='verse' id="verse-${ayahNum}" style="position: relative; margin-top: 16px;">
 						<div class="verse-number">${currentSurah}:${ayahNum}</div>
-						<div class="arabic-text" style=" margin-top : 5px; font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
-
-						<audio controls preload="none"
-							id="audio-ar-${ayahNum}"
-							onended="playNext('arabic', ${ayahNum})"
-							onplay="handleAudioPlay(this, 'arabic')"
-							style="width:100%;margin-top:6px;">
-							<source src="${audioUrl}" type="audio/mpeg">
-							Your browser does not support the audio element.
-						</audio>
-
+						<div class="verse-content">
+							<div class="arabic-section">
+								<div class="arabic-text" style="margin-top: 5px; font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
+								<audio controls preload="none"
+									id="audio-ar-${ayahNum}"
+									onended="playNext('arabic', ${ayahNum})"
+									onplay="handleAudioPlay(this, 'arabic')"
+									style="width:100%;margin-top:6px;">
+									<source src="${audioUrl}" type="audio/mpeg">
+									Your browser does not support the audio element.
+								</audio>
+							</div>
+							<div class="translation-section">
+								${translationHtml}
+								<audio controls preload="none"
+									id="audio-ur-${ayahNum}"
+									onended="playNext('urdu', ${ayahNum})"
+									onplay="handleAudioPlay(this, 'urdu')"
+									style="width:100%;margin-top:6px;">
+									<source src="${translationAudioUrl}" type="audio/mpeg">
+									Your browser does not support the audio element.
+								</audio>
+							</div>
+						</div>
 						${wbwHtml}
-						${translationHtml}
-
-						<audio controls preload="none"
-							id="audio-ur-${ayahNum}"
-							onended="playNext('urdu', ${ayahNum})"
-							onplay="handleAudioPlay(this, 'urdu')"
-							style="width:100%;margin-top:6px;">
-							<source src="${translationAudioUrl}" type="audio/mpeg">
-							Your browser does not support the audio element.
-						</audio>
-						${hashiyahHtml}
 						<div style="margin-top:6px;display:flex;gap:6px;">
 							<button class="share-btn" onclick="shareVerse(${currentSurah}, ${ayahNum})"
 							style="flex:1;padding:6px 10px;border:none;border-radius:6px;cursor:pointer;">
@@ -2278,7 +2322,7 @@
 							</button>
 						</div>
 					</div>
-					`;
+				`;
 			});
 			// intro audio injection (keeps existing logic)
 			if (parseInt(currentSurah) !== 1 && parseInt(currentSurah) !== 9) {
@@ -2408,31 +2452,31 @@
 				versesHtml += `
 						<div class='verse' id="verse-${surahNum}-${ayahNum}" style="position: relative; margin-top: 16px;">
 							<div class="verse-number">${surahNum}:${ayahNum}</div>
-							<div class="arabic-text" style="margin-top : 5px; font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
-
-							<audio controls preload="none"
-							id="audio-ar-${surahNum}-${ayahNum}"
-							onended="playNext('arabic', ${ayahNum}, ${surahNum})"
-							onplay="handleAudioPlay(this, 'arabic', ${surahNum})"
-							style="width:100%;margin-top:6px;">
-							<source src="${audioUrl}" type="audio/mpeg">
-							Your browser does not support the audio element.
-							</audio>
-
+							<div class="verse-content">
+								<div class="arabic-section">
+									<div class="arabic-text" style="margin-top: 5px; font-size:${arabicFontSize}rem; font-family:${arabicFont}">${ayahObj.text}</div>
+									<audio controls preload="none"
+										id="audio-ar-${surahNum}-${ayahNum}"
+										onended="playNext('arabic', ${ayahNum}, ${surahNum})"
+										onplay="handleAudioPlay(this, 'arabic', ${surahNum})"
+										style="width:100%;margin-top:6px;">
+										<source src="${audioUrl}" type="audio/mpeg">
+										Your browser does not support the audio element.
+									</audio>
+								</div>
+								<div class="translation-section">
+									${translationHtml}
+									<audio controls preload="none"
+										id="audio-ur-${surahNum}-${ayahNum}"
+										onended="playNext('urdu', ${ayahNum}, ${surahNum})"
+										onplay="handleAudioPlay(this, 'urdu', ${surahNum})"
+										style="width:100%;margin-top:6px;">
+										<source src="${translationAudioUrl}" type="audio/mpeg">
+										Your browser does not support the audio element.
+									</audio>
+								</div>
+							</div>
 							${wbwHtml}
-							${translationHtml}
-
-							<audio controls preload="none"
-							id="audio-ur-${surahNum}-${ayahNum}"
-							onended="playNext('urdu', ${ayahNum}, ${surahNum})"
-							onplay="handleAudioPlay(this, 'urdu', ${surahNum})"
-							style="width:100%;margin-top:6px;">
-							<source src="${translationAudioUrl}" type="audio/mpeg">
-							Your browser does not support the audio element.
-							</audio>
-
-							${hashiyahHtml}
-
 							<div style="margin-top:6px;display:flex;gap:6px;">
 								<button class="share-btn" onclick="shareVerse(${surahNum}, ${ayahNum})"
 								style="flex:1;padding:6px 10px;border:none;border-radius:6px;cursor:pointer;">
@@ -2444,7 +2488,7 @@
 								</button>
 							</div>
 						</div>
-						`;
+					`;
 			});
 			// pagination html (unchanged)
 			let paginationHtml = `<div style="margin-top:1rem;display:flex;flex-direction:column;align-items:center;gap:6px;">`;
