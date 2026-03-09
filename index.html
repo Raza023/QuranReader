@@ -30,6 +30,12 @@
 			font-display: swap;
 		}
 
+		@font-face {
+			font-family: 'noto';
+			src: url('src/fonts/noto/font.ttf') format('truetype');
+			font-display: swap;
+		}
+
 		:root {
 			/* === Light mode sepia theme === */
 			--bg-light: #f4ecd8;
@@ -332,12 +338,13 @@
 		}
 
 		.translation {
+			line-height: 2;
 			font-size: 1rem;
 			color: #5a4630;
 			text-align: right;
 			direction: rtl;
 			margin-top: 0.5rem;
-			font-family: 'Noto Nastaliq Urdu', serif;
+			font-family: 'noto', serif;
 		}
 
 		body.dark .translation {
@@ -345,11 +352,12 @@
 		}
 
 		.hashiyah {
+			line-height: 2;
 			color: #1d7b02;
 			text-align: right;
 			direction: rtl;
 			margin-top: 0.4rem;
-			font-family: 'Noto Nastaliq Urdu';
+			font-family: 'noto', serif;
 		}
 
 		body.dark .hashiyah {
@@ -367,7 +375,7 @@
 
 		.wbw span {
 			background: #fdc289;
-			padding: 3px 6px;
+			padding: 10px 6px;
 			border-radius: 6px;
 			text-align: center;
 		}
@@ -1977,7 +1985,7 @@
 			}
 		}
 		function changeFontSize(delta) {
-			arabicFontSize += 0.1 * delta;
+			arabicFontSize += 0.15 * delta;
 			urduFontSize += 0.1 * delta;
 			wbwArabicFontSize += 0.1 * delta;
 			wbwUrduFontSize += 0.1 * delta;
@@ -2250,7 +2258,7 @@
 							${wbwAyah.map(word => `
 								<span>
 									<div style="font-family:${arabicFont}; font-size:${wbwArabicFontSize}rem;">${word.arabic}</div>
-									<div style="font-family:'Noto Nastaliq Urdu', serif; font-size:${wbwUrduFontSize}rem;">${word.urdu}</div>
+									<div style="font-family:'noto', serif; font-size:${wbwUrduFontSize}rem;">${word.urdu}</div>
 								</span>
 								`).join('')}
 							</div>`;
@@ -2267,7 +2275,7 @@
 					}
 				} else {
 					if (tData.urdu) {
-						translationHtml = `<div class='translation' style="font-size:${urduFontSize}rem; direction:rtl; text-align: right; font-family: 'Noto Nastaliq Urdu', serif;">${tData.urdu}</div>`;
+						translationHtml = `<div class='translation' style="font-size:${urduFontSize}rem; direction:rtl; text-align: right; font-family: 'noto', serif;">${tData.urdu}</div>`;
 					}
 				}
 
@@ -2311,6 +2319,7 @@
 							</div>
 						</div>
 						${wbwHtml}
+						${hashiyahHtml}
 						<div style="margin-top:6px;display:flex;gap:6px;">
 							<button class="share-btn" onclick="shareVerse(${currentSurah}, ${ayahNum})"
 							style="flex:1;padding:6px 10px;border:none;border-radius:6px;cursor:pointer;">
@@ -2423,7 +2432,7 @@
 							${wbwAyah.map(word => `
 							<span>
 								<div style="font-family:${arabicFont}; font-size:${wbwArabicFontSize}rem;">${word.arabic}</div>
-								<div style="font-family:'Noto Nastaliq Urdu', serif; font-size:${wbwUrduFontSize}rem;">${word.urdu}</div>
+								<div style="font-family:'noto', serif; font-size:${wbwUrduFontSize}rem;">${word.urdu}</div>
 							</span>
 							`).join('')}
 						</div>`;
@@ -2436,7 +2445,7 @@
 					const engTrans = (typeof wbwEnglish !== "undefined" && wbwEnglish?.[surahNum]?.[ayahNum]?.translation) ? wbwEnglish[surahNum][ayahNum].translation : null;
 					if (engTrans) translationHtml = `<div class='translation' style="font-size:${urduFontSize}rem; direction:ltr; text-align:left; font-family: Arial, sans-serif;">${engTrans}</div>`;
 				} else {
-					if (tData.urdu) translationHtml = `<div class='translation' style="font-size:${urduFontSize}rem; direction:rtl; text-align:right; font-family:'Noto Nastaliq Urdu', serif;">${tData.urdu}</div>`;
+					if (tData.urdu) translationHtml = `<div class='translation' style="font-size:${urduFontSize}rem; direction:rtl; text-align:right; font-family:'noto', serif;">${tData.urdu}</div>`;
 				}
 				// hashiyah only for Urdu
 				let hashiyahHtml = "";
@@ -2477,6 +2486,7 @@
 								</div>
 							</div>
 							${wbwHtml}
+							${hashiyahHtml}
 							<div style="margin-top:6px;display:flex;gap:6px;">
 								<button class="share-btn" onclick="shareVerse(${surahNum}, ${ayahNum})"
 								style="flex:1;padding:6px 10px;border:none;border-radius:6px;cursor:pointer;">
