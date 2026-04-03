@@ -1778,7 +1778,7 @@
 			<button id="repeatSurahBtn" class="toggle-theme" aria-label="Repeat Surah Mode"
 				data-tooltip="Repeat Mode"></button>
 			<button class="toggle-theme bookmark-btn" id="bookmarkBtn" aria-label="Bookmarks"
-				data-tooltip="My Bookmarks" onclick="toggleBookmarksDropdown()">
+				data-tooltip="My Bookmarks" onclick="openBookmarksViewModal()">
 				📑 <span class="bookmark-counter" id="bookmarkCounter" style="display:none;">0</span>
 			</button>
 			<div id="bookmarksDropdown" class="bookmarks-dropdown"></div>
@@ -3596,17 +3596,6 @@
 			el.style.textAlign = dir === 'rtl' ? 'right' : 'left';
 		}
 
-		function getBookmarkVerses(bookmark) {
-			if (!bookmark) return [];
-			if (Array.isArray(bookmark.verses)) {
-				return [...new Set(bookmark.verses.map(v => String(v || '').trim()).filter(Boolean))];
-			}
-			if (bookmark.verse) {
-				return [String(bookmark.verse).trim()].filter(Boolean);
-			}
-			return [];
-		}
-
 		function getBookmarkEntries(bookmark) {
 			if (!bookmark) return [];
 
@@ -3720,14 +3709,6 @@
 		function onBookmarkSearchInput(el) {
 			applyInputDirection(el);
 			setBookmarkSearchTerm(el.value);
-		}
-
-		function startAddBookmark() {
-			if (!isAuthenticated) {
-				openAuthModal();
-			} else {
-				getCurrentVerse();
-			}
 		}
 
 		function addBookmarkForVerse(surah, ayah) {
@@ -4063,14 +4044,9 @@
 			}
 		}
 
-		function toggleBookmarksDropdown() {
-			// Open My Bookmarks modal directly
-			openBookmarksViewModal();
-		}
-
 		function renderBookmarksDropdown() {
 			const dropdown = document.getElementById('bookmarksDropdown');
-
+			
 			if (bookmarks.length === 0) {
 				dropdown.innerHTML = '';
 				return;
