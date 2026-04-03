@@ -233,6 +233,81 @@
 			color: #60a5fa;
 		}
 
+		/* Logout Confirm Box Specifically */
+		.logout-confirm-box {
+			max-width: 320px;
+			border-radius: 20px;
+			overflow: hidden;
+			animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+		}
+
+		@keyframes scaleIn {
+			0% { transform: scale(0.9); opacity: 0; }
+			100% { transform: scale(1); opacity: 1; }
+		}
+
+		.logout-icon-wrap {
+			font-size: 3rem;
+			margin: 0.5rem 0 1rem 0;
+			filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
+		}
+
+		.logout-confirm-box .modal-footer {
+			border-top: none;
+			gap: 12px;
+			margin-top: 0.5rem;
+		}
+
+		/* Toast Notification Stylings */
+		.toast-container {
+			position: fixed;
+			top: 24px;
+			left: 50%;
+			transform: translateX(-50%);
+			z-index: 9999;
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+			width: 100%;
+			max-width: 380px;
+			pointer-events: none;
+		}
+
+		.toast {
+			padding: 12px 20px;
+			border-radius: 12px;
+			background: var(--card-bg);
+			color: var(--text);
+			box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+			border: 1px solid var(--border);
+			font-family: inherit;
+			font-size: 0.95rem;
+			font-weight: 500;
+			text-align: center;
+			pointer-events: auto;
+			animation: toast-in 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28), toast-out 0.4s 3.6s forwards;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 10px;
+		}
+
+		body.dark .toast {
+			background: rgba(30, 41, 59, 0.95);
+			box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+			border: 1px solid rgba(255, 255, 255, 0.1);
+		}
+
+		@keyframes toast-in {
+			from { transform: translateY(-40px); opacity: 0; }
+			to { transform: translateY(0); opacity: 1; }
+		}
+
+		@keyframes toast-out {
+			from { transform: translateY(0); opacity: 1; }
+			to { transform: translateY(-40px); opacity: 0; }
+		}
+
 		.header-title {
 			font-weight: bold;
 			font-size: 1.5rem;
@@ -931,7 +1006,7 @@
 				radial-gradient(circle at 20% 20%, rgba(205, 133, 63, 0.22), transparent 42%),
 				radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.18), transparent 45%),
 				rgba(0, 0, 0, 0.62);
-			backdrop-filter: blur(3px);
+			border: none;
 			align-items: center;
 			justify-content: center;
 		}
@@ -1826,6 +1901,24 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- Logout Confirmation Modal -->
+	<div id="logoutModal" class="modal">
+		<div class="modal-content logout-confirm-box">
+			<div class="modal-header" style="justify-content: center; font-size: 1.4rem;">Confirm Logout</div>
+			<div class="modal-body" style="text-align: center; padding: 1.5rem 0.5rem;">
+				<div class="logout-icon-wrap">🚪</div>
+				<p>Are you sure you want to log out of your account?</p>
+			</div>
+			<div class="modal-footer" style="padding-top: 0.5rem;">
+				<button class="modal-btn btn-secondary" onclick="closeLogoutModal()" style="flex:1;">Stay Logged In</button>
+				<button class="modal-btn btn-primary" onclick="confirmLogout()" style="flex:1; background: #e74c3c;">Log Out</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Toast Notification Container -->
+	<div id="toastContainer" class="toast-container"></div>
 
 	<script src="src/script/surahmeta.js"></script>
 	<script src="src/script/indopak.js"></script>
@@ -3462,6 +3555,28 @@
 			});
 		});
 
+		// === CUSTOM ALERT / TOAST SYSTEM ===
+		function showToast(message, duration = 3000) {
+			const container = document.getElementById('toastContainer');
+			if (!container) return;
+
+			const toast = document.createElement('div');
+			toast.className = 'toast';
+			toast.innerHTML = `<span>✨</span> <span>${message}</span>`;
+			
+			container.appendChild(toast);
+			
+			// Remove from DOM after duration
+			setTimeout(() => {
+				toast.remove();
+			}, duration + 1000); 
+		}
+
+		// Overwrite standard alert
+		window.alert = function(msg) {
+			showToast(msg);
+		};
+
 		// === BOOKMARK FUNCTIONALITY ===
 		let bookmarks = [];
 		let isAuthenticated = false;
@@ -3752,18 +3867,33 @@
 
 		function handleAuthClick() {
 			if (isAuthenticated) {
-				if (confirm('Are you sure you want to logout?')) {
-					firebase.auth().signOut().then(() => {
-						bookmarks = [];
-						updateBookmarkCounter();
-						renderBookmarksDropdown();
-						renderBookmarksListView();
-						alert('Logged out successfully');
-					});
-				}
+				openLogoutModal();
 			} else {
 				openAuthModal();
 			}
+		}
+
+		function openLogoutModal() {
+			const modal = document.getElementById('logoutModal');
+			modal.classList.add('show');
+		}
+
+		function closeLogoutModal() {
+			const modal = document.getElementById('logoutModal');
+			modal.classList.remove('show');
+		}
+
+		function confirmLogout() {
+			closeLogoutModal();
+			firebase.auth().signOut().then(() => {
+				bookmarks = [];
+				updateBookmarkCounter();
+				renderBookmarksDropdown();
+				renderBookmarksListView();
+				alert('Logged out successfully');
+			}).catch(err => {
+				console.error("Logout error:", err);
+			});
 		}
 
 		function getCurrentVerse() {
@@ -4151,6 +4281,7 @@
 				document.getElementById('bookmarkModal').classList.remove('show');
 				document.getElementById('bookmarksViewModal').classList.remove('show');
 				document.getElementById('bookmarksDropdown').classList.remove('show');
+				document.getElementById('logoutModal').classList.remove('show');
 			}
 		});
 
