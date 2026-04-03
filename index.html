@@ -158,7 +158,7 @@
 			height: 40px;
 			color: white;
 			margin-left: 8px;
-			box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 		}
 
 		.auth-status-btn:hover {
@@ -193,11 +193,21 @@
 			min-height: 1rem;
 		}
 
-		.validation-feedback.invalid { color: #ff6b6b; }
-		.validation-feedback.valid { color: #4caf50; }
-		
-		body.dark .validation-feedback.invalid { color: #f87171; }
-		body.dark .validation-feedback.valid { color: #4ade80; }
+		.validation-feedback.invalid {
+			color: #ff6b6b;
+		}
+
+		.validation-feedback.valid {
+			color: #4caf50;
+		}
+
+		body.dark .validation-feedback.invalid {
+			color: #f87171;
+		}
+
+		body.dark .validation-feedback.valid {
+			color: #4ade80;
+		}
 
 		.modal-switch {
 			margin-top: 1rem;
@@ -205,8 +215,10 @@
 			font-size: 0.9rem;
 			color: var(--text-light);
 		}
-		
-		body.dark .modal-switch { color: #e2e8f0; }
+
+		body.dark .modal-switch {
+			color: #e2e8f0;
+		}
 
 		.modal-switch-btn {
 			color: var(--accent-light);
@@ -217,7 +229,9 @@
 			padding: 0 4px;
 		}
 
-		body.dark .modal-switch-btn { color: #60a5fa; }
+		body.dark .modal-switch-btn {
+			color: #60a5fa;
+		}
 
 		.header-title {
 			font-weight: bold;
@@ -931,6 +945,7 @@
 			from {
 				opacity: 0;
 			}
+
 			to {
 				opacity: 1;
 			}
@@ -956,6 +971,7 @@
 				opacity: 0;
 				transform: translateY(16px) scale(0.98);
 			}
+
 			to {
 				opacity: 1;
 				transform: translateY(0) scale(1);
@@ -1450,6 +1466,7 @@
 				opacity: 0;
 				transform: translateY(-8px);
 			}
+
 			to {
 				opacity: 1;
 				transform: translateY(0);
@@ -1492,21 +1509,21 @@
 		.share-btn:hover,
 		.bookmark-btn-verse:hover {
 			transform: translateY(-2px);
-			box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+			box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
 		}
 
 		body.dark .share-btn,
 		body.dark .bookmark-btn-verse {
 			background: #3b82f6;
 			color: white;
-			box-shadow: 0 6px 18px rgba(59,130,246,0.18);
+			box-shadow: 0 6px 18px rgba(59, 130, 246, 0.18);
 		}
 
 		body:not(.dark) .share-btn,
 		body:not(.dark) .bookmark-btn-verse {
 			background: #8B6914;
 			color: white;
-			box-shadow: 0 6px 18px rgba(139,105,20,0.12);
+			box-shadow: 0 6px 18px rgba(139, 105, 20, 0.12);
 		}
 
 		.bookmark-btn-verse:disabled {
@@ -1541,9 +1558,12 @@
 		}
 
 		@keyframes pulse {
-			0%, 100% {
+
+			0%,
+			100% {
 				box-shadow: 0 3px 10px rgba(255, 68, 68, 0.3);
 			}
+
 			50% {
 				box-shadow: 0 3px 15px rgba(255, 68, 68, 0.5);
 			}
@@ -1593,6 +1613,7 @@
 				margin-bottom: clamp(2rem, 5vh, 4rem) !important;
 			}
 		}
+
 		@media (min-width: 768px) {
 			.verse {
 				display: flex;
@@ -1634,7 +1655,6 @@
 				width: 100%;
 			}
 		}
-
 	</style>
 </head>
 
@@ -1647,7 +1667,10 @@
 		<div class="header-title-container">
 			<div class="header-title">Quran Majeed</div>
 			<button id="authHeaderBtn" class="auth-status-btn" onclick="handleAuthClick()" title="Login/Signup">
-				<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+				<svg viewBox="0 0 24 24">
+					<path
+						d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z" />
+				</svg>
 			</button>
 			<select id="repeatSelect" aria-label="Repeat Count">
 				<option value="1" selected>Repeat 1x</option>
@@ -1740,7 +1763,8 @@
 				</div>
 				<div class="form-group">
 					<label>Password:</label>
-					<input type="password" id="signupPassword" placeholder="Strong password" oninput="validateSignupPassword()">
+					<input type="password" id="signupPassword" placeholder="Strong password"
+						oninput="validateSignupPassword()">
 					<span id="signupPasswordFeedback" class="validation-feedback"></span>
 				</div>
 				<div class="modal-switch">
@@ -1783,18 +1807,14 @@
 	<div id="bookmarksViewModal" class="modal">
 		<div class="modal-content">
 			<div class="modal-header">
-				My Bookmarks 
+				My Bookmarks
 				<button class="modal-btn btn-secondary modal-download-btn" onclick="downloadBookmarks()">
 					⬇️ JSON
 				</button>
 			</div>
 			<div class="modal-body">
 				<div class="bookmark-search-wrap">
-					<input
-						type="text"
-						id="bookmarkSearchInput"
-						dir="ltr"
-						placeholder="Search bookmarks by title..."
+					<input type="text" id="bookmarkSearchInput" dir="ltr" placeholder="Search bookmarks by title..."
 						oninput="onBookmarkSearchInput(this)" />
 				</div>
 				<div id="bookmarksListContainer" class="bookmarks-list">
@@ -3490,7 +3510,7 @@
 				return bookmark.verses
 					.map(v => String(v || '').trim())
 					.filter(Boolean)
-					.map(v => ({ 
+					.map(v => ({
 						id: Number(bookmark?.id) || Date.now(),
 						verse: v,
 						description: String(bookmark?.description || '').trim(),
@@ -3599,9 +3619,9 @@
 			const surahStr = String(surah).padStart(3, '0');
 			const ayahStr = String(ayah).padStart(3, '0');
 			const verseRef = `${surahStr}:${ayahStr}`;
-			
+
 			document.getElementById('bookmarkVerse').value = verseRef;
-			
+
 			if (!isAuthenticated) {
 				openAuthModal();
 			} else {
@@ -3614,7 +3634,7 @@
 			const modal = document.getElementById('authModal');
 			modal.classList.add('show');
 			document.getElementById('authUsername').focus();
-			
+
 			document.getElementById('authUsername').onkeypress = (e) => {
 				if (e.key === 'Enter') document.getElementById('authPassword').focus();
 			};
@@ -3703,7 +3723,7 @@
 				await userCredential.user.updateProfile({ displayName: name });
 				closeSignupModal();
 				alert(`Welcome ${name}! Your account has been created successfully.`);
-				loadBookmarks(); 
+				loadBookmarks();
 			} catch (error) {
 				alert('Signup failed: ' + error.message);
 			}
@@ -3712,7 +3732,7 @@
 		async function verifyAuth() {
 			const username = document.getElementById('authUsername').value.trim();
 			const password = document.getElementById('authPassword').value.trim();
-			
+
 			if (!username || !password) {
 				alert('Please enter both email/username and password');
 				return;
@@ -3749,7 +3769,7 @@
 		function getCurrentVerse() {
 			let surah = currentSurah || 1;
 			let ayah = 1;
-			
+
 			// Try to get current visible verse from page
 			if (currentViewMode === 'surah') {
 				// In surah view, get from localStorage or first verse
@@ -3773,7 +3793,7 @@
 			const surahStr = String(surah).padStart(3, '0');
 			const ayahStr = String(ayah).padStart(3, '0');
 			const verseRef = `${surahStr}:${ayahStr}`;
-			
+
 			document.getElementById('bookmarkVerse').value = verseRef;
 			openBookmarkModal();
 		}
@@ -3790,7 +3810,7 @@
 			titleInput.oninput = () => applyInputDirection(titleInput);
 			descInput.oninput = () => applyInputDirection(descInput);
 			titleInput.focus();
-			
+
 			// Add Enter key support for title field
 			titleInput.onkeypress = (e) => {
 				if (e.key === 'Enter' && e.ctrlKey) {
@@ -3920,7 +3940,7 @@
 
 		function renderBookmarksDropdown() {
 			const dropdown = document.getElementById('bookmarksDropdown');
-			
+
 			if (bookmarks.length === 0) {
 				dropdown.innerHTML = '';
 				return;
@@ -3979,7 +3999,7 @@
 			const filteredBookmarks = bookmarkSearchTerm
 				? bookmarks.filter(bookmark => (bookmark.title || '').toLowerCase().includes(bookmarkSearchTerm))
 				: bookmarks;
-			
+
 			if (bookmarks.length === 0) {
 				container.innerHTML = '<div class="bookmarks-empty">No bookmarks yet</div>';
 				return;
@@ -4117,7 +4137,7 @@
 		document.addEventListener('click', (e) => {
 			const bookmarkBtn = document.getElementById('bookmarkBtn');
 			const dropdown = document.getElementById('bookmarksDropdown');
-			
+
 			if (!e.target.closest('.bookmark-btn') && !e.target.closest('.bookmarks-dropdown')) {
 				dropdown.classList.remove('show');
 			}
@@ -4165,7 +4185,7 @@
 				firebaseDatabase = firebase.database();
 				firebaseReady = true;
 				console.log('✓ Firebase initialized successfully');
-				
+
 				// Setup Authentication listener
 				firebase.auth().onAuthStateChanged((user) => {
 					const authBtn = document.getElementById('authHeaderBtn');
