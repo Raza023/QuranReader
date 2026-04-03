@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -137,6 +137,87 @@
 				padding: 1rem 2rem;
 			}
 		}
+
+		.header-title-container {
+			display: flex;
+			align-items: center;
+			gap: 1rem;
+		}
+
+		.auth-status-btn {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 8px;
+			border-radius: 50%;
+			background: rgba(255, 255, 255, 0.15);
+			border: 1px solid rgba(255, 255, 255, 0.2);
+			cursor: pointer;
+			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			width: 40px;
+			height: 40px;
+			color: white;
+			margin-left: 8px;
+			box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		}
+
+		.auth-status-btn:hover {
+			background: white;
+			color: var(--accent);
+			transform: translateY(-2px);
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+			border-color: white;
+		}
+
+		.auth-status-btn.logged-in {
+			border-color: #2ecc71;
+			background: rgba(46, 204, 113, 0.2);
+		}
+
+		.auth-status-btn.logged-in:hover {
+			background: #e21c15;
+			color: white;
+			border-color: #e21c15;
+		}
+
+		.auth-status-btn svg {
+			width: 22px;
+			height: 22px;
+			fill: currentColor;
+		}
+
+		.validation-feedback {
+			font-size: 0.75rem;
+			margin-top: 4px;
+			display: block;
+			min-height: 1rem;
+		}
+
+		.validation-feedback.invalid { color: #ff6b6b; }
+		.validation-feedback.valid { color: #4caf50; }
+		
+		body.dark .validation-feedback.invalid { color: #f87171; }
+		body.dark .validation-feedback.valid { color: #4ade80; }
+
+		.modal-switch {
+			margin-top: 1rem;
+			text-align: center;
+			font-size: 0.9rem;
+			color: var(--text-light);
+		}
+		
+		body.dark .modal-switch { color: #e2e8f0; }
+
+		.modal-switch-btn {
+			color: var(--accent-light);
+			background: none;
+			border: none;
+			cursor: pointer;
+			font-weight: 700;
+			padding: 0 4px;
+		}
+
+		body.dark .modal-switch-btn { color: #60a5fa; }
 
 		.header-title {
 			font-weight: bold;
@@ -1428,6 +1509,14 @@
 			box-shadow: 0 6px 18px rgba(139,105,20,0.12);
 		}
 
+		.bookmark-btn-verse:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+			background: #94a3b8 !important;
+			box-shadow: none !important;
+			transform: none !important;
+		}
+
 		.bookmark-counter {
 			position: absolute;
 			top: -12px;
@@ -1555,8 +1644,12 @@
 		بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِیْمِ
 	</div>
 	<header>
-		<div class="header-title">Quran Majeed
-			<select style="float: right;" id="repeatSelect" aria-label="Repeat Count">
+		<div class="header-title-container">
+			<div class="header-title">Quran Majeed</div>
+			<button id="authHeaderBtn" class="auth-status-btn" onclick="handleAuthClick()" title="Login/Signup">
+				<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+			</button>
+			<select id="repeatSelect" aria-label="Repeat Count">
 				<option value="1" selected>Repeat 1x</option>
 				<option value="2">Repeat 2x</option>
 				<option value="3">Repeat 3x</option>
@@ -1597,6 +1690,7 @@
 
 	<!-- Firebase SDK (compat build for global `firebase` namespace) -->
 	<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 	<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 	<br>
 	<div class="bismillah" id="bismillahText">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِیْمِ</div>
@@ -1606,23 +1700,56 @@
 		<div class="surah-content" id="surahContent">Select a Surah or Juzz to view</div>
 	</div>
 
-	<!-- Auth Modal -->
+	<!-- Auth Modal (Login) -->
 	<div id="authModal" class="modal">
 		<div class="modal-content">
-			<div class="modal-header">Admin Authentication</div>
+			<div class="modal-header">Login</div>
 			<div class="modal-body">
 				<div class="form-group">
-					<label>Username:</label>
-					<input type="text" id="authUsername" placeholder="Enter username">
+					<label>Email or Username:</label>
+					<input type="text" id="authUsername" placeholder="Enter email/username">
 				</div>
 				<div class="form-group">
 					<label>Password:</label>
 					<input type="password" id="authPassword" placeholder="Enter password">
 				</div>
+				<div class="modal-switch">
+					Don't have an account? <button class="modal-switch-btn" onclick="openSignupModal()">Signup</button>
+				</div>
 			</div>
 			<div class="modal-footer">
 				<button class="modal-btn btn-secondary" onclick="closeAuthModal()">Cancel</button>
 				<button class="modal-btn btn-primary" onclick="verifyAuth()">Login</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Signup Modal -->
+	<div id="signupModal" class="modal">
+		<div class="modal-content">
+			<div class="modal-header">Create Account</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label>Display Name:</label>
+					<input type="text" id="signupName" placeholder="How should we call you?">
+				</div>
+				<div class="form-group">
+					<label>Email:</label>
+					<input type="email" id="signupEmail" placeholder="you@example.com" oninput="validateSignupEmail()">
+					<span id="signupEmailFeedback" class="validation-feedback"></span>
+				</div>
+				<div class="form-group">
+					<label>Password:</label>
+					<input type="password" id="signupPassword" placeholder="Strong password" oninput="validateSignupPassword()">
+					<span id="signupPasswordFeedback" class="validation-feedback"></span>
+				</div>
+				<div class="modal-switch">
+					Already have an account? <button class="modal-switch-btn" onclick="openAuthModal()">Login</button>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="modal-btn btn-secondary" onclick="closeSignupModal()">Cancel</button>
+				<button id="signupSubmitBtn" class="modal-btn btn-primary" onclick="registerUser()">Sign Up</button>
 			</div>
 		</div>
 	</div>
@@ -2325,9 +2452,11 @@
 							style="flex:1;padding:6px 10px;border:none;border-radius:6px;cursor:pointer;">
 							➦ Share
 							</button>
-							<button class="bookmark-btn-verse" onclick="addBookmarkForVerse(${currentSurah}, ${ayahNum})"
-							style="flex:1;padding:6px 10px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">
-							📑 Bookmark
+							<button class="bookmark-btn-verse" 
+								onclick="addBookmarkForVerse(${currentSurah}, ${ayahNum})"
+								${!isAuthenticated ? 'disabled title="Please login to bookmark"' : ''}
+								style="flex:1;padding:6px 10px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">
+								📑 Bookmark
 							</button>
 						</div>
 					</div>
@@ -2492,9 +2621,11 @@
 								style="flex:1;padding:6px 10px;border:none;border-radius:6px;cursor:pointer;">
 								➦ Share
 								</button>
-								<button class="bookmark-btn-verse" onclick="addBookmarkForVerse(${surahNum}, ${ayahNum})"
-								style="flex:1;padding:6px 10px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">
-								📑 Bookmark
+								<button class="bookmark-btn-verse" 
+									onclick="addBookmarkForVerse(${surahNum}, ${ayahNum})"
+									${!isAuthenticated ? 'disabled title="Please login to bookmark"' : ''}
+									style="flex:1;padding:6px 10px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;">
+									📑 Bookmark
 								</button>
 							</div>
 						</div>
@@ -3457,8 +3588,11 @@
 		}
 
 		function startAddBookmark() {
-			isAuthenticated = false;
-			openAuthModal();
+			if (!isAuthenticated) {
+				openAuthModal();
+			} else {
+				getCurrentVerse();
+			}
 		}
 
 		function addBookmarkForVerse(surah, ayah) {
@@ -3476,45 +3610,139 @@
 		}
 
 		function openAuthModal() {
+			closeSignupModal();
 			const modal = document.getElementById('authModal');
 			modal.classList.add('show');
 			document.getElementById('authUsername').focus();
 			
-			// Add Enter key support
 			document.getElementById('authUsername').onkeypress = (e) => {
-				if (e.key === 'Enter') {
-					document.getElementById('authPassword').focus();
-				}
+				if (e.key === 'Enter') document.getElementById('authPassword').focus();
 			};
 			document.getElementById('authPassword').onkeypress = (e) => {
-				if (e.key === 'Enter') {
-					verifyAuth();
-				}
+				if (e.key === 'Enter') verifyAuth();
 			};
 		}
 
 		function closeAuthModal() {
-			const modal = document.getElementById('authModal');
-			modal.classList.remove('show');
+			document.getElementById('authModal').classList.remove('show');
 			document.getElementById('authUsername').value = '';
 			document.getElementById('authPassword').value = '';
-			isAuthenticated = false;
 		}
 
-		function verifyAuth() {
+		function openSignupModal() {
+			closeAuthModal();
+			const modal = document.getElementById('signupModal');
+			modal.classList.add('show');
+			document.getElementById('signupName').focus();
+		}
+
+		function closeSignupModal() {
+			document.getElementById('signupModal').classList.remove('show');
+			document.getElementById('signupName').value = '';
+			document.getElementById('signupEmail').value = '';
+			document.getElementById('signupPassword').value = '';
+			document.getElementById('signupEmailFeedback').textContent = '';
+			document.getElementById('signupPasswordFeedback').textContent = '';
+		}
+
+		function validateEmailFormat(email) {
+			return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+		}
+
+		function validatePasswordStrength(pass) {
+			return pass.length >= 8 && /[A-Z]/.test(pass) && /[0-9]/.test(pass);
+		}
+
+		function validateSignupEmail() {
+			const email = document.getElementById('signupEmail').value.trim();
+			const feedback = document.getElementById('signupEmailFeedback');
+			if (!email) {
+				feedback.textContent = '';
+				return false;
+			}
+			if (validateEmailFormat(email)) {
+				feedback.textContent = '✓ Email format valid';
+				feedback.className = 'validation-feedback valid';
+				return true;
+			} else {
+				feedback.textContent = '⚠ Invalid email format';
+				feedback.className = 'validation-feedback invalid';
+				return false;
+			}
+		}
+
+		function validateSignupPassword() {
+			const pass = document.getElementById('signupPassword').value;
+			const feedback = document.getElementById('signupPasswordFeedback');
+			if (!pass) {
+				feedback.textContent = '';
+				return false;
+			}
+			if (validatePasswordStrength(pass)) {
+				feedback.textContent = '✓ Strong password';
+				feedback.className = 'validation-feedback valid';
+				return true;
+			} else {
+				feedback.textContent = '⚠ Minimum 8 chars, 1 uppercase, 1 number';
+				feedback.className = 'validation-feedback invalid';
+				return false;
+			}
+		}
+
+		async function registerUser() {
+			const name = document.getElementById('signupName').value.trim();
+			const email = document.getElementById('signupEmail').value.trim();
+			const password = document.getElementById('signupPassword').value;
+
+			if (!name) { alert('Please enter your name'); return; }
+			if (!validateSignupEmail()) { alert('Please enter a valid email'); return; }
+			if (!validateSignupPassword()) { alert('Please enter a stronger password'); return; }
+
+			try {
+				const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+				await userCredential.user.updateProfile({ displayName: name });
+				closeSignupModal();
+				alert(`Welcome ${name}! Your account has been created successfully.`);
+				loadBookmarks(); 
+			} catch (error) {
+				alert('Signup failed: ' + error.message);
+			}
+		}
+
+		async function verifyAuth() {
 			const username = document.getElementById('authUsername').value.trim();
 			const password = document.getElementById('authPassword').value.trim();
 			
-			if (username === 'quran' && password === 'quran') {
-				isAuthenticated = true;
+			if (!username || !password) {
+				alert('Please enter both email/username and password');
+				return;
+			}
+
+			try {
+				const email = username.includes('@') ? username : `${username}@bookmarks.com`;
+				await firebase.auth().signInWithEmailAndPassword(email, password);
 				closeAuthModal();
 				setTimeout(() => {
 					getCurrentVerse();
 				}, 300);
+			} catch (error) {
+				alert('Login failed: ' + error.message);
+			}
+		}
+
+		function handleAuthClick() {
+			if (isAuthenticated) {
+				if (confirm('Are you sure you want to logout?')) {
+					firebase.auth().signOut().then(() => {
+						bookmarks = [];
+						updateBookmarkCounter();
+						renderBookmarksDropdown();
+						renderBookmarksListView();
+						alert('Logged out successfully');
+					});
+				}
 			} else {
-				alert('Invalid credentials! Only admin can add bookmarks.');
-				document.getElementById('authPassword').value = '';
-				document.getElementById('authUsername').focus();
+				openAuthModal();
 			}
 		}
 
@@ -3576,7 +3804,6 @@
 			modal.classList.remove('show');
 			document.getElementById('bookmarkTitle').value = '';
 			document.getElementById('bookmarkDesc').value = '';
-			isAuthenticated = false;
 		}
 
 		function saveBookmark() {
@@ -3642,48 +3869,47 @@
 		}
 
 		function deleteBookmark(id) {
-			// Require admin authentication to delete
-			const password = prompt('Admin password required to delete bookmark:');
-			if (password === 'quran') {
-				if (confirm('Delete this bookmark?')) {
-					bookmarks = bookmarks.filter(b => b.id !== id);
-					saveBookmarks();
-					alert('Bookmark deleted! ✅');
-					renderBookmarksDropdown();
-					renderBookmarksListView();
-				}
-			} else if (password !== null) {
-				alert('Invalid password! Only admin can delete.');
+			if (!isAuthenticated) {
+				alert('Admin authentication required to delete bookmark.');
+				openAuthModal();
+				return;
+			}
+			if (confirm('Delete this bookmark?')) {
+				bookmarks = bookmarks.filter(b => b.id !== id);
+				saveBookmarks();
+				alert('Bookmark deleted! ✅');
+				renderBookmarksDropdown();
+				renderBookmarksListView();
 			}
 		}
 
 		function deleteBookmarkVerse(groupId, verse) {
-			const password = prompt('Admin password required to delete verse bookmark:');
-			if (password === 'quran') {
-				if (confirm(`Delete verse ${verse} from this title group?`)) {
-					const groupIndex = bookmarks.findIndex(b => Number(b.id) === Number(groupId));
-					if (groupIndex === -1) return;
+			if (!isAuthenticated) {
+				alert('Admin authentication required to delete verse bookmark.');
+				openAuthModal();
+				return;
+			}
+			if (confirm(`Delete verse ${verse} from this title group?`)) {
+				const groupIndex = bookmarks.findIndex(b => Number(b.id) === Number(groupId));
+				if (groupIndex === -1) return;
 
-					const entries = getBookmarkEntries(bookmarks[groupIndex]).filter(entry => entry.verse !== verse);
-					if (entries.length === 0) {
-						bookmarks.splice(groupIndex, 1);
-					} else {
-						bookmarks[groupIndex].entries = entries;
-						bookmarks[groupIndex].verses = entries.map(entry => entry.verse);
-						const latestEntry = entries.reduce((latest, current) => {
-							return Number(current.id || 0) > Number(latest.id || 0) ? current : latest;
-						}, entries[0]);
-						bookmarks[groupIndex].id = Number(latestEntry.id) || bookmarks[groupIndex].id;
-						bookmarks[groupIndex].date = latestEntry.date || bookmarks[groupIndex].date;
-					}
-
-					saveBookmarks();
-					renderBookmarksDropdown();
-					renderBookmarksListView();
-					alert('Verse bookmark deleted! ✅');
+				const entries = getBookmarkEntries(bookmarks[groupIndex]).filter(entry => entry.verse !== verse);
+				if (entries.length === 0) {
+					bookmarks.splice(groupIndex, 1);
+				} else {
+					bookmarks[groupIndex].entries = entries;
+					bookmarks[groupIndex].verses = entries.map(entry => entry.verse);
+					const latestEntry = entries.reduce((latest, current) => {
+						return Number(current.id || 0) > Number(latest.id || 0) ? current : latest;
+					}, entries[0]);
+					bookmarks[groupIndex].id = Number(latestEntry.id) || bookmarks[groupIndex].id;
+					bookmarks[groupIndex].date = latestEntry.date || bookmarks[groupIndex].date;
 				}
-			} else if (password !== null) {
-				alert('Invalid password! Only admin can delete.');
+
+				saveBookmarks();
+				renderBookmarksDropdown();
+				renderBookmarksListView();
+				alert('Verse bookmark deleted! ✅');
 			}
 		}
 
@@ -3901,10 +4127,10 @@
 		document.addEventListener('keydown', (e) => {
 			if (e.key === 'Escape') {
 				document.getElementById('authModal').classList.remove('show');
+				document.getElementById('signupModal').classList.remove('show');
 				document.getElementById('bookmarkModal').classList.remove('show');
 				document.getElementById('bookmarksViewModal').classList.remove('show');
 				document.getElementById('bookmarksDropdown').classList.remove('show');
-				isAuthenticated = false;
 			}
 		});
 
@@ -3939,6 +4165,32 @@
 				firebaseDatabase = firebase.database();
 				firebaseReady = true;
 				console.log('✓ Firebase initialized successfully');
+				
+				// Setup Authentication listener
+				firebase.auth().onAuthStateChanged((user) => {
+					const authBtn = document.getElementById('authHeaderBtn');
+					if (user) {
+						isAuthenticated = true;
+						authBtn.classList.add('logged-in');
+						authBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>';
+						authBtn.title = `Logout (${user.displayName || user.email})`;
+						console.log('✓ User authenticated:', user.email);
+						updateBookmarkButtons();
+						loadBookmarks(); // Load bookmarks for the authenticated user
+					} else {
+						isAuthenticated = false;
+						authBtn.classList.remove('logged-in');
+						authBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z"/></svg>';
+						authBtn.title = 'Login/Signup';
+						console.log('User logged out');
+						updateBookmarkButtons();
+						bookmarks = [];
+						updateBookmarkCounter();
+						renderBookmarksDropdown();
+						renderBookmarksListView();
+					}
+				});
+
 				setupFirebaseListeners();
 			} catch (error) {
 				console.warn('Firebase initialization failed:', error.message);
@@ -3947,12 +4199,27 @@
 			}
 		}
 
+		function updateBookmarkButtons() {
+			const buttons = document.querySelectorAll('.bookmark-btn-verse');
+			buttons.forEach(btn => {
+				btn.disabled = !isAuthenticated;
+				if (!isAuthenticated) {
+					btn.setAttribute('title', 'Please login to bookmark');
+				} else {
+					btn.removeAttribute('title');
+				}
+			});
+		}
+
 		// Setup real-time listeners from Firebase
 		function setupFirebaseListeners() {
 			if (!firebaseReady || !firebaseDatabase) return;
 
 			try {
-				const bookmarksRef = firebaseDatabase.ref('bookmarks');
+				const user = firebase.auth().currentUser;
+				if (!user) return;
+
+				const bookmarksRef = firebaseDatabase.ref('users/' + user.uid + '/bookmarks');
 				bookmarksRef.on('value', (snapshot) => {
 					if (Date.now() - lastSyncTime > 1000) {
 						const data = snapshot.val();
@@ -3960,7 +4227,7 @@
 							const remoteBookmarks = Array.isArray(data) ? data : Object.values(data);
 							const normalizedRemoteBookmarks = normalizeBookmarks(remoteBookmarks);
 							if (JSON.stringify(normalizedRemoteBookmarks) !== JSON.stringify(bookmarks)) {
-								console.log('Synced bookmarks from Firebase:', normalizedRemoteBookmarks.length, 'items');
+								console.log('Synced bookmarks for user:', normalizedRemoteBookmarks.length, 'items');
 								bookmarks = normalizedRemoteBookmarks;
 								updateBookmarkCounter();
 								renderBookmarksDropdown();
@@ -3984,7 +4251,9 @@
 			lastSyncTime = Date.now();
 
 			try {
-				const bookmarksRef = firebaseDatabase.ref('bookmarks');
+				const user = firebase.auth().currentUser;
+				if (!user) return;
+				const bookmarksRef = firebaseDatabase.ref('users/' + user.uid + '/bookmarks');
 				await bookmarksRef.set(bookmarks);
 				console.log('✓ Bookmarks synced to Firebase:', bookmarks.length, 'items');
 				isSyncingToFirebase = false;
@@ -3997,17 +4266,16 @@
 
 		// Load bookmarks - First try Firebase (if available), then fallback to local JSON
 		function loadBookmarks() {
-			// Only use Firebase as the primary source.
-			if (firebaseReady && firebaseDatabase) {
-				firebaseDatabase.ref('bookmarks').once('value', (snapshot) => {
+			const user = firebase.auth().currentUser;
+			if (firebaseReady && firebaseDatabase && user) {
+				firebaseDatabase.ref('users/' + user.uid + '/bookmarks').once('value', (snapshot) => {
 					const data = snapshot.val();
 					if (data) {
 						bookmarks = normalizeBookmarks(Array.isArray(data) ? data : Object.values(data));
-						console.log('Loaded', bookmarks.length, 'bookmarks from Firebase');
+						console.log('Loaded', bookmarks.length, 'bookmarks for user');
 					} else {
-						// No data in Firebase yet — start with empty bookmarks (do not load local file)
 						bookmarks = [];
-						console.log('No bookmarks found in Firebase — starting with empty list');
+						console.log('No bookmarks found for user');
 					}
 					updateBookmarkCounter();
 					renderBookmarksDropdown();
