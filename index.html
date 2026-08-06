@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -2321,8 +2321,8 @@
 				data-tooltip="Repeat Mode"></button>
 			<!-- Notes button (only active when logged in) -->
 			<div class="notes-btn-wrap disabled-feature" id="notesBtnWrap">
-				<button class="toggle-theme" id="notesBtn" aria-label="Notes"
-					data-tooltip="My Notes" onclick="openNotesViewModal()">
+				<button class="toggle-theme" id="notesBtn" aria-label="Notes" data-tooltip="My Notes"
+					onclick="openNotesViewModal()">
 					🗒️
 				</button>
 			</div>
@@ -3449,8 +3449,6 @@
 			// Remove/replace ayah end sign ( and similar)
 			arabic = arabic.replace(/[\uFD00-\uFDFF\u06DD\u06DE]/g, "");
 			arabic = arabic.slice(0, -1);
-			// (optional) add a clean marker at end
-			arabic = arabic.trim() + "سطس";
 			const urdu = verseEl.querySelector(".translation")?.innerText || "";
 			const hashiyah = verseEl.querySelector(".hashiyah")?.innerText || "";
 			// 🔹 NEW: Word-by-word
