@@ -242,14 +242,21 @@
 		}
 
 		@keyframes scaleIn {
-			0% { transform: scale(0.9); opacity: 0; }
-			100% { transform: scale(1); opacity: 1; }
+			0% {
+				transform: scale(0.9);
+				opacity: 0;
+			}
+
+			100% {
+				transform: scale(1);
+				opacity: 1;
+			}
 		}
 
 		.logout-icon-wrap {
 			font-size: 3rem;
 			margin: 0.5rem 0 1rem 0;
-			filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1));
+			filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.1));
 		}
 
 		.logout-confirm-box .modal-footer {
@@ -278,7 +285,7 @@
 			border-radius: 12px;
 			background: var(--card-bg);
 			color: var(--text);
-			box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+			box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 			border: 1px solid var(--border);
 			font-family: inherit;
 			font-size: 0.95rem;
@@ -294,18 +301,32 @@
 
 		body.dark .toast {
 			background: rgba(30, 41, 59, 0.95);
-			box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+			box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 			border: 1px solid rgba(255, 255, 255, 0.1);
 		}
 
 		@keyframes toast-in {
-			from { transform: translateY(-40px); opacity: 0; }
-			to { transform: translateY(0); opacity: 1; }
+			from {
+				transform: translateY(-40px);
+				opacity: 0;
+			}
+
+			to {
+				transform: translateY(0);
+				opacity: 1;
+			}
 		}
 
 		@keyframes toast-out {
-			from { transform: translateY(0); opacity: 1; }
-			to { transform: translateY(-40px); opacity: 0; }
+			from {
+				transform: translateY(0);
+				opacity: 1;
+			}
+
+			to {
+				transform: translateY(-40px);
+				opacity: 0;
+			}
 		}
 
 		.header-title {
@@ -1585,7 +1606,7 @@
 			font-weight: 700;
 			font-size: 1rem;
 			text-align: center;
-			box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+			box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 			user-select: none;
 		}
 
@@ -1600,7 +1621,7 @@
 			color: white;
 			border-color: #2563eb;
 			transform: translateY(-3px);
-			box-shadow: 0 8px 24px rgba(37,99,235,0.3);
+			box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
 		}
 
 		.note-type-card.ur-card {
@@ -1614,13 +1635,13 @@
 			color: white;
 			border-color: #16a34a;
 			transform: translateY(-3px);
-			box-shadow: 0 8px 24px rgba(22,163,74,0.3);
+			box-shadow: 0 8px 24px rgba(22, 163, 74, 0.3);
 		}
 
 		body.dark .note-type-card.en-card {
-			background: linear-gradient(135deg, rgba(37,99,235,0.15), rgba(29,78,216,0.2));
+			background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(29, 78, 216, 0.2));
 			color: #93c5fd;
-			border-color: rgba(59,130,246,0.3);
+			border-color: rgba(59, 130, 246, 0.3);
 		}
 
 		body.dark .note-type-card.en-card:hover {
@@ -1630,9 +1651,9 @@
 		}
 
 		body.dark .note-type-card.ur-card {
-			background: linear-gradient(135deg, rgba(22,163,74,0.15), rgba(21,128,61,0.2));
+			background: linear-gradient(135deg, rgba(22, 163, 74, 0.15), rgba(21, 128, 61, 0.2));
 			color: #86efac;
-			border-color: rgba(34,197,94,0.3);
+			border-color: rgba(34, 197, 94, 0.3);
 		}
 
 		body.dark .note-type-card.ur-card:hover {
@@ -1661,7 +1682,7 @@
 			display: inline-flex;
 			align-items: center;
 			gap: 0.4rem;
-			background: rgba(205,133,63,0.12);
+			background: rgba(205, 133, 63, 0.12);
 			color: var(--accent-light);
 			border-radius: 8px;
 			padding: 0.3rem 0.75rem;
@@ -1671,12 +1692,14 @@
 		}
 
 		body.dark .note-picker-verse-tag {
-			background: rgba(59,130,246,0.15);
+			background: rgba(59, 130, 246, 0.15);
 			color: #82d4f5;
 		}
 
 		@media (max-width: 420px) {
-			.note-type-picker-grid { grid-template-columns: 1fr; }
+			.note-type-picker-grid {
+				grid-template-columns: 1fr;
+			}
 		}
 
 		/* ====== NOTES BUTTON & DROPDOWN ====== */
@@ -1699,7 +1722,7 @@
 			background: linear-gradient(135deg, #fdfbf7, #f9f4ed);
 			border: 2px solid #e0c9b1;
 			border-radius: 12px;
-			box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 			z-index: 1004;
 			overflow: hidden;
 			animation: slideDown 0.2s ease;
@@ -1708,10 +1731,12 @@
 		body.dark .notes-submenu {
 			background: linear-gradient(135deg, #1e293b, #172031);
 			border-color: #2d3e52;
-			box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 		}
 
-		.notes-submenu.show { display: block; }
+		.notes-submenu.show {
+			display: block;
+		}
 
 		.notes-submenu-item {
 			padding: 0.75rem 1.1rem;
@@ -1723,18 +1748,25 @@
 			gap: 0.6rem;
 			transition: background 0.18s;
 			color: var(--text-light);
-			border-bottom: 1px solid rgba(205,133,63,0.15);
+			border-bottom: 1px solid rgba(205, 133, 63, 0.15);
 		}
 
-		body.dark .notes-submenu-item { color: #e2e8f0; border-bottom-color: rgba(59,130,246,0.12); }
+		body.dark .notes-submenu-item {
+			color: #e2e8f0;
+			border-bottom-color: rgba(59, 130, 246, 0.12);
+		}
 
-		.notes-submenu-item:last-child { border-bottom: none; }
+		.notes-submenu-item:last-child {
+			border-bottom: none;
+		}
 
 		.notes-submenu-item:hover {
-			background: rgba(205,133,63,0.1);
+			background: rgba(205, 133, 63, 0.1);
 		}
 
-		body.dark .notes-submenu-item:hover { background: rgba(59,130,246,0.13); }
+		body.dark .notes-submenu-item:hover {
+			background: rgba(59, 130, 246, 0.13);
+		}
 
 		/* Notes list in modal */
 		.notes-list {
@@ -1743,13 +1775,13 @@
 			border: 2px solid #e0c9b1;
 			border-radius: 12px;
 			background: linear-gradient(135deg, #fdfbf7, #f9f4ed);
-			box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+			box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 		}
 
 		body.dark .notes-list {
 			background: linear-gradient(135deg, #1e293b, #172031);
 			border-color: #2d3e52;
-			box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);
+			box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
 		}
 
 		.notes-empty {
@@ -1759,21 +1791,31 @@
 			font-size: 0.95rem;
 		}
 
-		body.dark .notes-empty { color: #7a8c9e; }
+		body.dark .notes-empty {
+			color: #7a8c9e;
+		}
 
 		.note-item {
 			padding: 1rem 1.1rem;
-			border-bottom: 1px solid rgba(205,133,63,0.2);
+			border-bottom: 1px solid rgba(205, 133, 63, 0.2);
 			transition: background 0.2s;
 		}
 
-		body.dark .note-item { border-bottom-color: rgba(59,130,246,0.15); }
+		body.dark .note-item {
+			border-bottom-color: rgba(59, 130, 246, 0.15);
+		}
 
-		.note-item:last-child { border-bottom: none; }
+		.note-item:last-child {
+			border-bottom: none;
+		}
 
-		.note-item:hover { background: rgba(205,133,63,0.08); }
+		.note-item:hover {
+			background: rgba(205, 133, 63, 0.08);
+		}
 
-		body.dark .note-item:hover { background: rgba(59,130,246,0.1); }
+		body.dark .note-item:hover {
+			background: rgba(59, 130, 246, 0.1);
+		}
 
 		.note-item-head {
 			display: flex;
@@ -1788,7 +1830,7 @@
 			font-size: 0.85rem;
 			color: var(--accent-light);
 			font-weight: 700;
-			background: rgba(205,133,63,0.12);
+			background: rgba(205, 133, 63, 0.12);
 			padding: 0.25rem 0.55rem;
 			border-radius: 6px;
 			cursor: pointer;
@@ -1796,7 +1838,7 @@
 
 		body.dark .note-verse-ref {
 			color: #82d4f5;
-			background: rgba(59,130,246,0.15);
+			background: rgba(59, 130, 246, 0.15);
 		}
 
 		.note-type-badge {
@@ -1809,23 +1851,23 @@
 		}
 
 		.note-type-badge.en {
-			background: rgba(59,130,246,0.15);
+			background: rgba(59, 130, 246, 0.15);
 			color: #2563eb;
 		}
 
 		body.dark .note-type-badge.en {
 			color: #93c5fd;
-			background: rgba(59,130,246,0.2);
+			background: rgba(59, 130, 246, 0.2);
 		}
 
 		.note-type-badge.ur {
-			background: rgba(34,197,94,0.15);
+			background: rgba(34, 197, 94, 0.15);
 			color: #16a34a;
 		}
 
 		body.dark .note-type-badge.ur {
 			color: #86efac;
-			background: rgba(34,197,94,0.15);
+			background: rgba(34, 197, 94, 0.15);
 		}
 
 		/* Inline Verse Notes Container */
@@ -1836,7 +1878,7 @@
 			border: 1.5px solid #e0c9b1;
 			border-left: 4px solid var(--accent-light, #cd853f);
 			border-radius: 10px;
-			box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 			animation: slideDown 0.2s ease;
 		}
 
@@ -1844,7 +1886,7 @@
 			background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(23, 32, 49, 0.95));
 			border-color: #2d3e52;
 			border-left-color: #60a5fa;
-			box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 		}
 
 		.verse-notes-header {
@@ -1853,13 +1895,13 @@
 			align-items: center;
 			margin-bottom: 8px;
 			padding-bottom: 6px;
-			border-bottom: 1px dashed rgba(205,133,63,0.25);
+			border-bottom: 1px dashed rgba(205, 133, 63, 0.25);
 			gap: 8px;
 			flex-wrap: wrap;
 		}
 
 		body.dark .verse-notes-header {
-			border-bottom-color: rgba(59,130,246,0.2);
+			border-bottom-color: rgba(59, 130, 246, 0.2);
 		}
 
 		.verse-notes-title {
@@ -1871,7 +1913,9 @@
 			color: var(--text-light);
 		}
 
-		body.dark .verse-notes-title { color: #e2e8f0; }
+		body.dark .verse-notes-title {
+			color: #e2e8f0;
+		}
 
 		.verse-notes-actions {
 			display: flex;
@@ -1893,6 +1937,7 @@
 			color: #2563eb;
 			border: 1px solid #bfdbfe;
 		}
+
 		.verse-notes-add-btn.en:hover {
 			background: #2563eb;
 			color: white;
@@ -1903,26 +1948,29 @@
 			color: #16a34a;
 			border: 1px solid #bbf7d0;
 		}
+
 		.verse-notes-add-btn.ur:hover {
 			background: #16a34a;
 			color: white;
 		}
 
 		body.dark .verse-notes-add-btn.en {
-			background: rgba(37,99,235,0.2);
+			background: rgba(37, 99, 235, 0.2);
 			color: #93c5fd;
-			border-color: rgba(59,130,246,0.3);
+			border-color: rgba(59, 130, 246, 0.3);
 		}
+
 		body.dark .verse-notes-add-btn.en:hover {
 			background: #2563eb;
 			color: white;
 		}
 
 		body.dark .verse-notes-add-btn.ur {
-			background: rgba(22,163,74,0.2);
+			background: rgba(22, 163, 74, 0.2);
 			color: #86efac;
-			border-color: rgba(34,197,94,0.3);
+			border-color: rgba(34, 197, 94, 0.3);
 		}
+
 		body.dark .verse-notes-add-btn.ur:hover {
 			background: #16a34a;
 			color: white;
@@ -1935,7 +1983,10 @@
 			padding: 6px 0;
 			text-align: center;
 		}
-		body.dark .verse-notes-empty { color: #8a9cb0; }
+
+		body.dark .verse-notes-empty {
+			color: #8a9cb0;
+		}
 
 		.note-text {
 			font-size: 1rem;
@@ -1944,7 +1995,9 @@
 			word-break: break-word;
 		}
 
-		body.dark .note-text { color: #e2e8f0; }
+		body.dark .note-text {
+			color: #e2e8f0;
+		}
 
 		.note-text.ur-note {
 			direction: rtl;
@@ -1980,7 +2033,7 @@
 			font-size: 0.78rem;
 			font-weight: 600;
 			transition: all 0.2s ease;
-			box-shadow: 0 2px 6px rgba(255,68,68,0.2);
+			box-shadow: 0 2px 6px rgba(255, 68, 68, 0.2);
 		}
 
 		.note-delete-btn:hover {
@@ -1988,7 +2041,28 @@
 			transform: translateY(-1px);
 		}
 
-		.notes-search-wrap { margin-bottom: 0.8rem; }
+		.note-edit-btn {
+			background: linear-gradient(135deg, #f59e0b, #d97706);
+			color: white;
+			border: none;
+			padding: 0.3rem 0.6rem;
+			border-radius: 7px;
+			cursor: pointer;
+			font-size: 0.78rem;
+			font-weight: 600;
+			transition: all 0.2s ease;
+			box-shadow: 0 2px 6px rgba(245, 158, 11, 0.25);
+		}
+
+		.note-edit-btn:hover {
+			background: linear-gradient(135deg, #d97706, #b45309);
+			transform: translateY(-1px);
+			box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+		}
+
+		.notes-search-wrap {
+			margin-bottom: 0.8rem;
+		}
 
 		#noteSearchInput {
 			width: 100%;
@@ -2005,7 +2079,7 @@
 		#noteSearchInput:focus {
 			outline: none;
 			border-color: var(--accent-light);
-			box-shadow: 0 0 0 3px rgba(205,133,63,0.15);
+			box-shadow: 0 0 0 3px rgba(205, 133, 63, 0.15);
 		}
 
 		body.dark #noteSearchInput {
@@ -2016,12 +2090,19 @@
 
 		body.dark #noteSearchInput:focus {
 			border-color: var(--accent);
-			box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+			box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 		}
 
 		@media (max-width: 520px) {
-			.note-item-head { flex-direction: column; align-items: flex-start; }
-			.notes-submenu { min-width: 180px; right: 0; }
+			.note-item-head {
+				flex-direction: column;
+				align-items: flex-start;
+			}
+
+			.notes-submenu {
+				min-width: 180px;
+				right: 0;
+			}
 		}
 
 		/* Theme-aware small action buttons inside verses */
@@ -2241,14 +2322,9 @@
 			<!-- Notes button (only active when logged in) -->
 			<div class="notes-btn-wrap disabled-feature" id="notesBtnWrap">
 				<button class="toggle-theme" id="notesBtn" aria-label="Notes"
-					data-tooltip="My Notes" onclick="toggleNotesSubmenu(event)">
+					data-tooltip="My Notes" onclick="openNotesViewModal()">
 					🗒️
 				</button>
-				<div id="notesSubmenu" class="notes-submenu">
-					<div class="notes-submenu-item" onclick="openAddNoteModal('en')">✏️ Add English Note</div>
-					<div class="notes-submenu-item" onclick="openAddNoteModal('ur')">✏️ Add Urdu Note</div>
-					<div class="notes-submenu-item" onclick="openNotesViewModal()">📋 My Saved Notes</div>
-				</div>
 			</div>
 			<button class="toggle-theme bookmark-btn" id="bookmarkBtn" aria-label="Bookmarks"
 				data-tooltip="My Bookmarks" onclick="openBookmarksViewModal()">
@@ -2451,8 +2527,10 @@
 				<p>Are you sure you want to log out of your account?</p>
 			</div>
 			<div class="modal-footer" style="padding-top: 0.5rem;">
-				<button class="modal-btn btn-secondary" onclick="closeLogoutModal()" style="flex:1;">Stay Logged In</button>
-				<button class="modal-btn btn-primary" onclick="confirmLogout()" style="flex:1; background: #e74c3c;">Log Out</button>
+				<button class="modal-btn btn-secondary" onclick="closeLogoutModal()" style="flex:1;">Stay Logged
+					In</button>
+				<button class="modal-btn btn-primary" onclick="confirmLogout()" style="flex:1; background: #e74c3c;">Log
+					Out</button>
 			</div>
 		</div>
 	</div>
@@ -4113,17 +4191,17 @@
 			const toast = document.createElement('div');
 			toast.className = 'toast';
 			toast.innerHTML = `<span>✨</span> <span>${message}</span>`;
-			
+
 			container.appendChild(toast);
-			
+
 			// Remove from DOM after duration
 			setTimeout(() => {
 				toast.remove();
-			}, duration + 1000); 
+			}, duration + 1000);
 		}
 
 		// Overwrite standard alert
-		window.alert = function(msg) {
+		window.alert = function (msg) {
 			showToast(msg);
 		};
 
@@ -4136,6 +4214,7 @@
 		let notes = []; // [{id, verse, type:'en'|'ur', text, date}]
 		let noteSearchTerm = '';
 		let _pendingNoteType = 'en'; // type being added
+		let _editingNoteId = null;  // null = adding new, number = editing existing
 
 		function updateNotesBtnState() {
 			const wrap = document.getElementById('notesBtnWrap');
@@ -4174,7 +4253,7 @@
 					if (parts.length === 2) { surah = parseInt(parts[0]) || surah; ayah = parseInt(parts[1]) || 1; }
 				}
 			}
-			const verseRef = `${String(surah).padStart(3,'0')}:${String(ayah).padStart(3,'0')}`;
+			const verseRef = `${String(surah).padStart(3, '0')}:${String(ayah).padStart(3, '0')}`;
 			document.getElementById('noteVerseRef').value = verseRef;
 
 			const isEn = type === 'en';
@@ -4193,6 +4272,10 @@
 		function closeAddNoteModal() {
 			document.getElementById('addNoteModal').classList.remove('show');
 			document.getElementById('noteTextArea').value = '';
+			_editingNoteId = null;
+			// Reset save button text
+			const saveBtn = document.querySelector('#addNoteModal .btn-primary');
+			if (saveBtn) saveBtn.textContent = 'Save Note';
 		}
 
 		function saveNote() {
@@ -4200,20 +4283,64 @@
 			const text = document.getElementById('noteTextArea').value.trim();
 			if (!text) { alert('Please write a note before saving.'); return; }
 			const verse = document.getElementById('noteVerseRef').value;
-			const note = {
-				id: Date.now(),
-				verse,
-				type: _pendingNoteType,
-				text,
-				date: new Date().toLocaleString()
-			};
-			notes.push(note);
-			saveNotes();
-			closeAddNoteModal();
-			alert('Note saved successfully! ✅');
+
+			if (_editingNoteId !== null) {
+				// Update existing note
+				const idx = notes.findIndex(n => n.id === _editingNoteId);
+				if (idx !== -1) {
+					notes[idx].text = text;
+					notes[idx].date = new Date().toLocaleString() + ' (edited)';
+				}
+				saveNotes();
+				closeAddNoteModal();
+				showToast('Note updated successfully! ✅');
+			} else {
+				// Add new note
+				const note = {
+					id: Date.now(),
+					verse,
+					type: _pendingNoteType,
+					text,
+					date: new Date().toLocaleString()
+				};
+				notes.push(note);
+				saveNotes();
+				closeAddNoteModal();
+				showToast('Note saved successfully! ✅');
+			}
 			renderNotesListView();
 			updateAllVerseNoteButtons();
 			updateOpenVerseNoteSections();
+		}
+
+		function editNote(id) {
+			if (!isAuthenticated) { openAuthModal(); return; }
+			const note = notes.find(n => n.id === id);
+			if (!note) return;
+
+			// Close any open modals first
+			closeNotesViewModal();
+
+			_editingNoteId = id;
+			_pendingNoteType = note.type;
+
+			const isEn = note.type === 'en';
+			document.getElementById('addNoteModalHeader').textContent = isEn ? 'Edit English Note' : 'Edit Urdu Note';
+			document.getElementById('noteTextLabel').textContent = isEn ? 'Note (English):' : 'Note (Urdu):';
+			document.getElementById('noteVerseRef').value = note.verse;
+
+			const ta = document.getElementById('noteTextArea');
+			ta.value = note.text;
+			ta.dir = isEn ? 'ltr' : 'rtl';
+			ta.style.textAlign = isEn ? 'left' : 'right';
+			ta.placeholder = isEn ? 'Write your English note here...' : 'یہاں اردو نوٹ لکھیں...';
+
+			// Change save button label
+			const saveBtn = document.querySelector('#addNoteModal .btn-primary');
+			if (saveBtn) saveBtn.textContent = 'Update Note';
+
+			document.getElementById('addNoteModal').classList.add('show');
+			ta.focus();
 		}
 
 		function deleteNote(id) {
@@ -4229,7 +4356,6 @@
 		}
 
 		function openNotesViewModal() {
-			document.getElementById('notesSubmenu').classList.remove('show');
 			const si = document.getElementById('noteSearchInput');
 			if (si) { si.value = ''; }
 			noteSearchTerm = '';
@@ -4276,7 +4402,8 @@
 							<span class="note-verse-ref" onclick="navigateToBookmark('${n.verse}')" title="Go to verse">${n.verse}</span>
 							<span class="note-type-badge ${n.type}">${isEn ? 'English' : 'Urdu'}</span>
 							<div class="note-actions">
-								<button class="note-delete-btn" onclick="deleteNote(${n.id})">✕</button>
+								<button class="note-edit-btn" onclick="editNote(${n.id})" title="Edit note">✏️</button>
+								<button class="note-delete-btn" onclick="deleteNote(${n.id})" title="Delete note">✕</button>
 							</div>
 						</div>
 						<div class="note-text ${isEn ? 'en-note' : 'ur-note'}">${escapeHtml(n.text)}</div>
@@ -4337,7 +4464,8 @@
 							<div class="note-item-head">
 								<span class="note-type-badge ${n.type}">${isEn ? 'English' : 'Urdu'}</span>
 								<div class="note-actions">
-									<button class="note-delete-btn" onclick="deleteNote(${n.id})">✕</button>
+									<button class="note-edit-btn" onclick="editNote(${n.id})" title="Edit note">✏️</button>
+									<button class="note-delete-btn" onclick="deleteNote(${n.id})" title="Delete note">✕</button>
 								</div>
 							</div>
 							<div class="note-text ${isEn ? 'en-note' : 'ur-note'}">${escapeHtml(n.text)}</div>
@@ -4363,7 +4491,7 @@
 			if (!isAuthenticated) { openAuthModal(); return; }
 			_pendingNoteType = type;
 			const surahStr = String(surah).padStart(3, '0');
-			const ayahStr  = String(ayah).padStart(3, '0');
+			const ayahStr = String(ayah).padStart(3, '0');
 			document.getElementById('noteVerseRef').value = `${surahStr}:${ayahStr}`;
 
 			const isEn = type === 'en';
@@ -4401,7 +4529,7 @@
 		}
 
 		function escapeHtml(str) {
-			return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+			return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 		}
 
 		function saveNotes() {
@@ -4427,7 +4555,7 @@
 					updateAllVerseNoteButtons();
 					updateOpenVerseNoteSections();
 				}
-			} catch(e) { notes = []; }
+			} catch (e) { notes = []; }
 		}
 
 		async function syncNotesToFirebase() {
@@ -4435,7 +4563,7 @@
 				const user = firebase.auth().currentUser;
 				if (!user) return;
 				await firebaseDatabase.ref('users/' + user.uid + '/notes').set(notes);
-			} catch(e) { console.warn('Notes sync failed:', e.message); }
+			} catch (e) { console.warn('Notes sync failed:', e.message); }
 		}
 
 
@@ -4587,7 +4715,7 @@
 		function addNoteForVerse(surah, ayah) {
 			if (!isAuthenticated) { openAuthModal(); return; }
 			const surahStr = String(surah).padStart(3, '0');
-			const ayahStr  = String(ayah).padStart(3, '0');
+			const ayahStr = String(ayah).padStart(3, '0');
 			_pendingNoteVerseRef = `${surahStr}:${ayahStr}`;
 			// Show human-readable label in picker
 			document.getElementById('notePickerVerseLabel').textContent = `${surah}:${ayah}`;
@@ -4941,7 +5069,7 @@
 
 		function renderBookmarksDropdown() {
 			const dropdown = document.getElementById('bookmarksDropdown');
-			
+
 			if (bookmarks.length === 0) {
 				dropdown.innerHTML = '';
 				return;
